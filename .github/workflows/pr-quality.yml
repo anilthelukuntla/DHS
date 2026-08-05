@@ -56,13 +56,30 @@ jobs:
           name: lwc-jest-coverage
           path: coverage/
 
+      - name: Detect Apex source folders
+        id: apex-source
+        shell: bash
+        run: |
+          if [ -d force-app/main/default/classes ] || [ -d force-app/main/default/triggers ]; then
+            echo "has_apex_sources=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_apex_sources=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip Apex PMD
+        if: steps.apex-source.outputs.has_apex_sources == 'false'
+        run: echo "No Apex classes or triggers folder exists in this branch."
+
       - name: Install Salesforce CLI
+        if: steps.apex-source.outputs.has_apex_sources == 'true'
         run: npm install --global @salesforce/cli@latest
 
       - name: Install Salesforce Code Analyzer
+        if: steps.apex-source.outputs.has_apex_sources == 'true'
         run: sf plugins install code-analyzer@latest
 
       - name: Run Apex PMD through Salesforce Code Analyzer
+        if: steps.apex-source.outputs.has_apex_sources == 'true'
         id: code-analyzer
         uses: forcedotcom/run-code-analyzer@v2
         with:
@@ -72,10 +89,12 @@ jobs:
 
       - name: Enforce Apex PMD quality gate
         if: |
-          steps.code-analyzer.outputs.exit-code > 0 ||
-          steps.code-analyzer.outputs.num-sev1-violations-in-changed-files > 0 ||
-          steps.code-analyzer.outputs.num-sev2-violations-in-changed-files > 0 ||
-          steps.code-analyzer.outputs.num-sev3-violations-in-changed-files > 0
+          steps.apex-source.outputs.has_apex_sources == 'true' && (
+            steps.code-analyzer.outputs.exit-code > 0 ||
+            steps.code-analyzer.outputs.num-sev1-violations-in-changed-files > 0 ||
+            steps.code-analyzer.outputs.num-sev2-violations-in-changed-files > 0 ||
+            steps.code-analyzer.outputs.num-sev3-violations-in-changed-files > 0
+          )
         run: |
           echo "Apex PMD gate failed. Fix Critical, High, and Medium PMD issues in changed files."
           exit 1
