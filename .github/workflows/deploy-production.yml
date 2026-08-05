@@ -1,0 +1,58 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy-production:
+    name: Deploy to Production Org
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli@latest
+
+      - name: Authenticate Production
+        shell: bash
+        run: |
+          mkdir -p .ci
+          echo "${{ secrets.SF_PROD_JWT_KEY }}" > .ci/server.key
+          sf org login jwt \
+            --client-id "${{ secrets.SF_PROD_CLIENT_ID }}" \
+            --jwt-key-file .ci/server.key \
+            --username "${{ secrets.SF_PROD_USERNAME }}" \
+            --instance-url "${{ secrets.SF_PROD_INSTANCE_URL }}" \
+            --alias PRODUCTION
+
+      - name: Deploy and run Apex tests
+        shell: bash
+        run: |
+          set -o pipefail
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org PRODUCTION \
+            --test-level RunLocalTests \
+            --wait 120 \
+            --json | tee deploy-result.json
+
+      - name: Enforce Apex coverage >= 75%
+        run: node scripts/ci/check-apex-coverage.js deploy-result.json 75
+
+      - name: Upload deployment result
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-deploy-result
+          path: deploy-result.json

@@ -1,0 +1,58 @@
+name: Deploy INTELUAT
+
+on:
+  push:
+    branches:
+      - INTELUAT
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-inteluat
+  cancel-in-progress: false
+
+jobs:
+  deploy-uat:
+    name: Deploy to INTELUAT Org
+    runs-on: ubuntu-latest
+    environment: INTELUAT
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli@latest
+
+      - name: Authenticate INTELUAT
+        shell: bash
+        run: |
+          mkdir -p .ci
+          echo "${{ secrets.SF_UAT_JWT_KEY }}" > .ci/server.key
+          sf org login jwt \
+            --client-id "${{ secrets.SF_UAT_CLIENT_ID }}" \
+            --jwt-key-file .ci/server.key \
+            --username "${{ secrets.SF_UAT_USERNAME }}" \
+            --instance-url "${{ secrets.SF_UAT_INSTANCE_URL }}" \
+            --alias INTELUAT
+
+      - name: Deploy and run Apex tests
+        shell: bash
+        run: |
+          set -o pipefail
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org INTELUAT \
+            --test-level RunLocalTests \
+            --wait 120 \
+            --json | tee deploy-result.json
+
+      - name: Enforce Apex coverage >= 75%
+        run: node scripts/ci/check-apex-coverage.js deploy-result.json 75
+
+      - name: Upload deployment result
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: inteluat-deploy-result
+          path: deploy-result.json

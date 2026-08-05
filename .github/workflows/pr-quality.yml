@@ -1,0 +1,156 @@
+name: PR Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - INTELUAT
+      - main
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+
+concurrency:
+  group: pr-quality-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  lwc-and-static-analysis:
+    name: LWC ESLint, Jest Coverage, Apex PMD
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Setup Java for PMD
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint LWC
+        run: npm run lint:lwc
+
+      - name: Run LWC Jest with coverage
+        run: npm run test:unit:coverage:ci
+
+      - name: Enforce LWC Jest coverage >= 80%
+        run: npm run coverage:lwc:check
+
+      - name: Upload Jest coverage artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lwc-jest-coverage
+          path: coverage/
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli@latest
+
+      - name: Install Salesforce Code Analyzer
+        run: sf plugins install code-analyzer@latest
+
+      - name: Run Apex PMD through Salesforce Code Analyzer
+        id: code-analyzer
+        uses: forcedotcom/run-code-analyzer@v2
+        with:
+          run-arguments: --workspace . --target force-app/main/default/classes --target force-app/main/default/triggers --rule-selector pmd --view detail --output-file sfca_results.html --output-file sfca_results.json
+          results-artifact-name: salesforce-code-analyzer-results
+          github-token: ${{ github.token }}
+
+      - name: Enforce Apex PMD quality gate
+        if: |
+          steps.code-analyzer.outputs.exit-code > 0 ||
+          steps.code-analyzer.outputs.num-sev1-violations-in-changed-files > 0 ||
+          steps.code-analyzer.outputs.num-sev2-violations-in-changed-files > 0 ||
+          steps.code-analyzer.outputs.num-sev3-violations-in-changed-files > 0
+        run: |
+          echo "Apex PMD gate failed. Fix Critical, High, and Medium PMD issues in changed files."
+          exit 1
+
+  apex-validation:
+    name: Apex Validation and Coverage
+    runs-on: ubuntu-latest
+    needs: lwc-and-static-analysis
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect Apex changes
+        id: apex-changes
+        shell: bash
+        run: |
+          if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" \
+            | grep -E '^force-app/main/default/(classes|triggers)/.*\.(cls|trigger)(-meta\.xml)?$'; then
+            echo "apex_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "apex_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip Apex validation
+        if: steps.apex-changes.outputs.apex_changed == 'false'
+        run: echo "No Apex classes or triggers changed in this PR."
+
+      - name: Install Salesforce CLI
+        if: steps.apex-changes.outputs.apex_changed == 'true'
+        run: npm install --global @salesforce/cli@latest
+
+      - name: Authenticate target validation org
+        if: steps.apex-changes.outputs.apex_changed == 'true'
+        shell: bash
+        run: |
+          mkdir -p .ci
+          if [ "${{ github.base_ref }}" = "main" ]; then
+            echo "${{ secrets.SF_PROD_JWT_KEY }}" > .ci/server.key
+            sf org login jwt \
+              --client-id "${{ secrets.SF_PROD_CLIENT_ID }}" \
+              --jwt-key-file .ci/server.key \
+              --username "${{ secrets.SF_PROD_USERNAME }}" \
+              --instance-url "${{ secrets.SF_PROD_INSTANCE_URL }}" \
+              --alias TARGET_ORG
+          else
+            echo "${{ secrets.SF_UAT_JWT_KEY }}" > .ci/server.key
+            sf org login jwt \
+              --client-id "${{ secrets.SF_UAT_CLIENT_ID }}" \
+              --jwt-key-file .ci/server.key \
+              --username "${{ secrets.SF_UAT_USERNAME }}" \
+              --instance-url "${{ secrets.SF_UAT_INSTANCE_URL }}" \
+              --alias TARGET_ORG
+          fi
+
+      - name: Validate deployment and run Apex tests
+        if: steps.apex-changes.outputs.apex_changed == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          sf project deploy validate \
+            --source-dir force-app \
+            --target-org TARGET_ORG \
+            --test-level RunLocalTests \
+            --wait 120 \
+            --json | tee deploy-result.json
+
+      - name: Enforce Apex coverage >= 75%
+        if: steps.apex-changes.outputs.apex_changed == 'true'
+        run: node scripts/ci/check-apex-coverage.js deploy-result.json 75
+
+      - name: Upload Apex validation result
+        if: always() && steps.apex-changes.outputs.apex_changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: apex-validation-result
+          path: deploy-result.json
