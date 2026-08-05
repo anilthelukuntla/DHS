@@ -17,14 +17,25 @@ jobs:
     name: Deploy to Production Org
     runs-on: ubuntu-latest
     environment: production
+    env:
+      HAS_PROD_SECRETS: ${{ secrets.SF_PROD_CLIENT_ID != '' && secrets.SF_PROD_JWT_KEY != '' && secrets.SF_PROD_USERNAME != '' && secrets.SF_PROD_INSTANCE_URL != '' }}
     steps:
+      - name: Skip deployment until production secrets are configured
+        if: env.HAS_PROD_SECRETS != 'true'
+        run: |
+          echo "Skipping production deployment because one or more required secrets are missing."
+          echo "Required secrets: SF_PROD_CLIENT_ID, SF_PROD_JWT_KEY, SF_PROD_USERNAME, SF_PROD_INSTANCE_URL."
+
       - name: Checkout
+        if: env.HAS_PROD_SECRETS == 'true'
         uses: actions/checkout@v5
 
       - name: Install Salesforce CLI
+        if: env.HAS_PROD_SECRETS == 'true'
         run: npm install --global @salesforce/cli@latest
 
       - name: Authenticate Production
+        if: env.HAS_PROD_SECRETS == 'true'
         shell: bash
         run: |
           mkdir -p .ci
@@ -37,6 +48,7 @@ jobs:
             --alias PRODUCTION
 
       - name: Deploy and run Apex tests
+        if: env.HAS_PROD_SECRETS == 'true'
         shell: bash
         run: |
           set -o pipefail
@@ -48,11 +60,12 @@ jobs:
             --json | tee deploy-result.json
 
       - name: Enforce Apex coverage >= 75%
+        if: env.HAS_PROD_SECRETS == 'true'
         run: node scripts/ci/check-apex-coverage.js deploy-result.json 75
 
       - name: Upload deployment result
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && env.HAS_PROD_SECRETS == 'true'
         with:
           name: production-deploy-result
           path: deploy-result.json

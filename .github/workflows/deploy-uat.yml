@@ -17,14 +17,25 @@ jobs:
     name: Deploy to INTELUAT Org
     runs-on: ubuntu-latest
     environment: INTELUAT
+    env:
+      HAS_UAT_SECRETS: ${{ secrets.SF_UAT_CLIENT_ID != '' && secrets.SF_UAT_JWT_KEY != '' && secrets.SF_UAT_USERNAME != '' && secrets.SF_UAT_INSTANCE_URL != '' }}
     steps:
+      - name: Skip deployment until INTELUAT secrets are configured
+        if: env.HAS_UAT_SECRETS != 'true'
+        run: |
+          echo "Skipping INTELUAT deployment because one or more required secrets are missing."
+          echo "Required secrets: SF_UAT_CLIENT_ID, SF_UAT_JWT_KEY, SF_UAT_USERNAME, SF_UAT_INSTANCE_URL."
+
       - name: Checkout
+        if: env.HAS_UAT_SECRETS == 'true'
         uses: actions/checkout@v5
 
       - name: Install Salesforce CLI
+        if: env.HAS_UAT_SECRETS == 'true'
         run: npm install --global @salesforce/cli@latest
 
       - name: Authenticate INTELUAT
+        if: env.HAS_UAT_SECRETS == 'true'
         shell: bash
         run: |
           mkdir -p .ci
@@ -37,6 +48,7 @@ jobs:
             --alias INTELUAT
 
       - name: Deploy and run Apex tests
+        if: env.HAS_UAT_SECRETS == 'true'
         shell: bash
         run: |
           set -o pipefail
@@ -48,11 +60,12 @@ jobs:
             --json | tee deploy-result.json
 
       - name: Enforce Apex coverage >= 75%
+        if: env.HAS_UAT_SECRETS == 'true'
         run: node scripts/ci/check-apex-coverage.js deploy-result.json 75
 
       - name: Upload deployment result
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && env.HAS_UAT_SECRETS == 'true'
         with:
           name: inteluat-deploy-result
           path: deploy-result.json
