@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - INTELUAT
-      - main
+      - Main
 
 permissions:
   contents: read
@@ -114,7 +114,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p .ci
-          if [ "${{ github.base_ref }}" = "main" ]; then
+          if [ "${{ github.base_ref }}" = "Main" ]; then
             echo "${{ secrets.SF_PROD_JWT_KEY }}" > .ci/server.key
             sf org login jwt \
               --client-id "${{ secrets.SF_PROD_CLIENT_ID }}" \
