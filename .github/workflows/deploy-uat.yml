@@ -30,6 +30,12 @@ jobs:
         if: env.HAS_UAT_SECRETS == 'true'
         uses: actions/checkout@v5
 
+      - name: Setup Node
+        if: env.HAS_UAT_SECRETS == 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
       - name: Install Salesforce CLI
         if: env.HAS_UAT_SECRETS == 'true'
         run: npm install --global @salesforce/cli@latest

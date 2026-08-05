@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
 
       - name: Setup Java for PMD
@@ -104,6 +104,12 @@ jobs:
       - name: Skip Apex validation
         if: steps.apex-changes.outputs.apex_changed == 'false'
         run: echo "No Apex classes or triggers changed in this PR."
+
+      - name: Setup Node for Salesforce CLI
+        if: steps.apex-changes.outputs.apex_changed == 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
 
       - name: Install Salesforce CLI
         if: steps.apex-changes.outputs.apex_changed == 'true'
