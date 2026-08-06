@@ -18,13 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: INTELDEPLOYHUB
     env:
-      HAS_INTELDEPLOYHUB_SECRETS: ${{ secrets.SF_INTELDEPLOYHUB_AUTH_URL != '' }}
+      HAS_INTELDEPLOYHUB_SECRETS: ${{ secrets.SF_INTELDEPLOYHUB_CLIENT_ID != '' && secrets.SF_INTELDEPLOYHUB_CLIENT_SECRET != '' && secrets.SF_INTELDEPLOYHUB_INSTANCE_URL != '' }}
     steps:
       - name: Skip deployment until INTELDEPLOYHUB secrets are configured
         if: env.HAS_INTELDEPLOYHUB_SECRETS != 'true'
         run: |
-          echo "Skipping INTELDEPLOYHUB deployment because the required secret is missing."
-          echo "Required secret: SF_INTELDEPLOYHUB_AUTH_URL."
+          echo "Skipping INTELDEPLOYHUB deployment because one or more required secrets are missing."
+          echo "Required secrets: SF_INTELDEPLOYHUB_CLIENT_ID, SF_INTELDEPLOYHUB_CLIENT_SECRET, SF_INTELDEPLOYHUB_INSTANCE_URL."
 
       - name: Checkout
         if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
@@ -42,14 +42,24 @@ jobs:
         if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
         run: npm install --global @salesforce/cli@latest
 
-      - name: Authenticate INTELDEPLOYHUB
+      - name: Authenticate INTELDEPLOYHUB with client credentials
         if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        env:
+          SF_INTELDEPLOYHUB_CLIENT_ID: ${{ secrets.SF_INTELDEPLOYHUB_CLIENT_ID }}
+          SF_INTELDEPLOYHUB_CLIENT_SECRET: ${{ secrets.SF_INTELDEPLOYHUB_CLIENT_SECRET }}
+          SF_INTELDEPLOYHUB_INSTANCE_URL: ${{ secrets.SF_INTELDEPLOYHUB_INSTANCE_URL }}
         shell: bash
         run: |
-          mkdir -p .ci
-          echo "${{ secrets.SF_INTELDEPLOYHUB_AUTH_URL }}" > .ci/inteldeployhub-auth-url.txt
-          sf org login sfdx-url \
-            --sfdx-url-file .ci/inteldeployhub-auth-url.txt \
+          token_response="$(curl --silent --show-error --fail \
+            --request POST "${SF_INTELDEPLOYHUB_INSTANCE_URL}/services/oauth2/token" \
+            --form grant_type=client_credentials \
+            --form client_id="${SF_INTELDEPLOYHUB_CLIENT_ID}" \
+            --form client_secret="${SF_INTELDEPLOYHUB_CLIENT_SECRET}")"
+          export SF_ACCESS_TOKEN
+          SF_ACCESS_TOKEN="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$token_response")"
+          sf org login access-token \
+            --instance-url "${SF_INTELDEPLOYHUB_INSTANCE_URL}" \
+            --no-prompt \
             --alias INTELDEPLOYHUB
 
       - name: Detect Apex changes
