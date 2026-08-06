@@ -29,6 +29,8 @@ jobs:
       - name: Checkout
         if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
@@ -50,20 +52,39 @@ jobs:
             --sfdx-url-file .ci/inteldeployhub-auth-url.txt \
             --alias INTELDEPLOYHUB
 
-      - name: Deploy and run Apex tests
+      - name: Detect Apex changes
+        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        id: apex-changes
+        shell: bash
+        run: |
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            echo "apex_changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" \
+            | grep -E '^force-app/main/default/(classes|triggers)/.*\.(cls|trigger)(-meta\.xml)?$'; then
+            echo "apex_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "apex_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy metadata
         if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
         shell: bash
         run: |
           set -o pipefail
+          test_level="NoTestRun"
+          if [ "${{ steps.apex-changes.outputs.apex_changed }}" = "true" ]; then
+            test_level="RunLocalTests"
+          fi
+          echo "Using Salesforce deploy test level: ${test_level}"
           sf project deploy start \
             --source-dir force-app \
             --target-org INTELDEPLOYHUB \
-            --test-level RunLocalTests \
+            --test-level "${test_level}" \
             --wait 120 \
             --json | tee deploy-result.json
 
       - name: Enforce Apex coverage >= 85%
-        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true' && steps.apex-changes.outputs.apex_changed == 'true'
         run: npm run coverage:apex:check
 
       - name: Upload deployment result
