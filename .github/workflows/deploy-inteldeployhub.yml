@@ -1,0 +1,74 @@
+name: Deploy INTELDEPLOYHUB
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-inteldeployhub
+  cancel-in-progress: false
+
+jobs:
+  deploy-inteldeployhub:
+    name: Deploy to INTELDEPLOYHUB Org
+    runs-on: ubuntu-latest
+    environment: INTELDEPLOYHUB
+    env:
+      HAS_INTELDEPLOYHUB_SECRETS: ${{ secrets.SF_INTELDEPLOYHUB_AUTH_URL != '' }}
+    steps:
+      - name: Skip deployment until INTELDEPLOYHUB secrets are configured
+        if: env.HAS_INTELDEPLOYHUB_SECRETS != 'true'
+        run: |
+          echo "Skipping INTELDEPLOYHUB deployment because the required secret is missing."
+          echo "Required secret: SF_INTELDEPLOYHUB_AUTH_URL."
+
+      - name: Checkout
+        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install Salesforce CLI
+        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        run: npm install --global @salesforce/cli@latest
+
+      - name: Authenticate INTELDEPLOYHUB
+        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        shell: bash
+        run: |
+          mkdir -p .ci
+          echo "${{ secrets.SF_INTELDEPLOYHUB_AUTH_URL }}" > .ci/inteldeployhub-auth-url.txt
+          sf org login sfdx-url \
+            --sfdx-url-file .ci/inteldeployhub-auth-url.txt \
+            --alias INTELDEPLOYHUB
+
+      - name: Deploy and run Apex tests
+        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org INTELDEPLOYHUB \
+            --test-level RunLocalTests \
+            --wait 120 \
+            --json | tee deploy-result.json
+
+      - name: Enforce Apex coverage >= 85%
+        if: env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        run: npm run coverage:apex:check
+
+      - name: Upload deployment result
+        uses: actions/upload-artifact@v4
+        if: always() && env.HAS_INTELDEPLOYHUB_SECRETS == 'true'
+        with:
+          name: inteldeployhub-deploy-result
+          path: deploy-result.json
