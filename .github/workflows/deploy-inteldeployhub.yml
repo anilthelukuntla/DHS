@@ -3,7 +3,7 @@ name: Deploy INTELDEPLOYHUB
 on:
   push:
     branches:
-      - main
+      - Develop
 
 permissions:
   contents: read

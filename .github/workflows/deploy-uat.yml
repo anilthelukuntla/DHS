@@ -3,7 +3,7 @@ name: Deploy INTELUAT
 on:
   push:
     branches:
-      - INTELUAT
+      - UAT
 
 permissions:
   contents: read
@@ -18,60 +18,88 @@ jobs:
     runs-on: ubuntu-latest
     environment: INTELUAT
     env:
-      HAS_UAT_SECRETS: ${{ secrets.SF_UAT_CLIENT_ID != '' && secrets.SF_UAT_JWT_KEY != '' && secrets.SF_UAT_USERNAME != '' && secrets.SF_UAT_INSTANCE_URL != '' }}
+      HAS_INTELUAT_SECRETS: ${{ secrets.SF_INTELUAT_CLIENT_ID != '' && secrets.SF_INTELUAT_CLIENT_SECRET != '' && secrets.SF_INTELUAT_INSTANCE_URL != '' }}
     steps:
       - name: Skip deployment until INTELUAT secrets are configured
-        if: env.HAS_UAT_SECRETS != 'true'
+        if: env.HAS_INTELUAT_SECRETS != 'true'
         run: |
           echo "Skipping INTELUAT deployment because one or more required secrets are missing."
-          echo "Required secrets: SF_UAT_CLIENT_ID, SF_UAT_JWT_KEY, SF_UAT_USERNAME, SF_UAT_INSTANCE_URL."
+          echo "Required secrets: SF_INTELUAT_CLIENT_ID, SF_INTELUAT_CLIENT_SECRET, SF_INTELUAT_INSTANCE_URL."
 
       - name: Checkout
-        if: env.HAS_UAT_SECRETS == 'true'
+        if: env.HAS_INTELUAT_SECRETS == 'true'
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
-        if: env.HAS_UAT_SECRETS == 'true'
+        if: env.HAS_INTELUAT_SECRETS == 'true'
         uses: actions/setup-node@v5
         with:
           node-version: '22'
 
       - name: Install Salesforce CLI
-        if: env.HAS_UAT_SECRETS == 'true'
+        if: env.HAS_INTELUAT_SECRETS == 'true'
         run: npm install --global @salesforce/cli@latest
 
-      - name: Authenticate INTELUAT
-        if: env.HAS_UAT_SECRETS == 'true'
+      - name: Authenticate INTELUAT with client credentials
+        if: env.HAS_INTELUAT_SECRETS == 'true'
+        env:
+          SF_INTELUAT_CLIENT_ID: ${{ secrets.SF_INTELUAT_CLIENT_ID }}
+          SF_INTELUAT_CLIENT_SECRET: ${{ secrets.SF_INTELUAT_CLIENT_SECRET }}
+          SF_INTELUAT_INSTANCE_URL: ${{ secrets.SF_INTELUAT_INSTANCE_URL }}
         shell: bash
         run: |
-          mkdir -p .ci
-          echo "${{ secrets.SF_UAT_JWT_KEY }}" > .ci/server.key
-          sf org login jwt \
-            --client-id "${{ secrets.SF_UAT_CLIENT_ID }}" \
-            --jwt-key-file .ci/server.key \
-            --username "${{ secrets.SF_UAT_USERNAME }}" \
-            --instance-url "${{ secrets.SF_UAT_INSTANCE_URL }}" \
+          token_response="$(curl --silent --show-error --fail \
+            --request POST "${SF_INTELUAT_INSTANCE_URL}/services/oauth2/token" \
+            --form grant_type=client_credentials \
+            --form client_id="${SF_INTELUAT_CLIENT_ID}" \
+            --form client_secret="${SF_INTELUAT_CLIENT_SECRET}")"
+          export SF_ACCESS_TOKEN
+          SF_ACCESS_TOKEN="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$token_response")"
+          sf org login access-token \
+            --instance-url "${SF_INTELUAT_INSTANCE_URL}" \
+            --no-prompt \
             --alias INTELUAT
 
-      - name: Deploy and run Apex tests
-        if: env.HAS_UAT_SECRETS == 'true'
+      - name: Detect Apex changes
+        if: env.HAS_INTELUAT_SECRETS == 'true'
+        id: apex-changes
+        shell: bash
+        run: |
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            echo "apex_changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" \
+            | grep -E '^force-app/main/default/(classes|triggers)/.*\.(cls|trigger)(-meta\.xml)?$'; then
+            echo "apex_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "apex_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy metadata
+        if: env.HAS_INTELUAT_SECRETS == 'true'
         shell: bash
         run: |
           set -o pipefail
+          test_level="NoTestRun"
+          if [ "${{ steps.apex-changes.outputs.apex_changed }}" = "true" ]; then
+            test_level="RunLocalTests"
+          fi
+          echo "Using Salesforce deploy test level: ${test_level}"
           sf project deploy start \
             --source-dir force-app \
             --target-org INTELUAT \
-            --test-level RunLocalTests \
+            --test-level "${test_level}" \
             --wait 120 \
             --json | tee deploy-result.json
 
-      - name: Enforce Apex coverage >= 75%
-        if: env.HAS_UAT_SECRETS == 'true'
-        run: node scripts/ci/check-apex-coverage.js deploy-result.json 75
+      - name: Enforce Apex coverage >= 85%
+        if: env.HAS_INTELUAT_SECRETS == 'true' && steps.apex-changes.outputs.apex_changed == 'true'
+        run: npm run coverage:apex:check
 
       - name: Upload deployment result
         uses: actions/upload-artifact@v4
-        if: always() && env.HAS_UAT_SECRETS == 'true'
+        if: always() && env.HAS_INTELUAT_SECRETS == 'true'
         with:
           name: inteluat-deploy-result
           path: deploy-result.json
