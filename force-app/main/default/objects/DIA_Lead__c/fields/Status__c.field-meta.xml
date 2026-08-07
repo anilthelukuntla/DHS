@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status__c</fullName>
+    <label>Status</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Unassigned</fullName>
+                <default>false</default>
+                <label>Unassigned</label>
+            </value>
+            <value>
+                <fullName>Assigned</fullName>
+                <default>false</default>
+                <label>Assigned</label>
+            </value>
+            <value>
+                <fullName>Assigned Not Accepted</fullName>
+                <default>false</default>
+                <label>Assigned Not Accepted</label>
+            </value>
+            <value>
+                <fullName>Investigator Rejected</fullName>
+                <default>false</default>
+                <label>Investigator Rejected</label>
+            </value>
+            <value>
+                <fullName>In-Progress</fullName>
+                <default>false</default>
+                <label>In-Progress</label>
+            </value>
+            <value>
+                <fullName>Cancelled</fullName>
+                <default>false</default>
+                <label>Cancelled</label>
+            </value>
+            <value>
+                <fullName>Applied For Waiver</fullName>
+                <default>false</default>
+                <label>Applied For Waiver</label>
+            </value>
+            <value>
+                <fullName>QA Rejected</fullName>
+                <default>false</default>
+                <label>QA Rejected</label>
+            </value>
+            <value>
+                <fullName>QA Review Completed</fullName>
+                <default>false</default>
+                <label>QA Review Completed</label>
+            </value>
+            <value>
+                <fullName>Completed</fullName>
+                <default>false</default>
+                <label>Completed</label>
+            </value>
+            <value>
+                <fullName>Discontinued</fullName>
+                <default>false</default>
+                <label>Discontinued</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
