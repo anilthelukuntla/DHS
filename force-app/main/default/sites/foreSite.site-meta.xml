@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomSite xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <allowGuestPaymentsApi>false</allowGuestPaymentsApi>
+    <allowHomePage>false</allowHomePage>
+    <allowStandardAnswersPages>false</allowStandardAnswersPages>
+    <allowStandardIdeasPages>false</allowStandardIdeasPages>
+    <allowStandardLookups>false</allowStandardLookups>
+    <allowStandardPortalPages>true</allowStandardPortalPages>
+    <allowStandardSearch>false</allowStandardSearch>
+    <authorizationRequiredPage>ISNBILoginPage</authorizationRequiredPage>
+    <bandwidthExceededPage>BandwidthExceeded</bandwidthExceededPage>
+    <browserXssProtection>true</browserXssProtection>
+    <cachePublicVisualforcePagesInProxyServers>true</cachePublicVisualforcePagesInProxyServers>
+    <changePasswordPage>IntelChangePasswordPage</changePasswordPage>
+    <clickjackProtectionLevel>SameOriginOnly</clickjackProtectionLevel>
+    <contentSniffingProtection>true</contentSniffingProtection>
+    <customWebAddresses>
+        <certificate>foresite26</certificate>
+        <domainName>foresite.isncorp.com</domainName>
+        <primary>true</primary>
+    </customWebAddresses>
+    <enableAuraRequests>true</enableAuraRequests>
+    <fileNotFoundPage>FileNotFound</fileNotFoundPage>
+    <genericErrorPage>Exception</genericErrorPage>
+    <inMaintenancePage>InMaintenance</inMaintenancePage>
+    <indexPage>CommunitiesLanding</indexPage>
+    <masterLabel>foreSite</masterLabel>
+    <redirectToCustomDomain>false</redirectToCustomDomain>
+    <referrerPolicyOriginWhenCrossOrigin>true</referrerPolicyOriginWhenCrossOrigin>
+    <selfRegPage>CommunitiesSelfReg</selfRegPage>
+    <siteAdmin>ukunvar@isncorp.com</siteAdmin>
+    <siteGuestRecordDefaultOwner>ukunvar@isncorp.com</siteGuestRecordDefaultOwner>
+    <siteType>ChatterNetwork</siteType>
+    <subdomain>isn-foresite</subdomain>
+    <urlPathPrefix>ForeSite</urlPathPrefix>
+</CustomSite>

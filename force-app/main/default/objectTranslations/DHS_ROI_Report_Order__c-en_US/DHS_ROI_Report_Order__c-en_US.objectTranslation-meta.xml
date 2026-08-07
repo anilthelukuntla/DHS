@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>ROI Report Order</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>ROI Report Orders</value>
+    </caseValues>
+    <layouts>
+        <layout>DHS ROI Report Order Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>
