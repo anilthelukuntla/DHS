@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subject_DOB_Verified__c</fullName>
+    <label>Subject DOB Verified</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Verified</fullName>
+                <default>false</default>
+                <label>Verified</label>
+            </value>
+            <value>
+                <fullName>Discrepant</fullName>
+                <default>false</default>
+                <label>Discrepant</label>
+            </value>
+            <value>
+                <fullName>Not Shown</fullName>
+                <default>false</default>
+                <label>Not Shown</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

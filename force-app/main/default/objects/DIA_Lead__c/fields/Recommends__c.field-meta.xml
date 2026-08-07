@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Recommends__c</fullName>
+    <label>Recommends</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>No reason not to recommend</fullName>
+                <default>false</default>
+                <label>No reason not to recommend</label>
+            </value>
+            <value>
+                <fullName>Does not know well enough to recommend</fullName>
+                <default>false</default>
+                <label>Does not know well enough to recommend</label>
+            </value>
+            <value>
+                <fullName>Does not recommend because</fullName>
+                <default>false</default>
+                <label>Does not recommend because</label>
+            </value>
+            <value>
+                <fullName>Recommends with reservation because</fullName>
+                <default>false</default>
+                <label>Recommends with reservation because</label>
+            </value>
+            <value>
+                <fullName>Recommends</fullName>
+                <default>false</default>
+                <label>Recommends</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
