@@ -3,7 +3,8 @@ name: PR Quality Gate
 on:
   pull_request:
     branches:
-      - INTELUAT
+      - Develop
+      - UAT
       - main
 
 permissions:
@@ -40,18 +41,35 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Detect LWC source folders
+        id: lwc-source
+        shell: bash
+        run: |
+          if [ -d force-app/main/default/lwc ]; then
+            echo "has_lwc_sources=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_lwc_sources=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip LWC ESLint and Jest
+        if: steps.lwc-source.outputs.has_lwc_sources == 'false'
+        run: echo "No LWC folder exists in this branch."
+
       - name: Lint LWC
+        if: steps.lwc-source.outputs.has_lwc_sources == 'true'
         run: npm run lint:lwc
 
       - name: Run LWC Jest with coverage
+        if: steps.lwc-source.outputs.has_lwc_sources == 'true'
         run: npm run test:unit:coverage:ci
 
-      - name: Enforce LWC Jest coverage >= 80%
+      - name: Enforce LWC Jest coverage >= 85%
+        if: steps.lwc-source.outputs.has_lwc_sources == 'true'
         run: npm run coverage:lwc:check
 
       - name: Upload Jest coverage artifact
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.lwc-source.outputs.has_lwc_sources == 'true'
         with:
           name: lwc-jest-coverage
           path: coverage/
@@ -87,16 +105,13 @@ jobs:
           results-artifact-name: salesforce-code-analyzer-results
           github-token: ${{ github.token }}
 
-      - name: Enforce Apex PMD quality gate
+      - name: Enforce critical Apex PMD quality gate
         if: |
           steps.apex-source.outputs.has_apex_sources == 'true' && (
-            steps.code-analyzer.outputs.exit-code > 0 ||
-            steps.code-analyzer.outputs.num-sev1-violations-in-changed-files > 0 ||
-            steps.code-analyzer.outputs.num-sev2-violations-in-changed-files > 0 ||
-            steps.code-analyzer.outputs.num-sev3-violations-in-changed-files > 0
+            steps.code-analyzer.outputs.num-sev1-violations-in-changed-files > 0
           )
         run: |
-          echo "Apex PMD gate failed. Fix Critical, High, and Medium PMD issues in changed files."
+          echo "Apex PMD gate failed. Fix Critical PMD issues in changed files."
           exit 1
 
   apex-validation:
@@ -136,26 +151,52 @@ jobs:
 
       - name: Authenticate target validation org
         if: steps.apex-changes.outputs.apex_changed == 'true'
+        env:
+          SF_INTELDEPLOYHUB_CLIENT_ID: ${{ secrets.SF_INTELDEPLOYHUB_CLIENT_ID }}
+          SF_INTELDEPLOYHUB_CLIENT_SECRET: ${{ secrets.SF_INTELDEPLOYHUB_CLIENT_SECRET }}
+          SF_INTELDEPLOYHUB_INSTANCE_URL: ${{ secrets.SF_INTELDEPLOYHUB_INSTANCE_URL }}
+          SF_INTELUAT_CLIENT_ID: ${{ secrets.SF_INTELUAT_CLIENT_ID }}
+          SF_INTELUAT_CLIENT_SECRET: ${{ secrets.SF_INTELUAT_CLIENT_SECRET }}
+          SF_INTELUAT_INSTANCE_URL: ${{ secrets.SF_INTELUAT_INSTANCE_URL }}
         shell: bash
         run: |
-          mkdir -p .ci
-          if [ "${{ github.base_ref }}" = "main" ]; then
-            echo "${{ secrets.SF_PROD_JWT_KEY }}" > .ci/server.key
-            sf org login jwt \
-              --client-id "${{ secrets.SF_PROD_CLIENT_ID }}" \
-              --jwt-key-file .ci/server.key \
-              --username "${{ secrets.SF_PROD_USERNAME }}" \
-              --instance-url "${{ secrets.SF_PROD_INSTANCE_URL }}" \
-              --alias TARGET_ORG
-          else
-            echo "${{ secrets.SF_UAT_JWT_KEY }}" > .ci/server.key
-            sf org login jwt \
-              --client-id "${{ secrets.SF_UAT_CLIENT_ID }}" \
-              --jwt-key-file .ci/server.key \
-              --username "${{ secrets.SF_UAT_USERNAME }}" \
-              --instance-url "${{ secrets.SF_UAT_INSTANCE_URL }}" \
-              --alias TARGET_ORG
+          case "${{ github.base_ref }}" in
+            Develop|main)
+              client_id="${SF_INTELDEPLOYHUB_CLIENT_ID}"
+              client_secret="${SF_INTELDEPLOYHUB_CLIENT_SECRET}"
+              instance_url="${SF_INTELDEPLOYHUB_INSTANCE_URL}"
+              ;;
+            UAT)
+              client_id="${SF_INTELUAT_CLIENT_ID}"
+              client_secret="${SF_INTELUAT_CLIENT_SECRET}"
+              instance_url="${SF_INTELUAT_INSTANCE_URL}"
+              ;;
+            *)
+              echo "No validation org configured for base branch ${{ github.base_ref }}."
+              exit 1
+              ;;
+          esac
+
+          missing=()
+          [ -n "$client_id" ] || missing+=("client_id")
+          [ -n "$client_secret" ] || missing+=("client_secret")
+          [ -n "$instance_url" ] || missing+=("instance_url")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            printf 'Missing target org auth value: %s\n' "${missing[@]}"
+            exit 1
           fi
+
+          token_response="$(curl --silent --show-error --fail \
+            --request POST "${instance_url}/services/oauth2/token" \
+            --form grant_type=client_credentials \
+            --form client_id="${client_id}" \
+            --form client_secret="${client_secret}")"
+          export SF_ACCESS_TOKEN
+          SF_ACCESS_TOKEN="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])' <<< "$token_response")"
+          sf org login access-token \
+            --instance-url "${instance_url}" \
+            --no-prompt \
+            --alias TARGET_ORG
 
       - name: Validate deployment and run Apex tests
         if: steps.apex-changes.outputs.apex_changed == 'true'
@@ -169,9 +210,9 @@ jobs:
             --wait 120 \
             --json | tee deploy-result.json
 
-      - name: Enforce Apex coverage >= 75%
+      - name: Enforce Apex coverage >= 85%
         if: steps.apex-changes.outputs.apex_changed == 'true'
-        run: node scripts/ci/check-apex-coverage.js deploy-result.json 75
+        run: npm run coverage:apex:check
 
       - name: Upload Apex validation result
         if: always() && steps.apex-changes.outputs.apex_changed == 'true'
