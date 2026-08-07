@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>ISNBI_Reset_Password</fullName>
+        <ccEmails>isnotp@isncorp.com</ccEmails>
+        <description>ISNBI Reset Password</description>
+        <protected>false</protected>
+        <recipients>
+            <type>owner</type>
+        </recipients>
+        <recipients>
+            <field>User__c</field>
+            <type>userLookup</type>
+        </recipients>
+        <senderType>DefaultWorkflowUser</senderType>
+        <template>unfiled$public/ISNBI_Reset_Password</template>
+    </alerts>
+    <alerts>
+        <fullName>OTP_to_verify_identity</fullName>
+        <ccEmails>ukunvar@isncorp.com</ccEmails>
+        <description>OTP to verify identity</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>isnotp@isncorp.com</recipient>
+            <type>user</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>Public_Email_Template/OTP_to_verify_identity</template>
+    </alerts>
+</Workflow>
