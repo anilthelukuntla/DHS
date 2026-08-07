@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Background_Investigator_Level__c</fullName>
+    <label>Background Investigator Level</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Level I</fullName>
+                <default>false</default>
+                <label>Level I</label>
+            </value>
+            <value>
+                <fullName>Level II</fullName>
+                <default>false</default>
+                <label>Level II</label>
+            </value>
+            <value>
+                <fullName>Level III</fullName>
+                <default>false</default>
+                <label>Level III</label>
+            </value>
+            <value>
+                <fullName>Level IV</fullName>
+                <default>false</default>
+                <label>Level IV</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

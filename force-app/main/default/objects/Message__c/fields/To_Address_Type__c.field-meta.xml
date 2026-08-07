@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>To_Address_Type__c</fullName>
+    <label>To Address Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>All PMOs</fullName>
+                <default>false</default>
+                <label>All PMOs</label>
+            </value>
+            <value>
+                <fullName>All Investigators</fullName>
+                <default>false</default>
+                <label>All Investigators</label>
+            </value>
+            <value>
+                <fullName>All CMOs</fullName>
+                <default>false</default>
+                <label>All CMOs</label>
+            </value>
+            <value>
+                <fullName>All Program Members</fullName>
+                <default>false</default>
+                <label>All Program Members</label>
+            </value>
+            <value>
+                <fullName>All QAs</fullName>
+                <default>false</default>
+                <label>All QAs</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

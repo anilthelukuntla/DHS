@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LMS_Training_Unit__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Training Unit</label>
+    <referenceTo>LMS_Training_Unit__c</referenceTo>
+    <relationshipLabel>Quiz Questions</relationshipLabel>
+    <relationshipName>Quiz_Questions</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

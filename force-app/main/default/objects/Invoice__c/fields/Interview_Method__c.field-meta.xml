@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Interview_Method__c</fullName>
+    <label>Interview Method</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>P</fullName>
+                <default>false</default>
+                <label>P</label>
+            </value>
+            <value>
+                <fullName>P-UC</fullName>
+                <default>false</default>
+                <label>P-UC</label>
+            </value>
+            <value>
+                <fullName>PO</fullName>
+                <default>false</default>
+                <label>PO</label>
+            </value>
+            <value>
+                <fullName>RO</fullName>
+                <default>false</default>
+                <label>RO</label>
+            </value>
+            <value>
+                <fullName>R</fullName>
+                <default>false</default>
+                <label>R</label>
+            </value>
+            <value>
+                <fullName>R-UC</fullName>
+                <default>false</default>
+                <label>R-UC</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
