@@ -1,7 +1,10 @@
 @isTest
+@SuppressWarnings('PMD.ApexDoc, PMD.ApexAssertionsShouldIncludeMessage, PMD.ApexUnitTestClassShouldHaveAsserts, PMD.LocalVariableNamingConventions, PMD.MethodNamingConventions, PMD.NcssMethodCount, PMD.UnusedLocalVariable')
 public class DIAModuleTest {
     
-    testMethod private static void TestCaseNLeadFlow(){ 
+    @IsTest
+    
+    private static void TestCaseNLeadFlow(){ 
         //CaseWizard Page Test Starts...        
         Account acc = new Account(name='ISN');
         insert acc;
@@ -148,7 +151,6 @@ public class DIAModuleTest {
         //LeadDashboardController test starts....
          Test.startTest(); 
         DIA_Lead__c lead = [Select Id, status__c, LeadType__c, Assigned_to__c, Lead_Accepted_or_Rejected__c from DIA_Lead__c limit 1];
-        System.debug('lead...'+lead);
         PageReference LeadDashboardPage = Page.BILeadDashboard;
         Test.setCurrentPage(LeadDashboardPage);
         DIALeadDashboardController leadDashboardCtrl = new DIALeadDashboardController(); 
@@ -287,7 +289,8 @@ public class DIAModuleTest {
         casedetailctrl.DeleteLeadAction();
  
     }
-	testMethod private static void Testmethod20(){ 
+	@IsTest
+	private static void Testmethod20(){ 
        	dia_case__c c =new dia_case__c(Subject_Type__c = 'Applicant');
         insert c;
           PageReference casedetailpage = Page.Bicasedetail;
@@ -317,7 +320,9 @@ public class DIAModuleTest {
         
     }
 
-    testMethod private static void TesttimesheetsController(){ 
+    @IsTest
+
+    private static void TesttimesheetsController(){ 
         DIAScheduleCreateTimesheetsBatch schedulableBatchCtrl = new DIAScheduleCreateTimesheetsBatch(); 
         schedulableBatchCtrl.execute(null);
         DateTime todaysDateTime = System.now();
@@ -351,7 +356,9 @@ public class DIAModuleTest {
         invoiceCtrl.FetchInvoiceRecords();
     }
    
-    testMethod private static void TestPayrollSettingsController(){
+    @IsTest
+   
+    private static void TestPayrollSettingsController(){
         DIAPayrollSettingsController payrollsettingsCtrl = new DIAPayrollSettingsController();
         payrollsettingsCtrl.UpdatePayrollSettings();
         DIAContractSettingsController ctrl = new DIAContractSettingsController();
@@ -361,7 +368,9 @@ public class DIAModuleTest {
         
     }
     
-    testmethod private static void onboardingTest(){
+    @IsTest
+    
+    private static void onboardingTest(){
         Account acc = new Account(name='ISN');
         insert acc;
         DIAOnBoardingController onboardingCtrl = new DIAOnBoardingController();
@@ -401,7 +410,8 @@ public class DIAModuleTest {
         onboardingCtrl.deleteOnboardingUserId = onboardings[0].id;
         onboardingCtrl.DeleteOnboardingUser();
     }
-      testmethod private static void onboardingTest2(){
+      @IsTest
+      private static void onboardingTest2(){
         Account acc = new Account(name='ISN');
         insert acc;
         DIAOnBoardingController onboardingCtrl = new DIAOnBoardingController();
@@ -439,7 +449,9 @@ public class DIAModuleTest {
         onboardingCtrl.DeleteOnboardingUser();
     }
     
-    testmethod private static void onboardingTest3(){
+    @IsTest
+    
+    private static void onboardingTest3(){
         Account acc = new Account(name='ISN');
         insert acc;
         DIAOnBoardingController onboardingCtrl = new DIAOnBoardingController();
@@ -476,7 +488,9 @@ public class DIAModuleTest {
         onboardingCtrl.DeleteOnboardingUser();
     }
     
-    testMethod private static void TestMyMessagesController(){
+    @IsTest
+    
+    private static void TestMyMessagesController(){
          list<user> currentUsers = [Select Id, User_Type__c,system_access__c,profile.name from User where contactid != Null or profile.name = 'System Administrator'];
         for(user u:currentUsers){
         u.User_Type__c = 'PMO';
@@ -514,7 +528,9 @@ public class DIAModuleTest {
         mymessagesCtrl.SendMessage();
     }
     
-    testMethod private static void TestMisc(){
+    @IsTest
+    
+    private static void TestMisc(){
         DIAHeaderController  ctrl = new DIAHeaderController ();
         user currentUser = [Select Id, User_Type__c from User where Id=:userinfo.getuserid()];
         currentUser.User_Type__c = 'CMO';
@@ -579,7 +595,8 @@ public class DIAModuleTest {
         String userQuery = ApexUtil.queryBuilder('User', userFields, userFilters);
         String onboardingQuery = ApexUtil.queryBuilder('Onboarding__c', 'OnboardingUser', new list<string>{});
     }
-    testMethod private static void ShippingDetailsControllerTest(){
+    @IsTest
+    private static void ShippingDetailsControllerTest(){
         DIA_Case__c c = new DIA_Case__c();
         insert c;
         DIA_PPF_Shipping_Information__c ppf = new DIA_PPF_Shipping_Information__c();
@@ -612,7 +629,9 @@ public class DIAModuleTest {
         }
     }
     
-     testMethod private static void ShippingDetailsControllerTest2(){
+     @IsTest
+    
+     private static void ShippingDetailsControllerTest2(){
         DIA_Case__c c = new DIA_Case__c();
         insert c;
         DIA_PPF_Shipping_Information__c ppf = new DIA_PPF_Shipping_Information__c();
@@ -645,7 +664,9 @@ public class DIAModuleTest {
         }
     }
     
-    testMethod private static void MyTrainingsControllerTest(){
+    @IsTest
+    
+    private static void MyTrainingsControllerTest(){
         DIA_Training__c training = new DIA_Training__c();
         training.user__c = userinfo.getuserid();
         training.Training_Name__c = 'test';
@@ -655,7 +676,9 @@ public class DIAModuleTest {
     
     }
     
-    testMethod private static void KnowledgeBaseControllerTest(){
+    @IsTest
+    
+    private static void KnowledgeBaseControllerTest(){
         DIA_Knowledge_Base__c kb  = new DIA_Knowledge_Base__c();
         kb.name__c = 'test';
         insert kb;
@@ -668,7 +691,8 @@ public class DIAModuleTest {
         DIAKnowledgeBaseController ctrl = new DIAKnowledgeBaseController();
     
     }
-    testMethod private static void CaseTriggerTest(){
+    @IsTest
+    private static void CaseTriggerTest(){
         DIA_Case__c c = new DIA_Case__c();
         insert c;
         c.case_type__c = 'Tier 5';
@@ -722,7 +746,9 @@ public class DIAModuleTest {
         update c;
     }
     
-    testMethod private static void CDRLReportsControllerTest(){
+    @IsTest
+    
+    private static void CDRLReportsControllerTest(){
         DIA_Case__c c = new DIA_Case__c();
         c.case_number__c = 'test';
         insert c;
@@ -764,7 +790,6 @@ public class DIAModuleTest {
         update lead;
         List<DIA_lead__c> leads = new List<DIA_lead__c>();
         leads = [select id, status__C from DIA_lead__c ];
-        System.debug('leads...'+leads);
         ctrl.SelectedLeadStatus = 'Assigned';
         ctrl.RunReportAction();
         ctrl.OnReportTypeSelect();
@@ -784,7 +809,9 @@ public class DIAModuleTest {
         ctrl.RunReportAction();
     }
     
-    testMethod private static void IntelAutoCompleteControllerTest1() {
+    @IsTest
+    
+    private static void IntelAutoCompleteControllerTest1() {
         User u = [Select Id, Email, FirstName from User where Id =:UserInfo.getUserId()];
         Test.setCurrentPage(Page.IntelAutoCompleteJSON);
         ApexPages.currentPage().getParameters().put('q',u.FirstName);
@@ -797,7 +824,9 @@ public class DIAModuleTest {
     
       }
     
-     testMethod private static void IntelAutoCompleteControllerTest2() {
+     @IsTest
+    
+     private static void IntelAutoCompleteControllerTest2() {
         User u = [Select Id, Email, FirstName,LastName from User where Id =:UserInfo.getUserId()];
         Test.setCurrentPage(Page.BIAutoCompleteJSON);
         ApexPages.currentPage().getParameters().put('q',u.FirstName);
@@ -809,7 +838,9 @@ public class DIAModuleTest {
         ctrl.getJSON();
      }
      
-     testMethod private static void caseNLeadMessages() {
+     @IsTest
+     
+     private static void caseNLeadMessages() {
          Account acc = new Account(Name='ISN');
          insert acc;
          Contact con = new Contact();
@@ -849,7 +880,8 @@ public class DIAModuleTest {
          leadctrl.reopenleadaction();
          leadctrl.deleteleadaction();
      }
-     testMethod private static void ForesiteFileUploadPageControllerTest(){
+     @IsTest
+     private static void ForesiteFileUploadPageControllerTest(){
         DIA_Case__c c = new DIA_Case__c();
         c.case_number__c = 'test';
         insert c;
@@ -864,7 +896,9 @@ public class DIAModuleTest {
          PageReference pref = ctrl.saveAndRedirect();  
      }
      
-     testmethod private static void IntelDeliverablesControllerTest(){
+     @IsTest
+     
+     private static void IntelDeliverablesControllerTest(){
         DIA_Case__c c = new DIA_Case__c();
         c.case_number__c = 'test';
         c.current_task__c = 'QA Review Completed';
@@ -879,7 +913,6 @@ public class DIAModuleTest {
         att.ParentId = doc.id;
         att.name = 'testingdocument.pdf';
         insert att;
-        System.debug('c.....'+c.id);
         DIADeliverablesController ctrl = new DIADeliverablesController();
         ctrl.selectedcaseOptions.add(new selectoption(c.id,c.case_number__c));
         ctrl.FetchCaseList();
@@ -888,7 +921,9 @@ public class DIAModuleTest {
         ctrl.downloadmanifestaction();
      } 
      
-     testMethod private static void LeadUploadPage(){ 
+     @IsTest
+     
+     private static void LeadUploadPage(){ 
          Account acc = new Account(Name='ISN');
          insert acc;
          Contact con = new Contact();
@@ -908,7 +943,8 @@ public class DIAModuleTest {
          ctrl.csvAsString = 'asdasdasdsa';
          ctrl.successMessage = 'test message';
      }
-    static testMethod void testMultiselectController() {
+    @IsTest
+    private static void testMultiselectController() {
         DIAMultiselectController c = new DIAMultiselectController();
         
         c.leftOptions = new List<SelectOption>();
@@ -921,7 +957,9 @@ public class DIAModuleTest {
         System.assertEquals(c.rightOptions.size(), 0);
     }
     
-    static testMethod void knowledgebaseuploadTest() {
+    @IsTest
+    
+    private static void knowledgebaseuploadTest() {
         //Split string 'file' in to two chunks, first chunk must be divisible by 3 for base64 encode with no padding
         Blob part1 = Blob.valueOf('This text re'); //length is 12 
         Blob part2 = Blob.valueOf('presents a dummy file');
@@ -964,7 +1002,9 @@ public class DIAModuleTest {
         
     }
     
-      testMethod private static void OrderROIReportControllerTest(){ 
+      @IsTest
+    
+      private static void OrderROIReportControllerTest(){ 
         //CaseWizard Page Test Starts...        
         Account acc = new Account(name='ISN');
         insert acc;
@@ -1080,7 +1120,6 @@ public class DIAModuleTest {
         //LeadDashboardController test starts....
          Test.startTest(); 
         DIA_Lead__c lead = [Select Id, status__c, LeadType__c, Assigned_to__c, Lead_Accepted_or_Rejected__c from DIA_Lead__c limit 1];
-        System.debug('lead...'+lead);
         PageReference LeadDashboardPage = Page.LeadDashboard;
         Test.setCurrentPage(LeadDashboardPage);
         DIALeadDashboardController leadDashboardCtrl = new DIALeadDashboardController(); 
@@ -1173,7 +1212,9 @@ public class DIAModuleTest {
        
     }
     
-      static testMethod void DIAfileuploadTest() {
+      @IsTest
+    
+      private static void DIAfileuploadTest() {
         //Split string 'file' in to two chunks, first chunk must be divisible by 3 for base64 encode with no padding
         Blob part1 = Blob.valueOf('This text re'); //length is 12 
         Blob part2 = Blob.valueOf('presents a dummy file');
@@ -1217,7 +1258,9 @@ public class DIAModuleTest {
         
     }
     
-    testMethod private static void TestDIAOtherMessagesController(){
+    @IsTest
+    
+    private static void TestDIAOtherMessagesController(){
         list<user> currentUsers = [Select Id, User_Type__c,system_access__c,profile.name from User where profile.name='System Administrator'];
         for(user u:currentUsers){
         u.User_Type__c = 'PMO';
@@ -1236,7 +1279,8 @@ public class DIAModuleTest {
         ctrl.selectedTypeofMessage = 'All';
         ctrl.fetchmessages();
    }
-    testMethod private static void TestDIACaseDetail(){
+    @IsTest
+    private static void TestDIACaseDetail(){
         Auto_Lead_Generation_Template__c temp = new Auto_Lead_Generation_Template__c(Name__c='Test');
         insert temp;
         Auto_Lead_Generation_Setting__c setting = new Auto_Lead_Generation_Setting__c();
