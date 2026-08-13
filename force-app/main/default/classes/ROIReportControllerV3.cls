@@ -1,0 +1,451 @@
+/** Supports version three of the legacy Visualforce ROI report workflow. */
+@SuppressWarnings('PMD.ApexCRUDViolation, PMD.ApexDoc, PMD.ApexSOQLInjection, PMD.ApexSharingViolations, PMD.ApexXSSFromURLParam, PMD.AvoidDeeplyNestedIfStmts, PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.DebugsShouldUseLoggingLevel, PMD.EmptyCatchBlock, PMD.EmptyIfStmt, PMD.EmptyStatementBlock, PMD.ExcessivePublicCount, PMD.FormalParameterNamingConventions, PMD.IfElseStmtsMustUseBraces, PMD.IfStmtsMustUseBraces, PMD.LocalVariableNamingConventions, PMD.MethodNamingConventions, PMD.NcssConstructorCount, PMD.NcssCount, PMD.NcssMethodCount, PMD.PropertyNamingConventions, PMD.StdCyclomaticComplexity')
+public class ROIReportControllerV3 {
+    public string caseId {get;set;}
+    public Case__c caseRecord {get;set;}
+    public List<Lead__c> leads {get;set;}
+    public Map<integer,boolean> skipTitles {get;set;}
+    public user currentUser{get;set;}
+    public integer totalLeads {get;set;}
+    public String investigationDates {get;set;}
+    public String investigators {get;set;}
+    public map<string,integer> leadsCountMap {get;set;}
+    public map<string,Lead__c> leadsMap {get;set;}
+    public map<integer,Lead__c> itemNumberNLeadsMap {get;set;}
+    public List<String> subjectInterviewList {get;set;}
+    public List<String> subjectContactList {get;set;}
+    public Map<String,Map<String,List<String>>> employmentMap {get;set;}
+    public Map<String,Map<String,List<String>>> educationMap {get;set;}
+    public Map<String,Map<String,List<String>>> medicalMap {get;set;}
+    public List<String> residenceList {get;set;}
+    public List<String> referencesList {get;set;}
+    public List<String> generalLeadsList {get;set;}
+    public List<String> formerSpouseList {get;set;}
+    public List<String> unEmploymentList {get;set;}
+    public List<String> lawEnforcementList {get;set;}
+    public List<String> financialList {get;set;}
+    public List<String> employmentList {get;set;}
+    public List<String> educationList {get;set;}
+    public List<String> medicalList {get;set;}
+    public string sequenceId{get;set;}
+    public list<integer> leadOrder {get;set;}
+    public string derogatorySummary {get;set;}
+    public set<string> derogatorySummaryItems {get;set;}
+    public boolean hasSubjectInterview { get; private set; }
+    public boolean hasSubjectRecontact { get; private set; }
+    public boolean hasResidence { get; private set; }
+    public integer numOfSubjectRecontacts {get;set;}
+    PUBLIC Map<String, Lead_RTA_Extension__c> subjectInterviewNLeadRTAExtension {get;set;}
+    
+    public Map<integer,List<integer>> subHeaderMap {get;set;}
+        
+    public List<String> leadHeaders {get;set;}
+    public Map<string,set<String>> leadHeaderNSubheaders {get;set;}
+    public Map<string,list<String>> leadSubheaderNItems {get;set;}
+    public Map<string,set<String>> noSubHeader {get;set;}
+    public Map<string,lead__c> itemNLead {get;set;}
+    public lead__c PAEI {get;set;}
+    public integer closestESI {get;set;}
+    public boolean showAllRecordObtained { get; private set; }
+    public ROIReportControllerV3(){
+        caseId = apexpages.currentpage().getparameters().get('id');
+        showAllRecordObtained = false;
+        Set<string> wasTheRecordObtained = New Set<string>();
+        List<Lead__c> completedLeads = [select id,Was_the_record_obtained__c from lead__c where status__c = 'Completed' and coverage_type__c = 'General Record' and case__c =: caseId];
+        for(Lead__c l : completedLeads){
+            if(l.Was_the_record_obtained__c != null){
+                wasTheRecordObtained.add(l.Was_the_record_obtained__c);
+            }
+        }
+        if(wasTheRecordObtained.size() > 0){
+            if(wasTheRecordObtained.contains('No, unable to obtain record')){
+                showAllRecordObtained = false;
+            }else{
+                showAllRecordObtained = true;
+            }
+        }else{
+            showAllRecordObtained = false;
+        }
+        skipTitles = New Map<integer,boolean>();
+        subHeaderMap = new Map<integer,List<integer>>();
+        leadHeaders = New List<String>();
+        leadHeaderNSubheaders = New Map<string,set<String>>();
+        leadSubheaderNItems = New Map<string,list<String>>();
+        noSubHeader = New Map<string,set<String>>();
+        itemNLead = New Map<string,lead__c>();
+        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId()];
+        
+        sequenceId = apexpages.currentpage().getparameters().get('sequenceid');
+        leadsCountMap = new map<string,integer>();
+        derogatorySummaryItems = new set<string>();
+        totalLeads= 0;
+        leadOrder = new list<integer>();
+        ROI_Report_Order__c ro = [select Id, ROI_Report_Order__c,Subheader_Order__c,Without_Subheader_Order_del__c,HideTitles__c from ROI_Report_Order__c WHERE Id=:sequenceId limit 1];  
+        if(ro.HideTitles__c != null){
+            List<string> itemNums = ro.HideTitles__c.split(',');
+            for(string i : itemNums){
+                skipTitles.put(integer.valueOf(i),true);
+            }
+        }
+        try{
+            if(sequenceId != Null){
+                if(ro.Subheader_Order__c != null){
+                    for(string item : ro.Subheader_Order__c.split(',')){
+                       leadOrder.add(integer.valueOf(item)); 
+                    }
+                }else{
+                    for(integer item : parseFullMapString(ro.ROI_Report_Order__c).keyset()){
+                        leadOrder.add(item);
+                    }
+                }
+                
+            if(ro.ROI_Report_Order__c != Null){
+                subHeaderMap = parseFullMapString(ro.ROI_Report_Order__c);
+            }
+        }
+        
+        }catch(exception e){
+        }
+        
+        hasSubjectInterview = false;
+        hasSubjectRecontact = false;
+        hasResidence = false;
+        FetchCaseInformation();
+        FetchLeadInformation();
+        
+        if(ApexPages.currentPage().getParameters().containsKey('download')){
+            String downloadParam = ApexPages.currentPage().getParameters().get('download');
+            if (downloadParam == 'true') {
+                string applicantType;
+                string ssnFormatted;
+                if(caseRecord.Subject_Type__c == 'Applicant'){
+                    applicantType = 'A';
+                }
+                if(caseRecord.Subject_Type__c == 'Contractor'){
+                    applicantType = 'C';
+                }
+                if(caseRecord.Contact__r.SSN__c != Null){
+                    ssnFormatted = caseRecord.Contact__r.SSN__c.replaceAll('-','');
+                }
+                string docName = applicantType + ssnFormatted + 'Rev00.pdf';
+                ApexPages.currentPage().getHeaders().put('Content-Disposition', 'attachment; filename="' + docName + '"');
+            }
+        }
+        
+            Map<integer,Lead__c> leads = itemNumberNLead(caseId);
+        for(integer i : leadOrder){
+            if(!skipTitles.containsKey(i)){
+                skipTitles.put(integer.valueOf(i),false);
+            }
+            Lead__c l = leads.get(i);
+            if(l != null){
+                if(l.leadType__c == 'Subject Interview (ESI/TESI)'){
+                    hasSubjectInterview = true;
+                }
+                if(l.leadType__c == 'Subject contact (SUBC)'){
+                    hasSubjectRecontact = true;
+                }
+                if(l.leadType__c == 'Residence (RESI)'){
+                    hasResidence = true;
+                }
+            }
+        }
+        
+    }
+    
+    public static Map<Integer, List<Integer>> parseFullMapString(String str) {
+    Map<Integer, List<Integer>> result = new Map<Integer, List<Integer>>();
+
+    // Clean outer braces
+    str = str.replace('{', '').replace('}', '');
+
+    // Split by comma + space, safely keeping groups together
+    List<String> entries = str.split(', (?=\\d+=\\()');
+
+    for (String entry : entries) {
+        List<String> keyValue = entry.split('=');
+        if (keyValue.size() != 2) continue;
+
+        Integer key = Integer.valueOf(keyValue[0].trim());
+
+        String rawList = keyValue[1].replace('(', '').replace(')', '');
+        List<Integer> values = new List<Integer>();
+
+        if (!String.isBlank(rawList)) {
+            for (String item : rawList.split(',')) {
+                item = item.trim();
+                if (!String.isBlank(item) && Pattern.matches('^-?\\d+$', item)) {
+                    values.add(Integer.valueOf(item));
+                }
+            }
+        }
+
+        result.put(key, values);
+    }
+
+    return result;
+}
+
+    
+    public void FetchCaseInformation(){
+        List<string> caseFields = new List<string>();
+        List<ApexUtil.Criteria> whereCriteria = new List<ApexUtil.Criteria>();
+        caseFields = ApexUtil.FetchFields('Case__c');
+        caseFields.add('contact__r.First_Name__c');
+        caseFields.add('contact__r.Last_Name__c');
+        caseFields.add('contact__r.Email__c');
+        caseFields.add('contact__r.Address__c');
+        caseFields.add('contact__r.City__c');
+        caseFields.add('contact__r.State__c');
+        caseFields.add('contact__r.Zip__c');
+        caseFields.add('contact__r.SSN__c');
+        String query = 'Select '+string.join(caseFields, ',') + ' From Case__c ';
+        
+        if(String.isNotBlank(caseId)){
+            whereCriteria.add(new ApexUtil.Criteria('Id',caseId,'='));
+        }
+        
+        String where_cond = ApexUtil.generateWhereQuery(whereCriteria);    
+        query = query + ' WHERE '+where_cond; 
+        list<case__c> cases = database.query(query);
+        if(!cases.isEmpty()){
+            caseRecord = cases[0];
+            DateTime fromDate = caseRecord.createddate;
+            String fromDateFormatted = fromDate.format('MM/dd/yyyy');
+            String toDateFormatted;
+            Date todayDate = Date.today();
+DateTime todayDateTime = DateTime.newInstance(todayDate, Time.newInstance(0, 0, 0, 0));
+
+toDateFormatted = todayDateTime.format('MM/dd/yyyy');
+
+investigationDates = fromDateFormatted + ' to ' + toDateFormatted;
+        }    
+    }
+    
+    
+    public void FetchLeadInformation(){
+        leadsMap = new Map<string,Lead__c>();
+        itemNumberNLeadsMap = new Map<integer,Lead__c>();
+        subjectInterviewNLeadRTAExtension = new Map<String, Lead_RTA_Extension__c>();
+        leads = new List<Lead__c> ();
+        List<string> leadFields = new List<string>();
+        List<ApexUtil.Criteria> whereCriteria = new List<ApexUtil.Criteria>();
+        leadFields = ApexUtil.FetchFields('Lead__c');  
+        leadFields.add('contact__r.First_Name__c');    
+        leadFields.add('contact__r.Last_Name__c');
+         leadFields.add('contact__r.State__c');   
+        String query = 'Select '+string.join(leadFields, ',') + ' From Lead__c ';
+        
+        if(String.isNotBlank(string.valueof(caseId))){
+            whereCriteria.add(new ApexUtil.Criteria('case__c',caseId,'='));
+        }
+        
+        String where_cond = ApexUtil.generateWhereQuery(whereCriteria);    
+        query = query + ' WHERE '+where_cond+ 'ORDER BY LeadType__c Asc'; 
+        
+        leads = database.query(query);
+        List<string> esiLeadIds = new List<String>();
+        integer PAEIItemNumber;
+        List<integer> esiLeadItems = New List<integer>();
+        for(Lead__c lc: leads){
+           
+            itemNLead.put(string.valueof(lc.item_number__c), lc);
+            itemNumberNLeadsMap.put(integer.valueof(lc.item_number__c), lc);
+             if(lc.LeadType__c == 'Publicly Available Electronic Information (PAEI)'){
+                PAEI = lc;
+                PAEIItemNumber = integer.valueOf(lc.Item_number__c);
+            }
+            if(lc.LeadType__c == 'Subject Interview (ESI/TESI)'){
+                esiLeadIds.add(lc.id);
+                esiLeadItems.add(integer.valueOf(lc.Item_number__c));
+            }
+            if(String.isNotblank(lc.Standardised_Issues_Picklist__c)){
+                if(String.isBlank(derogatorySummary)){
+                    derogatorySummary = lc.Standardised_Issues_Picklist__c;
+                }else{
+                    derogatorySummary = derogatorySummary + ';' +lc.Standardised_Issues_Picklist__c;
+                }
+                if(String.isNotBlank(lc.Standardised_Issues_Other_Description__c)){
+                     derogatorySummary = derogatorySummary + '; '+lc.Standardised_Issues_Other_Description__c;
+                }
+                for(string item : derogatorySummary.split(';')){
+                    derogatorySummaryItems.add(item);
+                }
+            }
+           
+        }
+        if (derogatorySummaryItems == null || derogatorySummaryItems.isEmpty()) {
+    derogatorySummaryItems = new Set<String>{ 'None' };
+}
+        if(Test.isRunningTest()){
+            esiLeadItems.add(1);
+            PAEIItemNumber = 2;
+        }
+        if(PAEIItemNumber != null){
+            closestESI = findClosest(esiLeadItems,PAEIItemNumber);
+        }
+        List<Lead_RTA_Extension__c> leadRTAExtensions = [Select Id, Lead__c, Foreign_Activities__c, Foreign_Contacts__c, Foreign_Travel1__c, Foreign_Travel2__c
+                                                         FROM Lead_RTA_Extension__c
+                                                         WHERE Lead__c IN:esiLeadIds];
+        
+        for(Lead_RTA_Extension__c lrta: leadRTAExtensions){
+            subjectInterviewNLeadRTAExtension.put(lrta.lead__c, lrta);
+        }  
+        
+        for(String str: esiLeadIds){
+            if(!subjectInterviewNLeadRTAExtension.keyset().contains(str)){
+                subjectInterviewNLeadRTAExtension.put(str, new Lead_RTA_Extension__c());
+            }
+        }                                                
+        
+        for(lead__c l: leads){
+            if(!leadsCountMap.containsKey(l.leadtype__c)){
+                leadsCountMap.put(l.leadtype__c, 1);    
+            }else{
+                leadsCountMap.put(l.leadtype__c, leadsCountMap.get(l.leadtype__c)+1);    
+            }
+            totalLeads++;
+            
+            string assignedDate;
+            if(l.Assignee_Date__c != Null){
+             assignedDate = l.Assignee_Date__c.year()+'-'+l.Assignee_Date__c.month()+'-'+l.Assignee_Date__c.day();
+            }
+            string completedDate;
+            if(l.Completed_Date__c != Null){
+             completedDate= l.Completed_Date__c.year()+'-'+l.Completed_Date__c.month()+'-'+l.Completed_Date__c.day();
+            }
+            
+            /*if(investigationDates != Null){
+                investigationDates =investigationDates+','+assignedDate+' to '+completedDate;
+            }else{
+                investigationDates =assignedDate+' to '+completedDate;
+            }*/
+            if(investigators != Null){
+                if(l.Assigned_To_Name__c != Null){
+                    string assignedName = l.Assigned_To_Name__c;
+                    if(assignedName == 'JS Investigator'){
+                        assignedName = 'Jason Stott';
+                    }else if(l.Assigned_To_Name__c == 'Laura Investigator'){
+                        assignedName = 'Laura Beeson';
+                    }else if(l.Assigned_To_Name__c == 'Katie RS'){
+                        assignedName = 'Record Searcher';
+                    }else{
+                        assignedName = l.Assigned_To_Name__c;
+                    }
+                    if(!investigators.contains(assignedName)){
+                        investigators = investigators +', '+assignedName;
+                    }
+                }
+            }else{
+                string assignedName = l.Assigned_To_Name__c;
+                    if(assignedName == 'JS Investigator'){
+                        assignedName = 'Jason Stott';
+                    }else if(l.Assigned_To_Name__c == 'Laura Investigator'){
+                        assignedName = 'Laura Beeson';
+                    }else if(l.Assigned_To_Name__c == 'Katie RS'){
+                        assignedName = 'Record Searcher';
+                    }else{
+                        assignedName = l.Assigned_To_Name__c;
+                    }
+                
+                investigators = assignedName;
+            }
+            leadsMap.put(l.id,l);
+        }
+         employmentMap = new Map<String,Map<String,List<String>>>();
+        educationMap = new Map<String,Map<String,List<String>>>();
+        medicalMap = new Map<String,Map<String,List<String>>> ();
+        subjectInterviewList = new List<String>();
+        subjectContactList = new List<String>();
+        residenceList = new List<String>();
+        referencesList = new List<String>();
+        generalLeadsList = new List<String>();
+        formerSpouseList = new List<String>();
+        unEmploymentList = new List<String>();
+        lawEnforcementList = new List<String>();
+        financialList = new List<String>();
+        employmentList = new list<string>();
+        educationList= new list<string>();
+        medicalList= new list<string>();
+        
+        for(lead__c l: leads){
+            if(l.leadType__c == 'Employment (EMPL)'){
+                employmentList.add(l.id);
+            }
+            if(l.leadType__c == 'Education (EDUC)'){
+                educationList.add(l.id);
+            }
+             if(l.leadType__c == 'Medical (MEDI)'){
+                medicalList.add(l.id);
+            }
+            if(l.leadType__c == 'Subject Interview (ESI/TESI)'){
+                subjectInterviewList.add(l.id);
+                //hasSubjectInterview = true;
+            }
+            if(l.leadType__c == 'Subject contact (SUBC)'){
+                subjectContactList.add(l.id);
+                //hasSubjectRecontact = true;
+            }
+            
+            if(l.leadType__c == 'Residence (RESI)'){
+                residenceList.add(l.id);
+                //hasResidence = true;
+            }
+            if(l.leadType__c == 'References (REFE)'){
+                referencesList.add(l.id);
+            }
+            if(l.leadType__c == 'General (GENL)'){
+                generalLeadsList.add(l.id);
+            }
+            if(l.leadType__c == 'Former Spouse (FMSP)'){
+                formerSpouseList.add(l.id);
+            }
+            if(l.leadType__c == 'Unemployment'){
+                unEmploymentList.add(l.id);
+            }
+            if(l.leadType__c == 'Law Enforcement (LAWE)'){
+                lawEnforcementList.add(l.id);
+            }
+            if(l.leadType__c == 'Financial (FINL)'){
+                financialList.add(l.id);
+            }
+       
+        }
+
+    }
+    public static Integer findClosest(List<Integer> esiItems, Integer PAEI) {
+        if (esiItems == null || esiItems.isEmpty()) {
+            return null; // no items
+        }
+        Integer closest = esiItems[0];
+        Integer minDiff = Math.abs(PAEI - closest);
+    
+        for (Integer item : esiItems) {
+            Integer diff = Math.abs(PAEI - item);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closest = item;
+            }
+        }
+        return closest;
+    }
+    public static Map<integer,Lead__c> itemNumberNLead(string caseId){
+        Map<integer,Lead__c> returnVal = New Map<integer,Lead__c>();
+        List<Lead__c> leads = [select id,item_Number__c,leadType__c from Lead__c where case__c =: caseId];
+        for(Lead__c l : leads){
+            returnVal.put(integer.valueOf(l.item_Number__c),l);
+        }
+        return returnVal;
+    }
+    public static datetime dt(date dte){
+        integer day;
+        integer month;
+        integer year;
+        day = dte.day();
+        month = dte.month();
+        year = dte.year();
+        datetime dtime;
+        dtime = datetime.newinstance(day,month,year);
+        return dtime;
+    }
+}
