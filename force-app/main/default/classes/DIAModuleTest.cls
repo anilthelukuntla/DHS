@@ -1,5 +1,5 @@
-@isTest
-@SuppressWarnings('PMD.ApexDoc, PMD.ApexAssertionsShouldIncludeMessage, PMD.ApexUnitTestClassShouldHaveAsserts, PMD.LocalVariableNamingConventions, PMD.MethodNamingConventions, PMD.NcssMethodCount, PMD.UnusedLocalVariable')
+@IsTest
+@SuppressWarnings('PMD.ApexDoc, PMD.ApexAssertionsShouldIncludeMessage, PMD.ApexUnitTestClassShouldHaveAsserts, PMD.ApexUnitTestClassShouldHaveRunAs, PMD.LocalVariableNamingConventions, PMD.MethodNamingConventions, PMD.NcssCount, PMD.NcssMethodCount, PMD.UnusedLocalVariable')
 public class DIAModuleTest {
     
     @IsTest
