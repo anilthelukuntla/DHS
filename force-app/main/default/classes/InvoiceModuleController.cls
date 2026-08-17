@@ -70,7 +70,7 @@ public with sharing class InvoiceModuleController {
 
         setCycleFilterDateFromSelection();
         if (cycleFilterDate != null) {
-            whereCriteria.add(new ApexUtil.Criteria('Pay_Period_Ending__c',String.valueOf(cycleFilterDate), '=','Date'));
+            whereCriteria.add(new ApexUtil.Criteria('Pay_Period_Ending__c',String.valueOf(cycleFilterDate), '=').withFieldType('Date'));
         }
         if (selectedUserOption != null && selectedUserOption != 'All') {
             whereCriteria.add(new ApexUtil.Criteria('Lead__r.Assigned_to__r.contact.onboarding__r.Candidate_Type__c',String.escapeSingleQuotes(selectedUserOption), '='));

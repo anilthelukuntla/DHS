@@ -1,5 +1,4 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class CaseWizardControllerTest {
     @IsTest
     static void searchesAndCreatesCases() {
@@ -16,13 +15,13 @@ private class CaseWizardControllerTest {
             controller.subjectFirstNameSearchEntry = 'Wizard';
             controller.subjectLastNameSearchEntry = 'Subject';
             controller.subjectEmailSearchEntry = 'wizard.subject@example.com';
-            controller.SearchSubjectsAction();
+            controller.searchSubjectsAction();
             Assert.areEqual(1, controller.subjectsSearched.size(), 'Assertion failed in CaseWizardControllerTest at source line 20');
             Assert.isTrue(controller.showsubjectspanel, 'Assertion failed in CaseWizardControllerTest at source line 21');
             controller.subjectsSearched[0].isSelected = true;
-            PageReference result = controller.CreateCaseAction();
+            PageReference result = controller.createCaseAction();
             Assert.isTrue(result.getRedirect(), 'Assertion failed in CaseWizardControllerTest at source line 24');
-            Assert.isTrue(CaseWizardController.CheckIfCaseExists(subject.Id), 'Assertion failed in CaseWizardControllerTest at source line 25');
+            Assert.isTrue(CaseWizardController.checkIfCaseExists(subject.Id), 'Assertion failed in CaseWizardControllerTest at source line 25');
         }
     }
 
@@ -35,7 +34,7 @@ private class CaseWizardControllerTest {
                 First_Name__c = 'New',
                 Last_Name__c = 'Subject'
             );
-            PageReference result = controller.CreateNewSubjectAction();
+            PageReference result = controller.createNewSubjectAction();
             Assert.isTrue(result.getRedirect(), 'Assertion failed in CaseWizardControllerTest at source line 39');
             Assert.isNotNull(result.getParameters().get('id'), 'Assertion failed in CaseWizardControllerTest at source line 40');
         }

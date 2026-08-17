@@ -81,7 +81,7 @@ public class OtherMessagesController{
         }
         
         if(String.isNotBlank(string.valueof(selectedDate))){
-            whereCriteria.add(new ApexUtil.Criteria('Message_Date__c',String.valueof(selectedDate), '=', 'Date'));
+            whereCriteria.add(new ApexUtil.Criteria('Message_Date__c',String.valueof(selectedDate), '=').withFieldType('Date'));
         }
        
         String where_cond = ApexUtil.generateWhereQuery(whereCriteria); 
@@ -114,7 +114,7 @@ public class OtherMessagesController{
         }
         
         if(String.isNotBlank(string.valueof(selectedDate))){
-            whereCriteria.add(new ApexUtil.Criteria('Message_Date__c',String.valueof(selectedDate), '=', 'Date'));
+            whereCriteria.add(new ApexUtil.Criteria('Message_Date__c',String.valueof(selectedDate), '=').withFieldType('Date'));
         }
          
         String where_cond = ApexUtil.generateWhereQuery(whereCriteria);    

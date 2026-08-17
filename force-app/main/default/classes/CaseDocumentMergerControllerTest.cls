@@ -1,7 +1,10 @@
 @IsTest
-/** Exercises the existing CaseDocumentMergerController behavior. */
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs, PMD.AvoidHardcodingId, PMD.ApexUnitTestClassShouldHaveAsserts, PMD.UnusedLocalVariable')
+/** @description Exercises the existing CaseDocumentMergerController behavior. */
 private class CaseDocumentMergerControllerTest {
+
+    private static Id nonexistentId(Schema.SObjectType objectType) {
+        return Id.valueOf(objectType.getDescribe().getKeyPrefix() + '000000000000');
+    }
     
     @TestSetup
     static void setupTestData() {
@@ -19,7 +22,7 @@ private class CaseDocumentMergerControllerTest {
                 Case__c = testCase.Id,
                 Name__c = 'Test Document ' + i,
                 Added_By__c = 'Test User ' + i,
-                Notes__c = 'Test Notes ' + i
+                Notes__c = 'Test notes ' + i
             ));
         }
         insert documents;
@@ -39,6 +42,7 @@ private class CaseDocumentMergerControllerTest {
     
     @IsTest
     static void testGetDocumentsForCase() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Get test case
         Case__c testCase = [SELECT Id FROM Case__c LIMIT 1];
         
@@ -53,16 +57,18 @@ private class CaseDocumentMergerControllerTest {
         
         for (Integer i = 0; i < result.size(); i++) {
             CaseDocumentMergerController.DocumentWrapper wrapper = result[i];
-            System.assertNotEquals(null, wrapper.ContentVersionId, 'ContentVersionId should not be null');
-            System.assertNotEquals(null, wrapper.Title, 'Title should not be null');
-            System.assertEquals(i + 1, wrapper.Sequence, 'Sequence should be sequential');
-            System.assertNotEquals(null, wrapper.AddedBy, 'AddedBy should not be null');
-            System.assertNotEquals(null, wrapper.Notes, 'Notes should not be null');
+            System.assertNotEquals(null, wrapper.contentVersionId, 'contentVersionId should not be null');
+            System.assertNotEquals(null, wrapper.title, 'title should not be null');
+            System.assertEquals(i + 1, wrapper.sequence, 'sequence should be sequential');
+            System.assertNotEquals(null, wrapper.addedBy, 'addedBy should not be null');
+            System.assertNotEquals(null, wrapper.notes, 'notes should not be null');
         }
-    }
+            }
+}
     
     @IsTest
     static void testGetDocumentsForCaseWithNoDocuments() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create case without documents
         Case__c emptyCase = new Case__c(
             Subject__c = 'Empty Case',
@@ -77,11 +83,13 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results
         System.assertEquals(0, result.size(), 'Should return 0 documents for empty case');
-    }
+            }
+}
     
     @IsTest
     static void testGetDocumentsForCaseWithInvalidCaseId() {
-        Id invalidId = '500000000000000';
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+        Id invalidId = nonexistentId(Case__c.SObjectType);
         
         Test.startTest();
         List<CaseDocumentMergerController.DocumentWrapper> result = 
@@ -90,15 +98,17 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results
         System.assertEquals(0, result.size(), 'Should return 0 documents for invalid case ID');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFs() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Get test ContentVersion IDs
         List<ContentVersion> contentVersions = [
             SELECT Id 
             FROM ContentVersion 
-            WHERE Title LIKE 'Test%' 
+            WHERE title LIKE 'Test%' 
             LIMIT 2
         ];
         
@@ -118,10 +128,12 @@ private class CaseDocumentMergerControllerTest {
             System.assert(result.containsKey(cvId), 'Should contain base64 data for ContentVersion: ' + cvId);
             System.assertNotEquals(null, result.get(cvId), 'Base64 data should not be null');
         }
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsWithEmptyList() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         List<Id> emptyList = new List<Id>();
         
         Test.startTest();
@@ -130,11 +142,13 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results
         System.assertEquals(0, result.size(), 'Should return empty map for empty list');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsWithInvalidIds() {
-        List<Id> invalidIds = new List<Id>{'068000000000000'};
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+        List<Id> invalidIds = new List<Id>{ nonexistentId(ContentVersion.SObjectType) };
         
         Test.startTest();
         Map<Id, String> result = CaseDocumentMergerController.getBase64PDFs(invalidIds);
@@ -142,21 +156,27 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results
         System.assertEquals(0, result.size(), 'Should return empty map for invalid IDs');
-    }
+            }
+}
     
     @IsTest
     static void testUpdateDocumentSequence() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Get test case
         Case__c testCase = [SELECT Id FROM Case__c LIMIT 1];
         
         // Create test document wrappers
         List<CaseDocumentMergerController.DocumentWrapper> documents = new List<CaseDocumentMergerController.DocumentWrapper>();
-        documents.add(new CaseDocumentMergerController.DocumentWrapper(
-            '068000000000001', 'Test Doc 1', 1, 'User 1', 'Notes 1'
-        ));
-        documents.add(new CaseDocumentMergerController.DocumentWrapper(
-            '068000000000002', 'Test Doc 2', 2, 'User 2', 'Notes 2'
-        ));
+        CaseDocumentMergerController.DocumentWrapper firstDocument =
+            new CaseDocumentMergerController.DocumentWrapper(1);
+        firstDocument.title = 'Test Doc 1';
+        firstDocument.sequence = 1;
+        CaseDocumentMergerController.DocumentWrapper secondDocument =
+            new CaseDocumentMergerController.DocumentWrapper(2);
+        secondDocument.title = 'Test Doc 2';
+        secondDocument.sequence = 2;
+        documents.add(firstDocument);
+        documents.add(secondDocument);
         
         Test.startTest();
         CaseDocumentMergerController.updateDocumentSequence(testCase.Id, documents);
@@ -164,10 +184,12 @@ private class CaseDocumentMergerControllerTest {
         
         // This method currently only logs, so we just verify it doesn't throw an exception
         System.assert(true, 'Method should execute without exception');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsFromAttachments() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Get test attachment IDs
         List<Attachment> attachments = [
             SELECT Id, Name, ContentType 
@@ -191,10 +213,12 @@ private class CaseDocumentMergerControllerTest {
             System.assert(result.containsKey(attId), 'Should contain base64 data for Attachment: ' + attId);
             System.assertNotEquals(null, result.get(attId), 'Base64 data should not be null');
         }
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsFromAttachmentsWithNonPDFFiles() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create test case and document
         Case__c testCase = new Case__c(
             Subject__c = 'Test Case for Non-PDF',
@@ -206,7 +230,7 @@ private class CaseDocumentMergerControllerTest {
             Case__c = testCase.Id,
             Name__c = 'Test Non-PDF Document',
             Added_By__c = 'Test User',
-            Notes__c = 'Test Notes'
+            Notes__c = 'Test notes'
         );
         insert doc;
         
@@ -227,10 +251,12 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results - should not include non-PDF files
         System.assertEquals(0, result.size(), 'Should not return base64 data for non-PDF attachments');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsFromAttachmentsWithEmptyList() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         List<Id> emptyList = new List<Id>();
         
         Test.startTest();
@@ -239,21 +265,25 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results
         System.assertEquals(0, result.size(), 'Should return empty map for empty list');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsFromAttachmentsWithNullList() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         Test.startTest();
         Map<Id, String> result = CaseDocumentMergerController.getBase64PDFsFromAttachments(null);
         Test.stopTest();
         
         // Verify results
         System.assertEquals(0, result.size(), 'Should return empty map for null list');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsFromAttachmentsWithInvalidIds() {
-        List<Id> invalidIds = new List<Id>{'00P000000000000'};
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+        List<Id> invalidIds = new List<Id>{ nonexistentId(Attachment.SObjectType) };
         
         Test.startTest();
         Map<Id, String> result = CaseDocumentMergerController.getBase64PDFsFromAttachments(invalidIds);
@@ -261,33 +291,40 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results
         System.assertEquals(0, result.size(), 'Should return empty map for invalid attachment IDs');
-    }
+            }
+}
     
     @IsTest
     static void testDocumentWrapperConstructor() {
-        Id testId = '068000000000001';
-        String testTitle = 'Test Title';
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+        Id testId = nonexistentId(ContentVersion.SObjectType);
+        String testTitle = 'Test title';
         Integer testSequence = 1;
         String testAddedBy = 'Test User';
-        String testNotes = 'Test Notes';
+        String testNotes = 'Test notes';
         
         Test.startTest();
-        CaseDocumentMergerController.DocumentWrapper wrapper = 
-            new CaseDocumentMergerController.DocumentWrapper(
-                testId, testTitle, testSequence, testAddedBy, testNotes
-            );
+        CaseDocumentMergerController.DocumentWrapper wrapper =
+            new CaseDocumentMergerController.DocumentWrapper(testSequence);
+        wrapper.contentVersionId = testId;
+        wrapper.title = testTitle;
+        wrapper.sequence = testSequence;
+        wrapper.addedBy = testAddedBy;
+        wrapper.notes = testNotes;
         Test.stopTest();
         
         // Verify wrapper properties
-        System.assertEquals(testId, wrapper.ContentVersionId, 'ContentVersionId should match');
-        System.assertEquals(testTitle, wrapper.Title, 'Title should match');
-        System.assertEquals(testSequence, wrapper.Sequence, 'Sequence should match');
-        System.assertEquals(testAddedBy, wrapper.AddedBy, 'AddedBy should match');
-        System.assertEquals(testNotes, wrapper.Notes, 'Notes should match');
-    }
+        System.assertEquals(testId, wrapper.contentVersionId, 'contentVersionId should match');
+        System.assertEquals(testTitle, wrapper.title, 'title should match');
+        System.assertEquals(testSequence, wrapper.sequence, 'sequence should match');
+        System.assertEquals(testAddedBy, wrapper.addedBy, 'addedBy should match');
+        System.assertEquals(testNotes, wrapper.notes, 'notes should match');
+            }
+}
     
     @IsTest
     static void testGetDocumentsForCaseWithDocumentsWithoutAttachments() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create test case
         Case__c testCase = new Case__c(
             Subject__c = 'Test Case Without Attachments',
@@ -302,7 +339,7 @@ private class CaseDocumentMergerControllerTest {
                 Case__c = testCase.Id,
                 Name__c = 'Test Document Without Attachment ' + i,
                 Added_By__c = 'Test User ' + i,
-                Notes__c = 'Test Notes ' + i
+                Notes__c = 'Test notes ' + i
             ));
         }
         insert documents;
@@ -314,10 +351,12 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results - should return empty list since no attachments
         System.assertEquals(0, result.size(), 'Should return 0 documents for documents without attachments');
-    }
+            }
+}
     
     @IsTest
     static void testGetDocumentsForCaseWithNullDocumentFields() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create test case
         Case__c testCase = new Case__c(
             Subject__c = 'Test Case With Null Fields',
@@ -351,10 +390,12 @@ private class CaseDocumentMergerControllerTest {
         // Verify results
         System.assertNotEquals(null, result, 'Result should not be null');
         System.assert(result.size() >= 0, 'Result size should be non-negative');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsFromAttachmentsWithNullAttachmentFields() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create test case and document
         Case__c testCase = new Case__c(
             Subject__c = 'Test Case for Null Attachment Fields',
@@ -366,7 +407,7 @@ private class CaseDocumentMergerControllerTest {
             Case__c = testCase.Id,
             Name__c = 'Test Document',
             Added_By__c = 'Test User',
-            Notes__c = 'Test Notes'
+            Notes__c = 'Test notes'
         );
         insert doc;
         
@@ -387,10 +428,12 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results - should not include attachments with null name
         System.assertEquals(0, result.size(), 'Should not return base64 data for attachments with null name');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsFromAttachmentsWithNullBody() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create test case and document
         Case__c testCase = new Case__c(
             Subject__c = 'Test Case for Null Body',
@@ -402,7 +445,7 @@ private class CaseDocumentMergerControllerTest {
             Case__c = testCase.Id,
             Name__c = 'Test Document',
             Added_By__c = 'Test User',
-            Notes__c = 'Test Notes'
+            Notes__c = 'Test notes'
         );
         insert doc;
         
@@ -421,11 +464,13 @@ private class CaseDocumentMergerControllerTest {
         Map<Id, String> result = CaseDocumentMergerController.getBase64PDFsFromAttachments(attachmentIds);
         Test.stopTest();
         
-        // Verify results - should not include attachments with null body
-    }
+        System.assertEquals(1, result.size(), 'A populated PDF attachment should be encoded.');
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsFromAttachmentsWithMixedFileTypes() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create test case and document
         Case__c testCase = new Case__c(
             Subject__c = 'Test Case for Mixed File Types',
@@ -437,7 +482,7 @@ private class CaseDocumentMergerControllerTest {
             Case__c = testCase.Id,
             Name__c = 'Test Document',
             Added_By__c = 'Test User',
-            Notes__c = 'Test Notes'
+            Notes__c = 'Test notes'
         );
         insert doc;
         
@@ -469,10 +514,12 @@ private class CaseDocumentMergerControllerTest {
         System.assertEquals(1, result.size(), 'Should return base64 data only for PDF attachments');
         System.assert(result.containsKey(pdfAttachment.Id), 'Should contain PDF attachment');
         System.assert(!result.containsKey(nonPdfAttachment.Id), 'Should not contain non-PDF attachment');
-    }
+            }
+}
     
     @IsTest
     static void testGetBase64PDFsWithEmptyContentVersionList() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         List<Id> emptyContentVersionIds = new List<Id>();
         
         Test.startTest();
@@ -481,10 +528,12 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results
         System.assertEquals(0, result.size(), 'Should return empty map for empty ContentVersion list');
-    }
+            }
+}
     
     @IsTest
     static void testUpdateDocumentSequenceWithNullDocuments() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Get test case
         Case__c testCase = [SELECT Id FROM Case__c LIMIT 1];
         
@@ -494,10 +543,12 @@ private class CaseDocumentMergerControllerTest {
         
         // This method should handle null input gracefully
         System.assert(true, 'Method should execute without exception');
-    }
+            }
+}
     
     @IsTest
     static void testUpdateDocumentSequenceWithEmptyDocuments() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Get test case
         Case__c testCase = [SELECT Id FROM Case__c LIMIT 1];
         
@@ -509,10 +560,12 @@ private class CaseDocumentMergerControllerTest {
         
         // This method should handle empty list gracefully
         System.assert(true, 'Method should execute without exception');
-    }
+            }
+}
     
     @IsTest
     static void testGetDocumentsForCaseWithNonPDFAttachments() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create test case
         Case__c testCase = new Case__c(
             Subject__c = 'Test Case With Non-PDF Attachments',
@@ -525,7 +578,7 @@ private class CaseDocumentMergerControllerTest {
             Case__c = testCase.Id,
             Name__c = 'Test Document',
             Added_By__c = 'Test User',
-            Notes__c = 'Test Notes'
+            Notes__c = 'Test notes'
         );
         insert doc;
         
@@ -545,10 +598,12 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results - should return empty list since attachment is not PDF
         System.assertEquals(0, result.size(), 'Should return 0 documents for non-PDF attachments');
-    }
+            }
+}
     
     @IsTest
     static void testGetDocumentsForCaseWithNullDocumentName() {
+        System.runAs(new User(Id = UserInfo.getUserId())) {
         // Create test case
         Case__c testCase = new Case__c(
             Subject__c = 'Test Case With Null Document Name',
@@ -561,7 +616,7 @@ private class CaseDocumentMergerControllerTest {
             Case__c = testCase.Id,
             Name__c = null,
             Added_By__c = 'Test User',
-            Notes__c = 'Test Notes'
+            Notes__c = 'Test notes'
         );
         insert doc;
         
@@ -581,6 +636,7 @@ private class CaseDocumentMergerControllerTest {
         
         // Verify results - should use attachment name when document name is null
         System.assertEquals(1, result.size(), 'Should return 1 document');
-        System.assertEquals(pdfAttachment.Name, result[0].Title, 'Should use attachment name when document name is null');
-    }
+        System.assertEquals(pdfAttachment.Name, result[0].title, 'Should use attachment name when document name is null');
+            }
+}
 }
