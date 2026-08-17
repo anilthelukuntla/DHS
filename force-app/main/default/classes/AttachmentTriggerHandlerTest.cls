@@ -1,9 +1,9 @@
 @IsTest
-/** @description Verifies conversion of legacy attachments into Salesforce Files. */
+/** Verifies conversion of legacy attachments into Salesforce Files. */
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class AttachmentTriggerHandlerTest {
     @IsTest
     static void convertsAttachmentAndHandlesEmptyInput() {
-        System.runAs(new User(Id = UserInfo.getUserId())) {
         Account parentRecord = new Account(Name = 'Attachment conversion test');
         insert parentRecord;
         Attachment attachmentRecord = new Attachment(
@@ -33,6 +33,5 @@ private class AttachmentTriggerHandlerTest {
             [SELECT COUNT() FROM ContentDocumentLink
              WHERE LinkedEntityId = :parentRecord.Id]
         , 'Assertion failed in AttachmentTriggerHandlerTest at source line 31');
-        }
     }
 }

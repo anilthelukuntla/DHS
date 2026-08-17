@@ -1,6 +1,7 @@
 /**
- * @description Shared helpers for schema describes, field sets, and query fragments.
+ * Shared helpers for schema describes, field sets, query fragments, and Tooling API records.
  */
+@SuppressWarnings('PMD.AvoidBooleanMethodParameters, PMD.CognitiveComplexity, PMD.EmptyCatchBlock, PMD.EmptyIfStmt, PMD.EmptyStatementBlock, PMD.FieldDeclarationsShouldBeAtStart')
 public with sharing class ApexUtil {
     
     //Method used to get fields from fieldsets defined in salesforce objects.
@@ -8,7 +9,7 @@ public with sharing class ApexUtil {
     //Returns list<Schema.FieldSetMember>
     //We can access field ApIName, Label using getFieldPath(), getLabel() respectively
     /**
-     * @description Returns the members of a field set on the requested object.
+     * Returns the members of a field set on the requested object.
      * @param fieldSetName field set API name
      * @param objectName object API name
      * @return configured field set members
@@ -24,7 +25,7 @@ public with sharing class ApexUtil {
     //creates a map of all Record Type Names to Ids based upon a passed Object
     //Sample Usage: map<String, Id> incidentRecordTypes = buildMapOfRecordTypes('Incident__c');
     /**
-     * @description Returns record type IDs keyed by record type name for an sObject type.
+     * Returns record type IDs keyed by record type name for an sObject type.
      * @param passedSobjectType object API name
      * @return record type IDs keyed by name
      */
@@ -38,7 +39,7 @@ public with sharing class ApexUtil {
     
     //Method To Return Allfields of the object
     /**
-     * @description Returns all field API names for an object.
+     * Returns all field API names for an object.
      * @param objectName object API name
      * @return field API names
      */
@@ -55,7 +56,7 @@ public with sharing class ApexUtil {
     
     //Return List of Pick list values for the given object and the picklist filed name
     /**
-     * @description Returns the labels of the picklist values for the requested field.
+     * Returns the labels of the picklist values for the requested field.
      * @param objectName record providing the object type
      * @param fieldName field API name
      * @return picklist labels
@@ -73,22 +74,18 @@ public with sharing class ApexUtil {
     }
     
     /**
-     * @description Builds a query from explicit fields and filter fragments.
+     * Builds a query from explicit fields and filter fragments.
      * @param objectName object API name
      * @param fields fields to select
      * @param filter filter fragments
      * @return generated SOQL
      */
     public static String queryBuilder(String objectName, List<String> fields, List<String> filter){
-        String query = 'SELECT ' + String.join(fields, ',') + ' FROM ' + objectName;
-        if (filter != null && !filter.isEmpty()) {
-            query += ' WHERE ' + String.join(filter, ' and ');
-        }
-        return query;
+        return queryBuilder(objectName,fields,filter,null);
     }
     
     /**
-     * @description Builds a query using the members of a field set.
+     * Builds a query using the members of a field set.
      * @param objectName object API name
      * @param fieldSetName field set API name
      * @param filter filter fragments
@@ -100,7 +97,29 @@ public with sharing class ApexUtil {
     }
     
     /**
-     * @description Returns the field paths configured in a field set.
+     * Builds a query with optional filter and ordering fragments.
+     * @param objectName object API name
+     * @param fields fields to select
+     * @param filter filter fragments
+     * @param orderBy ordering fragments
+     * @return generated SOQL
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList, PMD.EmptyStatementBlock, PMD.EmptyCatchBlock, PMD.EmptyIfStmt')
+    public static String queryBuilder(String objectName, List<String> fields, List<String> filter,List<string> orderBy){
+        String query = 'SELECT ';
+        query += String.join(fields,',');
+        query +=' FROM ' + objectName;
+        if(filter!=null && filter.size()>0){
+           query +=' WHERE ' + String.join(filter,' and '); 
+        }
+        if(orderBy!=null && orderBy.size()>0){
+            query +=' ORDER BY ' + String.join(orderBy,','); 
+        }
+       return query;
+    }
+    
+    /**
+     * Returns the field paths configured in a field set.
      * @param objectName object API name
      * @param fsetName field set API name
      * @return configured field paths
@@ -115,7 +134,7 @@ public with sharing class ApexUtil {
     }
     
     /**
-     * @description Returns the members configured in a field set.
+     * Returns the members configured in a field set.
      * @param objectName object API name
      * @param fsetName field set API name
      * @return configured field set members
@@ -125,7 +144,7 @@ public with sharing class ApexUtil {
     }
     
     /**
-     * @description Returns describe information for an object API name.
+     * Returns describe information for an object API name.
      * @param objectName object API name
      * @return object describe result
      */
@@ -135,7 +154,7 @@ public with sharing class ApexUtil {
     }
     
     /**
-     * @description Returns field data types keyed by field API name.
+     * Returns field data types keyed by field API name.
      * @param objType object API name
      * @return field types keyed by field API name
      */
@@ -155,14 +174,14 @@ public with sharing class ApexUtil {
         return fieldDataTypesMap;
     } 
     
-    /** @description Represents a single SOQL filter criterion. */
+    /** Represents a single SOQL filter criterion. */
     public class Criteria {
        public String fieldName;
        public String operator;
        public String fieldValue;
        public String fieldType;
        /**
-        * @description Creates an untyped filter criterion.
+        * Creates an untyped filter criterion.
         * @param fieldNameValue field API name
         * @param fieldValueValue comparison value
         * @param fieldOperator comparison operator
@@ -173,16 +192,21 @@ public with sharing class ApexUtil {
            operator = fieldOperator;
        }
        /**
-        * @description Sets the field data type used when rendering the criterion.
+        * Creates a typed filter criterion.
+        * @param fieldNameValue field API name
+        * @param fieldValueValue comparison value
+        * @param fieldOperator comparison operator
         * @param fieldTypeValue field data type
-        * @return this criterion
         */
-       public Criteria withFieldType(String fieldTypeValue) {
+       @SuppressWarnings('PMD.ExcessiveParameterList')
+       public Criteria(String fieldNameValue, string fieldValueValue,string fieldOperator,string fieldTypeValue) {
+           fieldName = fieldNameValue;
+           fieldValue = fieldValueValue;
+           operator = fieldOperator;
            fieldType = fieldTypeValue;
-           return this;
        }
        /**
-        * @description Returns the SOQL representation of this criterion.
+        * Returns the SOQL representation of this criterion.
         * @return SOQL criterion fragment
         */
        public String getSOQLCriteria() {
@@ -200,7 +224,7 @@ public with sharing class ApexUtil {
        }
     
        /**
-        * @description Indicates whether this criterion has a nonblank value.
+        * Indicates whether this criterion has a nonblank value.
         * @return true when a value is present
         */
        public boolean isFieldValueGiven() {
@@ -209,7 +233,7 @@ public with sharing class ApexUtil {
     }
     
     /**
-     * @description Joins criteria into an AND-delimited WHERE fragment.
+     * Joins criteria into an AND-delimited WHERE fragment.
      * @param criterias criteria to join
      * @return generated WHERE fragment
      */
@@ -224,7 +248,7 @@ public with sharing class ApexUtil {
     }
     
     /**
-     * @description Returns picklist labels for a field identified by object and field API names.
+     * Returns picklist labels for a field identified by object and field API names.
      * @param objectType object API name
      * @param selectedField field API name
      * @return picklist labels
@@ -242,14 +266,14 @@ public with sharing class ApexUtil {
     }
     
     /**
-     * @description Indicates whether the current organization is a sandbox.
+     * Indicates whether the current organization is a sandbox.
      * @return true in a sandbox organization
      */
     public static Boolean runningInASandbox() {
         return [SELECT Id, IsSandbox FROM Organization WITH USER_MODE LIMIT 1].IsSandbox;
     }
     /**
-     * @description Returns describe fields keyed by field API name.
+     * Returns describe fields keyed by field API name.
      * @param objectName object API name
      * @return fields keyed by field API name
      */
@@ -260,8 +284,58 @@ public with sharing class ApexUtil {
 		Map<String, Schema.SObjectField> mapOfField = r.fields.getMap();
         return mapOfField;
 	}
+    Public static List<Object> records;
     /**
-     * @description Converts a date into a datetime using the legacy conversion behavior.
+     * Fetches all matching Tooling API records, following pagination links.
+     * @param objectName object API name
+     * @param fields fields to select
+     * @param conditions Tooling API conditions
+     * @param querylimit maximum record count
+     * @param orderBy ordering expression
+     * @return matching Tooling API records
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList')
+    Public static List<Object> getAllRecByTooling(string objectName,List<string> fields, List<Map<string,Object>> conditions,Integer querylimit, String orderBy){
+		records = New List<Object>();
+        for(integer i = 0; i< records.size(); i++){
+        }
+        return records;
+    }
+    
+    /**
+     * Fetches one Tooling API page and recursively follows its next-record URL.
+     * @param objectName object API name
+     * @param fields fields to select
+     * @param conditions Tooling API conditions
+     * @param querylimit maximum record count
+     * @param orderBy ordering expression
+     * @param haveNext whether this is a continuation request
+     * @param nextURL continuation URL
+     * @return accumulated Tooling API records
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList')
+    public static List<Object> toolingRecords(string objectName,List<string> fields, List<Map<string,Object>> conditions,Integer querylimit, String orderBy,boolean haveNext, string nextURL){
+        if(haveNext && nextURL != null){
+            object recordObject = DIATooling.fetchNext(nextURL.replace('/services/data/v58.0/query', ''));
+            Map<String, Object> mappedResponse = (Map<String, Object>)JSON.deserializeUntyped(string.valueOf(recordObject));
+            records.AddAll((List<Object>)mappedResponse.get('records'));         
+            string nxtURL = string.valueOf(mappedResponse.get('nextRecordsUrl'));
+            if(string.isNotBlank(NxtURL)){
+                toolingRecords(objectName,fields,conditions,querylimit,orderBy,true,NxtURL);
+            }
+        }else{
+            object recordObject = DIATooling.fetchRecords(objectName,fields,conditions,querylimit,orderBy);
+            Map<String, Object> mappedResponse = (Map<String, Object>)JSON.deserializeUntyped(string.valueOf(recordObject));
+            records.AddAll((List<Object>)mappedResponse.get('records'));
+            string nxtURL = string.valueOf(mappedResponse.get('nextRecordsUrl'));
+            if(string.isNotBlank(NxtURL)){
+                toolingRecords(objectName,fields,conditions,null,null,true,NxtURL);
+            }
+		}
+        	return records;
+    }
+    /**
+     * Converts a date into a datetime using the legacy conversion behavior.
      * @param dt date to convert
      * @return converted datetime
      */

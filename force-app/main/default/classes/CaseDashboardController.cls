@@ -144,13 +144,13 @@ public with sharing class CaseDashboardController {
             buildCaseDetailURLParams('showQACases=true');
             if(String.isNotBlank(string.valueof(fromSubmissionDateSearchEntry))){
                 
-                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(fromSubmissionDateSearchEntry), '>=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(fromSubmissionDateSearchEntry), '>=', 'Date'));
                 buildCaseDetailURLParams('fromSubmissionDateSearchEntry='+fromSubmissionDateSearchEntry);
             }
             
             if(String.isNotBlank(string.valueof(toSubmissionDateSearchEntry))){
                                 
-                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(toSubmissionDateSearchEntry), '<=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(toSubmissionDateSearchEntry), '<=', 'Date'));
                 buildCaseDetailURLParams('toSubmissionDateSearchEntry='+toSubmissionDateSearchEntry);
             }
             
@@ -212,13 +212,13 @@ public with sharing class CaseDashboardController {
             if(String.isNotBlank(string.valueof(fromSubmissionDateSearchEntry))){
                 
                 
-                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(fromSubmissionDateSearchEntry), '>=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(fromSubmissionDateSearchEntry), '>=', 'Date'));
                 buildCaseDetailURLParams('fromSubmissionDateSearchEntry='+fromSubmissionDateSearchEntry);
             }
             
             if(String.isNotBlank(string.valueof(toSubmissionDateSearchEntry))){
                 
-                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(toSubmissionDateSearchEntry), '<=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(toSubmissionDateSearchEntry), '<=', 'Date'));
                 buildCaseDetailURLParams('toSubmissionDateSearchEntry='+toSubmissionDateSearchEntry);
             }
             

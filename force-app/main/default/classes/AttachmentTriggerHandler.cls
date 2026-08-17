@@ -1,4 +1,4 @@
-/** @description Converts legacy attachments into Salesforce Files. */
+/** Converts legacy attachments into Salesforce Files. */
 public with sharing class AttachmentTriggerHandler{
    /* public static void CreditReportToCase(List<Attachment> attachments){
         Schema.DescribeSObjectResult creditChecker = creditchecker__Credit_Report__c.sObjectType.getDescribe();
@@ -32,7 +32,7 @@ public with sharing class AttachmentTriggerHandler{
              }
     }*/
     /**
-     * @description Converts attachments to ContentVersion and ContentDocumentLink records in bulk.
+     * Converts attachments to ContentVersion and ContentDocumentLink records in bulk.
      * @param attachments attachments to convert
      */
     public static void convertAttachmentToFile(List<Attachment> attachments){

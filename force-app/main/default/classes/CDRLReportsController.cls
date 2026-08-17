@@ -293,10 +293,10 @@ public with sharing class CDRLReportsController {
                 whereCriteria.add(new ApexUtil.Criteria('Status__c',selectedCaseStatus,'='));
             }
             if(fromDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(fromDate), '>=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(fromDate), '>=', 'Date'));
             }
             if(toDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(toDate), '<=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Submission_Date__c',String.valueof(toDate), '<=', 'Date'));
             }
             if(selectedCMoUser != 'All'){
                 whereCriteria.add(new ApexUtil.Criteria('Assigned_to__c',selectedCMoUser, '='));    
@@ -413,10 +413,10 @@ public with sharing class CDRLReportsController {
                 whereCriteria.add(new ApexUtil.Criteria('Status__c',SelectedLeadStatus,'='));
             }
             if(fromDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('Completed_Date__c',String.valueof(fromDate), '>=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Completed_Date__c',String.valueof(fromDate), '>=', 'Date'));
             }
             if(toDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('Completed_Date__c',String.valueof(toDate), '<=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Completed_Date__c',String.valueof(toDate), '<=', 'Date'));
             }
             if(selectedInvestigatorUser != 'All'){
                 whereCriteria.add(new ApexUtil.Criteria('Assigned_to__c',selectedInvestigatorUser, '='));    
@@ -577,10 +577,10 @@ public with sharing class CDRLReportsController {
                 whereCriteria.add(new ApexUtil.Criteria('Message_Date__c',String.valueof(toDate), '<='));
             }*/
             if(fromDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('MessageCreatedDate__c',string.valueOf(fromDate), '>=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('MessageCreatedDate__c',string.valueOf(fromDate), '>=','Date'));
             }
             if(toDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('MessageCreatedDate__c',string.valueOf(toDate), '<=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('MessageCreatedDate__c',string.valueOf(toDate), '<=','Date'));
             }
             String where_cond = ApexUtil.generateWhereQuery(whereCriteria);
             string countQuery;
@@ -647,10 +647,10 @@ public with sharing class CDRLReportsController {
                 whereCriteria.add(new ApexUtil.Criteria('TimeSheet__r.User__c', userinfo.getuserid(), '='));
             }
             if(fromDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('TimeSheet__r.Date__c',String.valueof(fromDate), '>=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('TimeSheet__r.Date__c',String.valueof(fromDate), '>=', 'Date'));
             }
             if(toDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('TimeSheet__r.Date__c',String.valueof(toDate), '<=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('TimeSheet__r.Date__c',String.valueof(toDate), '<=', 'Date'));
             }
             
             String where_cond = ApexUtil.generateWhereQuery(whereCriteria);
@@ -766,10 +766,10 @@ public with sharing class CDRLReportsController {
             productionSummaryFields = ApexUtil.FetchFields('Daily_Production_Summary__c');
             String query = 'Select '+string.join(productionSummaryFields, ',') + ' From Daily_Production_Summary__c ';
             if(fromDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('Summary_Date__c',String.valueof(fromDate), '>=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Summary_Date__c',String.valueof(fromDate), '>=', 'Date'));
             }
             if(toDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('Summary_Date__c',String.valueof(toDate), '<=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Summary_Date__c',String.valueof(toDate), '<=', 'Date'));
             }
             String where_cond = ApexUtil.generateWhereQuery(whereCriteria);    
             query = query + ' WHERE '+where_cond; 
@@ -830,10 +830,10 @@ public with sharing class CDRLReportsController {
                 whereCriteria.add(new ApexUtil.Criteria('User__c', userinfo.getuserid(), '='));
             }
             if(trackingfromDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('Date__c',String.valueof(trackingfromDate), '>=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Date__c',String.valueof(trackingfromDate), '>=', 'Date'));
             }
             if(trackingtoDate != Null){
-                whereCriteria.add(new ApexUtil.Criteria('Date__c',String.valueof(trackingtoDate), '<=').withFieldType('Date'));
+                whereCriteria.add(new ApexUtil.Criteria('Date__c',String.valueof(trackingtoDate), '<=', 'Date'));
             }
             
             Map<id,User> users = new Map<id,User>([Select Id, name,system_access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' WITH USER_MODE]);
