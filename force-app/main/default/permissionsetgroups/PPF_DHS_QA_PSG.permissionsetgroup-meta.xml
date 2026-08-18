@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Role-based Visualforce, Apex, and object access for PPF DHS QA users.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>PPF DHS QA PSG</label>
+    <permissionSets>Case_History_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Case_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Contact_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Case_History_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Case_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Contact_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Daily_Production_Summary_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Document_Request_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Document_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_GeneralSettings_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Investigator_Check_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Knowledge_Base_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Lead_Grammar_Check_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Lead_RTA_Extension_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Lead_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Message_Log_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Message_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_PPF_Shipping_Information_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_ROI_Report_Order_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_TimeSheet_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Training_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Waiver_Information_c_Read_Create_Edit</permissionSets>
+    <permissionSets>DHS_Workload_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Daily_Production_Summary_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Document_Request_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Document_c_Read_Create_Edit</permissionSets>
+    <permissionSets>GeneralSettings_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Investigator_Check_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Knowledge_Base_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Lead_Grammar_Check_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Lead_RTA_Extension_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Lead_c_Read_Create_Edit</permissionSets>
+    <permissionSets>MS_Team_Attendance_Interval_c_Read_Create_Edit</permissionSets>
+    <permissionSets>MS_Team_Call_Schedule_c_Read_Create_Edit</permissionSets>
+    <permissionSets>MS_Team_Meeting_Artifact_c_Read_Create_Edit</permissionSets>
+    <permissionSets>MS_Team_Meeting_Participant_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Message_Log_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Message_c_Read_Create_Edit</permissionSets>
+    <permissionSets>PPF_DHS_QA_VF_Apex_Access</permissionSets>
+    <permissionSets>PPF_Shipping_Information_c_Read_Create_Edit</permissionSets>
+    <permissionSets>ROI_Report_Order_c_Read_Create_Edit</permissionSets>
+    <permissionSets>TimeSheet_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Training_c_Read_Create_Edit</permissionSets>
+    <permissionSets>User_Read_Create_Edit</permissionSets>
+    <permissionSets>Waiver_Information_c_Read_Create_Edit</permissionSets>
+    <permissionSets>Workload_c_Read_Create_Edit</permissionSets>
+    <status>Updated</status>
+</PermissionSetGroup>
