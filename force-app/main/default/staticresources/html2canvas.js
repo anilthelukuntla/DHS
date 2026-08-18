@@ -1,1 +1,0 @@
-window.html2canvas = window.html2canvas || {};

@@ -1,1 +1,0 @@
-window.jspdf_umd = window.jspdf_umd || {};
