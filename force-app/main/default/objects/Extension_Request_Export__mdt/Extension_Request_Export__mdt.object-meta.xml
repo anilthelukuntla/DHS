@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>PM Extension Request Export</label>
-    <pluralLabel>PM Extension Request Exports</pluralLabel>
-    <visibility>Public</visibility>
-</CustomObject>

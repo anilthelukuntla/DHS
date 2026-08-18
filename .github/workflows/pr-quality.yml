@@ -128,11 +128,22 @@ jobs:
         id: apex-changes
         shell: bash
         run: |
+          apex_changed=false
           if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" \
             | grep -E '^force-app/main/default/(classes|triggers)/.*\.(cls|trigger)(-meta\.xml)?$'; then
+            apex_changed=true
+          fi
+
+          source_dirs=()
+          [ -d force-app/main/default/classes ] && source_dirs+=("--source-dir" "force-app/main/default/classes")
+          [ -d force-app/main/default/triggers ] && source_dirs+=("--source-dir" "force-app/main/default/triggers")
+
+          if [ "${apex_changed}" = "true" ] && [ "${#source_dirs[@]}" -gt 0 ]; then
             echo "apex_changed=true" >> "$GITHUB_OUTPUT"
+            printf 'source_dirs=%s\n' "${source_dirs[*]}" >> "$GITHUB_OUTPUT"
           else
             echo "apex_changed=false" >> "$GITHUB_OUTPUT"
+            echo "source_dirs=" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Skip Apex validation
@@ -204,8 +215,7 @@ jobs:
         run: |
           set -o pipefail
           sf project deploy validate \
-            --source-dir force-app/main/default/classes \
-            --source-dir force-app/main/default/triggers \
+            ${{ steps.apex-changes.outputs.source_dirs }} \
             --target-org TARGET_ORG \
             --test-level RunLocalTests \
             --wait 120 \
