@@ -78,10 +78,16 @@ jobs:
         id: apex-source
         shell: bash
         run: |
-          if [ -d force-app/main/default/classes ] || [ -d force-app/main/default/triggers ]; then
+          target_args=()
+          [ -d force-app/main/default/classes ] && target_args+=("--target" "force-app/main/default/classes")
+          [ -d force-app/main/default/triggers ] && target_args+=("--target" "force-app/main/default/triggers")
+
+          if [ "${#target_args[@]}" -gt 0 ]; then
             echo "has_apex_sources=true" >> "$GITHUB_OUTPUT"
+            printf 'target_args=%s\n' "${target_args[*]}" >> "$GITHUB_OUTPUT"
           else
             echo "has_apex_sources=false" >> "$GITHUB_OUTPUT"
+            echo "target_args=" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Skip Apex PMD
@@ -101,7 +107,7 @@ jobs:
         id: code-analyzer
         uses: forcedotcom/run-code-analyzer@v2
         with:
-          run-arguments: --workspace . --target force-app/main/default/classes --target force-app/main/default/triggers --rule-selector pmd --view detail --output-file sfca_results.html --output-file sfca_results.json
+          run-arguments: --workspace . ${{ steps.apex-source.outputs.target_args }} --rule-selector pmd --view detail --output-file sfca_results.html --output-file sfca_results.json
           results-artifact-name: salesforce-code-analyzer-results
           github-token: ${{ github.token }}
 
