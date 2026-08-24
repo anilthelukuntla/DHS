@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSDocumentRequestTriggerTest {
     @IsTest
     static void assignsExpirationAndProcessesRequest() {
@@ -23,6 +23,6 @@ private class DHSDocumentRequestTriggerTest {
             FROM DHS_Document_Request__c
             WHERE Id = :request.Id
         ];
-        System.assertNotEquals(null, request.Expiration_Date__c);
+        System.assertNotEquals(null, request.Expiration_Date__c, 'Expected the asserted condition to hold');
     }
 }

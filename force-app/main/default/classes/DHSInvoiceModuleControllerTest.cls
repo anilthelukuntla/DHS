@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
+
 private class DHSInvoiceModuleControllerTest {
     @IsTest
     static void fetchInvoiceRecordsUsesCompletedLeadsAndPaychexId() {
@@ -71,13 +71,13 @@ private class DHSInvoiceModuleControllerTest {
             Test.stopTest();
 
             System.assertEquals(1, controller.invoices.size(), 'Only completed, non-QA-rejected leads should be returned.');
-            System.assertEquals(1, controller.pageNumber);
-            System.assertEquals(1, controller.totalPages);
-            System.assertEquals(1, controller.totalRecordCount);
-            System.assertEquals(true, controller.disablePrev);
-            System.assertEquals(true, controller.disableNext);
+            System.assertEquals(1, controller.pageNumber, 'Expected the asserted condition to hold');
+            System.assertEquals(1, controller.totalPages, 'Expected the asserted condition to hold');
+            System.assertEquals(1, controller.totalRecordCount, 'Expected the asserted condition to hold');
+            System.assertEquals(true, controller.disablePrev, 'Expected the asserted condition to hold');
+            System.assertEquals(true, controller.disableNext, 'Expected the asserted condition to hold');
             DHS_Invoice__c row = controller.invoices[0];
-            System.assertNotEquals(null, row.Id);
+            System.assertNotEquals(null, row.Id, 'Expected the asserted condition to hold');
         }
     }
 
@@ -128,54 +128,54 @@ static void initializesControllerOptionsAndCycleDates() {
             new DHSInvoiceModuleController();
         Test.stopTest();
 
-        System.assertEquals(true, controller.isPMOUser);
-        System.assertEquals('DHS_All', controller.selectedUserOption);
-        System.assertEquals('DHS_All', controller.selectedWorkerId);
+        System.assertEquals(true, controller.isPMOUser, 'Expected the asserted condition to hold');
+        System.assertEquals('DHS_All', controller.selectedUserOption, 'Expected the asserted condition to hold');
+        System.assertEquals('DHS_All', controller.selectedWorkerId, 'Expected the asserted condition to hold');
 
-        System.assertEquals(1, controller.pageNumber);
-        System.assertEquals(1, controller.totalPages);
-        System.assertEquals(0, controller.totalRecordCount);
-        System.assertEquals(0, controller.currentRecordCount);
-        System.assertEquals(true, controller.disablePrev);
-        System.assertEquals(true, controller.disableNext);
+        System.assertEquals(1, controller.pageNumber, 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.totalPages, 'Expected the asserted condition to hold');
+        System.assertEquals(0, controller.totalRecordCount, 'Expected the asserted condition to hold');
+        System.assertEquals(0, controller.currentRecordCount, 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.disablePrev, 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.disableNext, 'Expected the asserted condition to hold');
 
-        System.assertEquals(4, controller.userTypeOptions.size());
+        System.assertEquals(4, controller.userTypeOptions.size(), 'Expected the asserted condition to hold');
         System.assertEquals(
             'DHS_All',
             controller.userTypeOptions[0].getValue()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'Employee',
             controller.userTypeOptions[1].getValue()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'SCA',
             controller.userTypeOptions[2].getValue()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'Non-SCA',
             controller.userTypeOptions[3].getValue()
-        );
+        , 'Expected the asserted condition to hold');
 
-        System.assertNotEquals(null, controller.workerOptions);
+        System.assertNotEquals(null, controller.workerOptions, 'Expected the asserted condition to hold');
         System.assertEquals(
             'DHS_All',
             controller.workerOptions[0].getValue()
-        );
+        , 'Expected the asserted condition to hold');
 
-        System.assertNotEquals(null, controller.cycleDates);
-        System.assertNotEquals(null, controller.cycleDateOptions);
+        System.assertNotEquals(null, controller.cycleDates, 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.cycleDateOptions, 'Expected the asserted condition to hold');
         System.assert(
             !controller.cycleDateOptions.isEmpty()
-        );
+        , 'Expected assertion condition to hold');
         System.assertEquals(
             '',
             controller.cycleDateOptions[0].getValue()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'All',
             controller.cycleDateOptions[0].getLabel()
-        );
+        , 'Expected the asserted condition to hold');
     }
 }
 
@@ -201,15 +201,15 @@ static void refreshesWorkerOptionsByCandidateType() {
         System.assertEquals(
             'DHS_All',
             controller.selectedWorkerId
-        );
-        System.assertNotEquals(null, controller.workerOptions);
+        , 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.workerOptions, 'Expected the asserted condition to hold');
         System.assert(
             !controller.workerOptions.isEmpty()
-        );
+        , 'Expected assertion condition to hold');
         System.assertEquals(
             'DHS_All',
             controller.workerOptions[0].getValue()
-        );
+        , 'Expected the asserted condition to hold');
     }
 }
 
@@ -235,11 +235,11 @@ static void refreshesAllWorkerOptions() {
         System.assertEquals(
             'DHS_All',
             controller.selectedWorkerId
-        );
-        System.assertNotEquals(null, controller.workerOptions);
+        , 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.workerOptions, 'Expected the asserted condition to hold');
         System.assert(
             !controller.workerOptions.isEmpty()
-        );
+        , 'Expected assertion condition to hold');
     }
 }
 
@@ -255,7 +255,7 @@ static void nonPMOUserCannotFetchInvoices() {
         DHSInvoiceModuleController controller =
             new DHSInvoiceModuleController();
 
-        System.assertEquals(false, controller.isPMOUser);
+        System.assertEquals(false, controller.isPMOUser, 'Expected the asserted condition to hold');
 
         /*
          * Set values first to verify FetchInvoiceRecords resets
@@ -272,14 +272,14 @@ static void nonPMOUserCannotFetchInvoices() {
         controller.FetchInvoiceRecords();
         Test.stopTest();
 
-        System.assertNotEquals(null, controller.invoices);
-        System.assertEquals(0, controller.invoices.size());
-        System.assertEquals(1, controller.pageNumber);
-        System.assertEquals(1, controller.totalPages);
-        System.assertEquals(0, controller.totalRecordCount);
-        System.assertEquals(0, controller.currentRecordCount);
-        System.assertEquals(true, controller.disablePrev);
-        System.assertEquals(true, controller.disableNext);
+        System.assertNotEquals(null, controller.invoices, 'Expected the asserted condition to hold');
+        System.assertEquals(0, controller.invoices.size(), 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.pageNumber, 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.totalPages, 'Expected the asserted condition to hold');
+        System.assertEquals(0, controller.totalRecordCount, 'Expected the asserted condition to hold');
+        System.assertEquals(0, controller.currentRecordCount, 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.disablePrev, 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.disableNext, 'Expected the asserted condition to hold');
     }
 }
 
@@ -307,19 +307,19 @@ static void fetchesUsingCycleDateFilter() {
         System.assertEquals(
             Date.today().addDays(-14),
             controller.cycleFilterDate
-        );
+        , 'Expected the asserted condition to hold');
         System.assertNotEquals(
             null,
             DHSInvoiceModuleController.criteria
-        );
+        , 'Expected the asserted condition to hold');
         System.assertNotEquals(
             null,
             controller.queryForNextRecords
-        );
-        System.assertEquals(1, controller.pageNumber);
+        , 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.pageNumber, 'Expected the asserted condition to hold');
         System.assert(
             controller.totalPages >= 1
-        );
+        , 'Expected assertion condition to hold');
     }
 }
 
@@ -343,15 +343,15 @@ static void fetchesUsingUserAndWorkerFilters() {
         controller.FetchInvoiceRecords();
         Test.stopTest();
 
-        System.assertEquals(null, controller.cycleFilterDate);
+        System.assertEquals(null, controller.cycleFilterDate, 'Expected the asserted condition to hold');
         System.assertNotEquals(
             null,
             DHSInvoiceModuleController.criteria
-        );
+        , 'Expected the asserted condition to hold');
         System.assertNotEquals(
             null,
             controller.queryForNextRecords
-        );
+        , 'Expected the asserted condition to hold');
 
         String serializedCriteria =
             String.valueOf(
@@ -360,10 +360,10 @@ static void fetchesUsingUserAndWorkerFilters() {
 
         System.assert(
             serializedCriteria.contains('Candidate_type__c')
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             serializedCriteria.contains(pmoUser.Id)
-        );
+        , 'Expected assertion condition to hold');
     }
 }
 
@@ -379,19 +379,19 @@ static void paginationMethodsHandleInvalidState() {
         DHSInvoiceModuleController controller =
             new DHSInvoiceModuleController();
 
-        System.assertEquals(null, controller.queryForNextRecords);
-        System.assertEquals(null, controller.firstRecordName);
-        System.assertEquals(null, controller.lastRecordName);
-        System.assertEquals(1, controller.pageNumber);
+        System.assertEquals(null, controller.queryForNextRecords, 'Expected the asserted condition to hold');
+        System.assertEquals(null, controller.firstRecordName, 'Expected the asserted condition to hold');
+        System.assertEquals(null, controller.lastRecordName, 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.pageNumber, 'Expected the asserted condition to hold');
 
         Test.startTest();
         controller.handlePrev();
         controller.handleNext();
         Test.stopTest();
 
-        System.assertEquals(1, controller.pageNumber);
-        System.assertEquals(true, controller.disablePrev);
-        System.assertEquals(true, controller.disableNext);
+        System.assertEquals(1, controller.pageNumber, 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.disablePrev, 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.disableNext, 'Expected the asserted condition to hold');
     }
 }
 
@@ -416,11 +416,11 @@ static void rebuildsCycleDateOptions() {
 
         System.assert(
             !controller.cycleDates.isEmpty()
-        );
+        , 'Expected assertion condition to hold');
         System.assertEquals(
             controller.cycleDates.size() + 1,
             controller.cycleDateOptions.size()
-        );
+        , 'Expected the asserted condition to hold');
 
         Date newestCycleDate = controller.cycleDates[
             controller.cycleDates.size() - 1
@@ -429,7 +429,7 @@ static void rebuildsCycleDateOptions() {
         System.assertEquals(
             String.valueOf(newestCycleDate),
             controller.cycleDateOptions[1].getValue()
-        );
+        , 'Expected the asserted condition to hold');
 
         String expectedLabel =
             String.valueOf(newestCycleDate.month()).leftPad(2, '0') +
@@ -441,7 +441,7 @@ static void rebuildsCycleDateOptions() {
         System.assertEquals(
             expectedLabel,
             controller.cycleDateOptions[1].getLabel()
-        );
+        , 'Expected the asserted condition to hold');
     }
 }
 

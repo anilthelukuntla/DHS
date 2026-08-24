@@ -1,20 +1,35 @@
-/** Controls DHS broadcast-message composition, display, and read tracking. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidDeeplyNestedIfStmts,PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Controls DHS broadcast-message composition, display, and read tracking.
+ */
+@SuppressWarnings('PMD.AvoidDeeplyNestedIfStmts,PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
 public with sharing class DHSMyMessagesController {
+    /** @description Provides this DHS API member. */
     public user currentUser{get;set;}
+    /** @description Provides this DHS API member. */
     public list<MessageRecord> messages{get;set;}
     public boolean showCurrentMessagePanel{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public String currentMessageId{get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Message__c currentMessage{get;set;} 
+    /** @description Provides this DHS API member. */
     public String messageBody{get;set;} 
+    /** @description Provides this DHS API member. */
     public String messageSubject{get;set;} 
+    /** @description Provides this DHS API member. */
     public Map<String,User> userMap {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> toAddressOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public string selecteToAddressOption {get;set;}
+    /** @description Provides this DHS API member. */
     public list<attachment> currentMessageAttachments{get;set;}
+    /** @description Provides this DHS API member. */
     public Integer unReadMessageCount{get;set;}
+    /** @description Provides this DHS API member. */
     public map<string,boolean> messageReadStatusMap {get;set;}
     
+    /** @description Provides this DHS API member. */
     public DHSMyMessagesController(){
         currentUser = [select id, firstname, lastname, email, user_type__c from User where id=:userinfo.getuserid() WITH USER_MODE];
         showCurrentMessagePanel = false;
@@ -27,6 +42,7 @@ public with sharing class DHSMyMessagesController {
         fetchMessages();
     }
     
+    /** @description Provides this DHS API member. */
     public void sendMessage(){
         List<User> toUsers = new List<User>();
         List<User> toUsersForMessageLogs = new List<User>();
@@ -109,6 +125,7 @@ public with sharing class DHSMyMessagesController {
         
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchCurrentMessageAction(){
         currentMessageAttachments = new list<attachment>();
         currentMessageAttachments = [Select id, parentid, Name, BodyLength  from attachment where parentid =: currentMessageId WITH USER_MODE];
@@ -139,6 +156,7 @@ public with sharing class DHSMyMessagesController {
         fetchMessages();
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchMessages(){
         messageReadStatusMap = new map<string,boolean>();
         messages = new list<MessageRecord>();
@@ -208,14 +226,23 @@ public with sharing class DHSMyMessagesController {
 
     }
     
+    /** @description Provides this DHS API member. */
     public class MessageRecord{
+        /** @description Provides this DHS API member. */
         public list<string> attachments{get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Message__c message{get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param attachments Method parameter.
+         * @param message Method parameter.
+         */
         public MessageRecord(list<string> attachments, DHS_Message__c message){
             this.attachments  = attachments;
             this.message = message;
         }
     }
+    /** @description Provides this DHS API member. */
     public void refreshAction(){
         fetchMessages();
     }

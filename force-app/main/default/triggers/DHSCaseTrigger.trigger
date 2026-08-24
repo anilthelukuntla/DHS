@@ -15,7 +15,7 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
             List<DHS_Lead__c> leadsToUpdate = new List<DHS_Lead__c>();
             leadsToUpdate = [Select Id, Status__c, DHS_Case__c, Lead_Status_Before_Discont__c from DHS_Lead__c WHERE DHS_Case__c in:caseIdsToConsiderForDiscontinuation]; // NOPMD - Legacy trigger behavior retained for compatibility.
             for(DHS_Lead__c l:leadsToUpdate){
-                if(discontinuationCasesMap.get(l.DHS_Case__c).Case_Discontinued__c){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(discontinuationCasesMap.get(l.DHS_Case__c).Case_Discontinued__c){
                    l.Lead_Status_Before_Discont__c = l.Status__c; 
                    l.Status__c = 'Discontinued';
                 }else{
@@ -23,7 +23,7 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
                    l.Lead_Status_Before_Discont__c = Null;
                 }
             }
-            update leadsToUpdate; // NOPMD - Legacy trigger behavior retained for compatibility.
+            Database.update(leadsToUpdate, AccessLevel.USER_MODE);
         }
     
     }
@@ -52,7 +52,7 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
         for(DHS_Contact__c con: contacts){
             con.Run_Credit_Report__c = true;
         }
-        update contacts; // NOPMD - Legacy trigger behavior retained for compatibility.
+        Database.update(contacts, AccessLevel.USER_MODE);
     } 
     
     if(trigger.isBefore && trigger.isUpdate){ 
@@ -61,8 +61,8 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
                 User assignee = [Select Id,Firstname,lastname,Email from user where id=:c.DHS_Assigned_To__c]; // NOPMD - Legacy trigger behavior retained for compatibility.
                 List<string> toAddress = new List<string>();
                 toAddress.add(assignee.Email);
-                System.debug('toAddress..'+toAddress); // NOPMD - Legacy trigger behavior retained for compatibility.
-                if(!test.isRunningTest()){ // NOPMD - Legacy trigger behavior retained for compatibility.
+
+                if(!test.isRunningTest()){
                     String subject = 'New Case assigned';
                     String body = 'Dear '+assignee.FirstName+' '+assignee.FirstName+',<br/><br/>';
                     body = body+ 'A new case has been assigned to you. Please log into the case management system and process by case due date.<br/><br/>';
@@ -81,16 +81,16 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
                 c.Case_Queue_Status__c = 'Completed';
                 c.Case_Completed_Date__c = system.today();
             }
-            System.debug('c.Scheduled_Date__c...'+c.Scheduled_Date__c); // NOPMD - Legacy trigger behavior retained for compatibility.
+
             if(c.Scheduled_Date__c != Null){
                 Integer numberOfDays = System.TODAY().daysBetween(c.Scheduled_Date__c);
-                System.debug('NumberOfDays...'+numberOfDays); // NOPMD - Legacy trigger behavior retained for compatibility.
-                System.debug('c.Service_Days__c....outside'+c.Service_Days__c); // NOPMD - Legacy trigger behavior retained for compatibility.
-                System.debug('c.Case_Type__c....outside'+c.Case_Type__c); // NOPMD - Legacy trigger behavior retained for compatibility.
+
+
+
                 String colorCode;
-                IF(c.Case_Type__c == 'Tier 5'){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                IF(c.Case_Type__c == 'Tier 5'){
                     if(c.Service_Days__c == '40'){
-                        System.debug('c.Service_Days__c....inside'+c.Service_Days__c); // NOPMD - Legacy trigger behavior retained for compatibility.
+
                         if(numberOfDays < 15){
                             colorCode = '#90cf55';
                         }else if(numberOfDays>=15 && numberOfDays <22){
@@ -161,6 +161,6 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
     }
 
     if(!caseHistoriesToInsert.isEmpty()){
-        insert caseHistoriesToInsert; // NOPMD - Legacy trigger behavior retained for compatibility.
+        Database.insert(caseHistoriesToInsert, AccessLevel.USER_MODE);
     } 
 }

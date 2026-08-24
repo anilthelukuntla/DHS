@@ -1,5 +1,5 @@
 @istest
-@SuppressWarnings('PMD.AnnotationsNamingConventions,PMD.ApexUnitTestClassShouldHaveAsserts,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.UnusedLocalVariable')
+@SuppressWarnings('PMD.AnnotationsNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSOrderROIReportControllerTest {
     @IsTest private static void testOrderROIReportController(){ 
         DHS_Case__c casesCreated = new DHS_Case__c();
@@ -24,6 +24,6 @@ public class DHSOrderROIReportControllerTest {
         rOIReport2.getParameters().put('id',casesCreated.id);
         rOIReport2.getParameters().put('sequenceid',roiOrder.id);
         rOIReport2.getParameters().put('download','true');
-        DHSROIReportControllerV2 roictrl = new DHSROIReportControllerV2 ();
+        DHSROIReportControllerV2 roictrl = new DHSROIReportControllerV2 (); System.assertNotEquals(null, roictrl, 'Expected roictrl to be initialized');
     }
 }

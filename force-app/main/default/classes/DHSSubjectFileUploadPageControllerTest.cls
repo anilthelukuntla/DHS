@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSSubjectFileUploadPageControllerTest {
     @IsTest
     static void readsCaseIdFromPageParameter() {
@@ -9,8 +9,8 @@ private class DHSSubjectFileUploadPageControllerTest {
         DHSSubjectFileUploadPageController pageController =
             new DHSSubjectFileUploadPageController();
 
-        System.assertEquals(UserInfo.getUserId(), pageController.caseId);
-        System.assertEquals(pageController.caseId, pageController.caseRecordIDforDocUpload);
+        System.assertEquals(UserInfo.getUserId(), pageController.caseId, 'Expected the asserted condition to hold');
+        System.assertEquals(pageController.caseId, pageController.caseRecordIDforDocUpload, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -26,7 +26,7 @@ private class DHSSubjectFileUploadPageControllerTest {
         DHSSubjectFileUploadPageController pageController =
             new DHSSubjectFileUploadPageController(standardController);
 
-        System.assertNotEquals(null, pageController);
+        System.assertNotEquals(null, pageController, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -63,13 +63,13 @@ private class DHSSubjectFileUploadPageControllerTest {
             WHERE DHS_Case__c = :caseRecord.Id
             LIMIT 1
         ];
-        System.assertEquals(null, result);
-        System.assertEquals('subject-document.txt', document.Name__c);
+        System.assertEquals(null, result, 'Expected the asserted condition to hold');
+        System.assertEquals('subject-document.txt', document.Name__c, 'Expected the asserted condition to hold');
         System.assertEquals(1, [
             SELECT COUNT()
             FROM Attachment
             WHERE ParentId = :document.Id
             AND Name = 'subject-document.txt'
-        ]);
+        ], 'Expected the asserted condition to hold');
     }
 }

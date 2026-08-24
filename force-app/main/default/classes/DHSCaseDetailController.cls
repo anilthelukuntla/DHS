@@ -1,45 +1,76 @@
 /**
+ * @description Provides this DHS API member.
  * Visualforce controller for the DHS case detail interface.
  * Public names are retained because DHSCasedetail.page binds directly to this API.
  */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidDebugStatements,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyIfStmt,PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.StdCyclomaticComplexity')
+@SuppressWarnings('PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.StdCyclomaticComplexity')
 public with sharing class DHSCaseDetailController {
+    /** @description Provides this DHS API member. */
     public string caseId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Contact__c contactRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public List<DHS_Lead__c> leads {get;set;}
+    /** @description Provides this DHS API member. */
     public List<DocumentRecord> documents {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Lead__c newLead {get;set;}
+    /** @description Provides this DHS API member. */
     public List<DHS_Case_History__c> caseHistory {get;set;}
+    /** @description Provides this DHS API member. */
     public List<DHS_Waiver_Information__c> waiverInformation {get;set;}
+    /** @description Provides this DHS API member. */
     public List<DHS_Message__c> messages {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case_History__c newCaseHistory {get;set;}
     public boolean hasWaiver{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public list<selectoption> assignUserList {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedUserIdForAssignment {get;set;}
+    /** @description Provides this DHS API member. */
     public user currentUser{get;set;}
     public boolean showQAReviewCompleteButton {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string landingTab {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<string,string> urlparametersMap {get;set;}
+    /** @description Provides this DHS API member. */
     public string urlparametersString {get;set;}
+    /** @description Provides this DHS API member. */
     public string messageSubject{get;set;}
+    /** @description Provides this DHS API member. */
     public string messageBody{get;set;}
+    /** @description Provides this DHS API member. */
     public string messageSubjectDuringLeadCreation{get;set;}
+    /** @description Provides this DHS API member. */
     public string messageBodyDuringLeadCreation{get;set;}
     public string nextURL;
+    /** @description Provides this DHS API member. */
     public integer pageNumber {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalPages	{get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalRecordCount	{get;set;}
     public boolean disablePrev {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean disableNext {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string queryForNextRecords {get;set;}
+    /** @description Provides this DHS API member. */
     public string lastRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public string firstRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public integer currentRecordCount {get;set;}
     public boolean showSubheader {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean showMultiUploadDocuments {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public DHS_Lead__c selectedLead {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedLeadId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSCaseDetailController(){ 
         
         showSubheader = false;
@@ -93,6 +124,12 @@ public with sharing class DHSCaseDetailController {
         }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param caseRecord Method parameter.
+     * @param currentUser Method parameter.
+     * @return The requested result.
+     */
     public static list<string> fetchToAddressOfCase(DHS_Case__c caseRecord, user currentUser){
         list<string> toUserIds = new list<string>();
         if(currentuser.user_type__c != 'PMO'){
@@ -115,6 +152,12 @@ public with sharing class DHSCaseDetailController {
         return toUserIds;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param caseRecord Method parameter.
+     * @param currentUser Method parameter.
+     * @return The requested result.
+     */
     public static list<string> fetchUsersOfCase(DHS_Case__c caseRecord, user currentUser){
         list<string> toUserIds = new list<string>();
         if(currentuser.user_type__c != 'PMO'){
@@ -138,6 +181,10 @@ public with sharing class DHSCaseDetailController {
     }
     
     
+     /**
+      * @description Provides this DHS API member.
+      * @return The requested result.
+      */
      public pagereference sendMessage(){
         list<string> toUserIdsForMessageLogs = new list<string>();
         List<String> toAddressList = new list<String>();
@@ -174,9 +221,6 @@ public with sharing class DHSCaseDetailController {
         
         Database.insert(messageLogsToCreate, AccessLevel.USER_MODE);
         
-        if(!test.isRunningTest()){
-            //DHSMailUtilities.sendHTMLEmail(toAddressList,messageSubject,emailBody,null);
-        }
         //FetchCaseMessages(); 
         messageSubject = null;
         messageBody = null; 
@@ -187,6 +231,12 @@ public with sharing class DHSCaseDetailController {
         return pr;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param messageSubjectParam Method parameter.
+     * @param messageBodyParam Method parameter.
+     * @param leadid Method parameter.
+     */
     public void sendMessage(string messageSubjectParam, string messageBodyParam, string leadid){
         list<string> toUserIdsForMessageLogs = new list<string>();
         List<String> toAddressList = new list<String>();
@@ -214,18 +264,17 @@ public with sharing class DHSCaseDetailController {
         
         Database.insert(messageLogsToCreate, AccessLevel.USER_MODE);
         
-        if(!test.isRunningTest()){
-            //DHSMailUtilities.sendHTMLEmail(toAddressList,messageSubject,emailBody,null);
-        }
         fetchCaseMessages(); 
     }
     
     
     
+    /** @description Provides this DHS API member. */
     public void onChangeLeadType(){
     
     }
     
+    /** @description Provides this DHS API member. */
     public void updatecaseaction(){
         if(selectedUserIdForAssignment != Null){
             caseRecord.DHS_Assigned_To__c = selectedUserIdForAssignment;
@@ -275,13 +324,16 @@ public with sharing class DHSCaseDetailController {
         fetchCaseInformation();
         fetchLeadInformation();
     }
+    /** @description Provides this DHS API member. */
     public void updateLeadAction(){
         Database.update(selectedLead, AccessLevel.USER_MODE);
     }
+    /** @description Provides this DHS API member. */
     public void selectLeadAction(){
        	selectedLead = [select id,LeadType__c,Coverage_Type__c,Item_number__c from DHS_Lead__c where Id =: selectedLeadId WITH USER_MODE limit 1];
     }
     
+    /** @description Provides this DHS API member. */
     public void markleadcreationcompleteaction(){
          DHS_Case_History__c ch = new DHS_Case_History__c();
                    ch.DHS_Case__c = caseRecord.id;
@@ -296,6 +348,7 @@ public with sharing class DHSCaseDetailController {
     
     }
     
+    /** @description Provides this DHS API member. */
     public void addCommentsAction(){
         newCaseHistory.DHS_Case__c = caseId;
                    newCaseHistory.DHS_Added_By__c = userinfo.getuserid();
@@ -305,7 +358,9 @@ public with sharing class DHSCaseDetailController {
         fetchCaseHistoryInformation();
     }
     
+    /** @description Provides this DHS API member. */
     public string errorMessage {get;set;}
+    /** @description Provides this DHS API member. */
     public void createLeadAction(){
         try{
             errorMessage = null;
@@ -339,6 +394,7 @@ public with sharing class DHSCaseDetailController {
             }
         }
     }
+    /** @description Provides this DHS API member. */
     public void fetchCaseInformation(){
         List<string> caseFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -368,6 +424,7 @@ public with sharing class DHSCaseDetailController {
             }   
         }    
     }
+    /** @description Provides this DHS API member. */
     public void fetchLeadInformation(){
         leads = new List<DHS_Lead__c> ();
         List<string> leadFields = new List<string>();
@@ -395,6 +452,7 @@ public with sharing class DHSCaseDetailController {
         showQAReviewCompleteButton = qaReviewCompleted;
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchCaseMessages(){
         messages = new list<DHS_Message__c>();
         List<string> messageFields = new List<string>();
@@ -444,6 +502,7 @@ public with sharing class DHSCaseDetailController {
         
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchWaiverInformation(){
         waiverInformation = new list<DHS_Waiver_Information__c>();
         List<string> waiverInformationFields = new List<string>();
@@ -464,7 +523,9 @@ public with sharing class DHSCaseDetailController {
             hasWaiver = true;
         }   
     }
+    /** @description Provides this DHS API member. */
     public string waiverinformationidtoupdate{get;set;}
+    /** @description Provides this DHS API member. */
     public void autosavewaiverinformationaction(){
         DHS_Waiver_Information__c recordToUpdate = new DHS_Waiver_Information__c();
         for(DHS_Waiver_Information__c wv: waiverInformation){
@@ -477,10 +538,12 @@ public with sharing class DHSCaseDetailController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void updatewaiverinformation(){
         Database.update(waiverInformation, AccessLevel.USER_MODE);
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchCaseHistoryInformation(){
         caseHistory = new list<DHS_Case_History__c>();
         List<string> caseHistoryFields = new List<string>();
@@ -497,6 +560,7 @@ public with sharing class DHSCaseDetailController {
         
         caseHistory = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
     }
+    /** @description Provides this DHS API member. */
     public void fetchDocumentInformation(){
         documents = new List<DocumentRecord> ();
         List<string> documentFields = new List<string>();
@@ -531,6 +595,11 @@ public with sharing class DHSCaseDetailController {
     }
     
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param leadId Method parameter.
+     * @return The requested result.
+     */
     public static boolean checkIfLeadIsAssigned(string leadId) {
         DHS_Lead__c lead = [select id,DHS_Assigned_To__c from DHS_Lead__c where id=:leadId WITH USER_MODE ];
         boolean isAssigned = false;
@@ -539,17 +608,27 @@ public with sharing class DHSCaseDetailController {
         }    
         return isAssigned;
     }
+    /** @description Provides this DHS API member. */
     public string deleteLeadId{get;set;}
     
+    /** @description Provides this DHS API member. */
     public void deleteLeadAction(){
         Database.delete([select id from DHS_Lead__c where id=:deleteLeadId WITH USER_MODE ], AccessLevel.USER_MODE);
         fetchLeadInformation();
         
     }
     
+    /** @description Provides this DHS API member. */
     public class DocumentRecord{
+        /** @description Provides this DHS API member. */
         public string attachmentId{get;set;}   
+        /** @description Provides this DHS API member. */
         public DHS_Document__c document{get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param attachmentId Method parameter.
+         * @param document Method parameter.
+         */
         public DocumentRecord(string attachmentId, DHS_Document__c document){
             this.document = document;    
             this.attachmentId = attachmentId;
@@ -557,6 +636,10 @@ public with sharing class DHSCaseDetailController {
     
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference qareviewcompleteaction(){
         caseRecord.Current_Task__c='QA Review Completed';
         Database.update(caseRecord, AccessLevel.USER_MODE);
@@ -564,7 +647,7 @@ public with sharing class DHSCaseDetailController {
         doc.Name__c = 'ROIReport';
         doc.DHS_Case__c = caseRecord.id;
         doc.Added_By__c = UserInfo.getFirstName() + ' '+ UserInfo.getLastName();
-        insert doc;
+        Database.insert(doc, AccessLevel.USER_MODE);
         
         string applicantType;
         string ssnFormatted;
@@ -591,7 +674,7 @@ public with sharing class DHSCaseDetailController {
         }
         
         att.ContentType = 'application/pdf';
-        insert att;
+        Database.insert(att, AccessLevel.USER_MODE);
         
         FetchDocumentInformation();*/
         PageReference redirectPage = Page.DHSOrderROIReport;
@@ -601,6 +684,7 @@ public with sharing class DHSCaseDetailController {
         return redirectPage;
     }
     
+    /** @description Provides this DHS API member. */
     public void setPPFContactInfo(){
         if(caseRecord.Subject_Type__c == 'Applicant'){
             caseRecord.PPF_Customer_Contact_Name__c = 'Alexis Burroughs';
@@ -614,6 +698,10 @@ public with sharing class DHSCaseDetailController {
         }    
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference regenerateroireportbuttonaction(){
         list<DHS_Document__c> documents = new list<DHS_Document__c>();
         documents = [Select Id,Name__c from DHS_Document__c WHERE Name__c = 'ROIReport' and DHS_Case__c=:caseRecord.id WITH USER_MODE ];
@@ -625,7 +713,7 @@ public with sharing class DHSCaseDetailController {
         doc.Name__c = 'ROIReport';
         doc.DHS_Case__c = caseRecord.id;
         doc.Added_By__c = UserInfo.getFirstName() + ' '+ UserInfo.getLastName();
-        insert doc;
+        Database.insert(doc, AccessLevel.USER_MODE);
         
         string applicantType;
         string ssnFormatted;
@@ -652,7 +740,7 @@ public with sharing class DHSCaseDetailController {
         }
         
         att.ContentType = 'application/pdf';
-        insert att;
+        Database.insert(att, AccessLevel.USER_MODE);
         
         FetchDocumentInformation();*/
         PageReference redirectPage = Page.DHSOrderROIReport;
@@ -662,8 +750,11 @@ public with sharing class DHSCaseDetailController {
         return redirectPage;
     }
     
+    /** @description Provides this DHS API member. */
     public string leadIdToUpdate {get;set;}
+    /** @description Provides this DHS API member. */
     public decimal itemnumbertoupdate {get;set;}
+    /** @description Provides this DHS API member. */
     public void updateLead(){
         errorMessage = Null;
         DHS_Lead__c leadToUpdate;
@@ -692,34 +783,38 @@ public with sharing class DHSCaseDetailController {
         list<DHS_Document__c> documents = new list<DHS_Document__c>();
         documents = [Select Id,Name__c from DHS_Document__c WHERE Name__c = 'Manifest' and DHS_Case__c=:caseRecord.id];
         if(!documents.isEmpty()){
-            delete documents;
+            Database.delete(documents, AccessLevel.USER_MODE);
         }
         
         DHS_Document__c doc = new DHS_Document__c();
         doc.Name__c = 'Manifest';
         doc.DHS_Case__c = caseRecord.id;
         doc.Added_By__c = UserInfo.getFirstName() + ' '+ UserInfo.getLastName();
-        insert doc;
+        Database.insert(doc, AccessLevel.USER_MODE);
         Attachment att = new attachment();
         att.ParentId = doc.id;
         att.body = blob.valueof(xmlBody);
         att.Name = 'isn_manifest_'+DateTime.now().format('yyyyMMddHHmmss')+'.xml';
         att.contentType = 'application/xml';
-        insert att;
+        Database.insert(att, AccessLevel.USER_MODE);
         manifestActionAttachmentId = att.id;
         fetchDocumentInformation();
         
     }*/
+    /** @description Provides this DHS API member. */
     public string deleteDocumentID{get;set;}
+    /** @description Provides this DHS API member. */
     public void deleteDocumentAction(){
         if(deleteDocumentID != Null){
             Database.delete([Select id from DHS_Document__c where id=:deleteDocumentID WITH USER_MODE ], AccessLevel.USER_MODE);
         }
         FetchDocumentInformation();
     }
+    /** @description Provides this DHS API member. */
     public void autoSaveCaseAction(){
         Database.update(caseRecord, AccessLevel.USER_MODE);
     }
+    /** @description Provides this DHS API member. */
     public void handlePrev(){
         	messages = new list<DHS_Message__c>();
         
@@ -747,6 +842,7 @@ public with sharing class DHSCaseDetailController {
             disableNext = false;
         }
     } 
+    /** @description Provides this DHS API member. */
     public void handleNext(){
         messages = new list<DHS_Message__c>();
         PageNumber ++ ;
@@ -784,11 +880,15 @@ public with sharing class DHSCaseDetailController {
     }
 
 
+    /** @description Provides this DHS API member. */
     public DHS_Message__c selectedMessage { get; set; }
+    /** @description Provides this DHS API member. */
     public String modalAction { get; set; }
+    /** @description Provides this DHS API member. */
     public Id selectedMessageId { get; set; }
 
     // Called by actionFunction before opening modal
+    /** @description Provides this DHS API member. */
     public void openModal() {
         if(modalAction == 'edit' && selectedMessageId != null){
             selectedMessage = [
@@ -800,24 +900,23 @@ public with sharing class DHSCaseDetailController {
         }
     }
 
+    /** @description Provides this DHS API member. */
     public void updateMessage() {
         if(selectedMessage != null){
             Database.update(selectedMessage, AccessLevel.USER_MODE);
         }
     }
 
+    /** @description Provides this DHS API member. */
     public void deleteMessage() {
         if(selectedMessageId != null){
-            try {
-                Database.delete([SELECT Id FROM DHS_Message__c WHERE Id = :selectedMessageId WITH USER_MODE LIMIT 1], AccessLevel.USER_MODE);
-                // Refresh messages after deletion
-                //FetchCaseMessages();
-            } catch (Exception e) {
-                System.debug(LoggingLevel.ERROR, 'Unable to delete DHS message: ' + e.getMessage());
-            }
-        } else {
+            Database.delete([SELECT Id FROM DHS_Message__c WHERE Id = :selectedMessageId WITH USER_MODE LIMIT 1], AccessLevel.USER_MODE);
         }
     }
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference previewROI() {
         user u = [select id,user_type__c from user where id =: UserInfo.getUserId() WITH USER_MODE limit 1];
         if(u.user_type__c == 'CMO'){

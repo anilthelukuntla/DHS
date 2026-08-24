@@ -1,18 +1,28 @@
-/** Visualforce controller for locating and downloading DHS case deliverables. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection')
+/**
+ * @description Visualforce controller for locating and downloading DHS case deliverables.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection')
 Public with sharing class DHSDownloadDeliverablesController{
+    /** @description Provides this DHS API member. */
     public string caseNumberToSearch {get;set;}
+    /** @description Provides this DHS API member. */
     public date fromDate {get;set;}
+    /** @description Provides this DHS API member. */
     public date toDate {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public list<CaseAttachment> caseAttachments {Get;set;}
+    /** @description Provides this DHS API member. */
     public string errorMessage {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSDownloadDeliverablesController(){
         errorMessage = Null;
         showTable = false;
        
     }
     public boolean showTable{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public void searchAction(){
         if(String.isNotBlank(caseNumberToSearch)){
             caseAttachments = new list<CaseAttachment> ();
@@ -20,6 +30,10 @@ Public with sharing class DHSDownloadDeliverablesController{
             fetchCaseInformation(caseNumberToSearch);  
         }    
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param caseNumber Method parameter.
+     */
     public void fetchCaseInformation(string caseNumber){
     showTable = false;
         List<string> caseFields = new List<string>();
@@ -52,6 +66,10 @@ Public with sharing class DHSDownloadDeliverablesController{
         } 
           
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     */
     public void fetchDocumentInformation(string caseId){
         List<string> documentFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -81,9 +99,17 @@ Public with sharing class DHSDownloadDeliverablesController{
         }
     }
     
+    /** @description Provides this DHS API member. */
     public class CaseAttachment{
+        /** @description Provides this DHS API member. */
         public string label {get;set;}
+        /** @description Provides this DHS API member. */
         public attachment attachment {get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param label Method parameter.
+         * @param att Method parameter.
+         */
         public CaseAttachment(string label, attachment att){
             this.label = label;
             this.attachment = att;

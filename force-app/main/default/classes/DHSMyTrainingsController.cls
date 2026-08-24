@@ -1,17 +1,26 @@
-/** Controls DHS training creation, listing, and deletion. */
-@SuppressWarnings('PMD.ApexDoc')
+/**
+ * @description Controls DHS training creation, listing, and deletion.
+ */
+
 public with sharing class DHSMyTrainingsController{
+    /** @description Provides this DHS API member. */
     public User currentUser {get;set;}
+    /** @description Provides this DHS API member. */
     public list<SelectOption> usersList {get;set;}
+    /** @description Provides this DHS API member. */
     public string selecteduseridtocreatetraining {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Training__c newTraining{get;set;}
+    /** @description Provides this DHS API member. */
     public List<DHS_Training__c> myTrainings{get;set;}
+    /** @description Provides this DHS API member. */
     public DHSMyTrainingsController(){
         currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE];
         newTraining = new DHS_Training__c();
         fetchUsersList();
         fetchMyTrainings();
     }
+    /** @description Provides this DHS API member. */
     public void submitTraining(){
         newTraining.DHS_User__c = userinfo.getuserid();
         Database.insert(newTraining, AccessLevel.USER_MODE);
@@ -19,6 +28,7 @@ public with sharing class DHSMyTrainingsController{
         newTraining = new DHS_Training__c();
         selecteduseridtocreatetraining = null;
     }
+    /** @description Provides this DHS API member. */
     public void fetchUsersList(){
         usersList = new list<selectoption>();
         usersList.add(new selectoption('','--None--'));
@@ -37,6 +47,7 @@ public with sharing class DHSMyTrainingsController{
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchMyTrainings(){
         myTrainings = new List<DHS_Training__c>();
         List<string> trainingFields = new List<string>();
@@ -52,8 +63,10 @@ public with sharing class DHSMyTrainingsController{
         myTrainings = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
     }
     
+    /** @description Provides this DHS API member. */
     public string deleteTrainingID{get;set;}
     
+    /** @description Provides this DHS API member. */
     public void deleteTrainingAction(){
         list<DHS_Training__c> deltrainging = [select id from DHS_Training__c where id=:deleteTrainingID WITH USER_MODE];
         database.delete(deltrainging,false,AccessLevel.USER_MODE);

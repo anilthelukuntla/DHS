@@ -1,14 +1,21 @@
-/** Authenticates subject access before DHS document upload. */
-@SuppressWarnings('PMD.ApexDoc,PMD.UnusedMethod')
+/**
+ * @description Authenticates subject access before DHS document upload.
+ */
+@SuppressWarnings('PMD.UnusedMethod')
 public without sharing class DHSSubjectFileUploadAuthPageController {
+    /** @description Provides this DHS API member. */
     public string caseId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Contact__c contactRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public string ssnUserInput{get;set;
         
     }
     public boolean showsuccessfailuremessage{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean isAuthenticatedSuccess {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public DHSSubjectFileUploadAuthPageController(){
     	String requestedCaseId = apexpages.currentpage().getparameters().get('id');
         caseId = String.isBlank(requestedCaseId)
@@ -18,6 +25,10 @@ public without sharing class DHSSubjectFileUploadAuthPageController {
         isAuthenticatedSuccess = false;
         showsuccessfailuremessage =false;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public pagereference authMethod(){
         String contactSSNlast4characters = contactRecord.SSN__c.right(4);
         if(contactSSNlast4characters == ssnUserInput){
@@ -72,6 +83,7 @@ public without sharing class DHSSubjectFileUploadAuthPageController {
          return afterblob.toString();
         
     }
+    /** @description Provides this DHS API member. */
     public void fetchCaseInformation(){
         List<string> caseFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();

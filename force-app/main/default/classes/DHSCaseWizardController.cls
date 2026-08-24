@@ -1,16 +1,29 @@
-/** Visualforce controller for creating DHS cases and searching DHS subjects. */
-@SuppressWarnings('PMD.ApexDoc')
+/**
+ * @description Visualforce controller for creating DHS cases and searching DHS subjects.
+ */
+
 public with sharing class DHSCaseWizardController {
+    /** @description Provides this DHS API member. */
     public DHS_Contact__c newSubject{get;set;}
+    /** @description Provides this DHS API member. */
     public string subjectFirstNameSearchEntry {Get;set;}
+    /** @description Provides this DHS API member. */
     public string subjectLastNameSearchEntry {Get;set;}
+    /** @description Provides this DHS API member. */
     public string subjectEmailSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
     public list<SubjectRecord> subjectsSearched {Get;set;}
+    /** @description Provides this DHS API member. */
     public boolean showsubjectspanel{ get; private set; }
+    /** @description Provides this DHS API member. */
     public DHSCaseWizardController(){
         newSubject = new DHS_Contact__c();
         showsubjectspanel = false;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public pagereference createNewSubjectAction(){
         database.insert(newSubject,false,AccessLevel.USER_MODE);
         DHS_Case__c newCase = new DHS_Case__c();
@@ -23,6 +36,7 @@ public with sharing class DHSCaseWizardController {
         return redirectPage; 
     }
     
+     /** @description Provides this DHS API member. */
      public void searchSubjectsAction(){
         List<DHS_Contact__c> subjects= new List<DHS_Contact__c>(); 
         subjectsSearched = new  list<SubjectRecord> ();
@@ -53,15 +67,25 @@ public with sharing class DHSCaseWizardController {
         showsubjectspanel = true;
     }
     
+    /** @description Provides this DHS API member. */
     public class SubjectRecord{
         public boolean isSelected{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+        /** @description Provides this DHS API member. */
         public DHS_Contact__c subject{get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param subject Method parameter.
+         */
         public SubjectRecord(DHS_Contact__c subject){
             this.subject = subject;   
             this.isSelected = false;
         }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public pagereference createCaseAction(){
         DHS_Case__c newCase= new DHS_Case__c();
         for(SubjectRecord sub: subjectsSearched){
@@ -80,6 +104,11 @@ public with sharing class DHSCaseWizardController {
     }
     
      @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param subjectId Method parameter.
+     * @return The requested result.
+     */
     public static boolean checkIfCaseExists(string subjectId) {
         list<DHS_Case__c> cases = [select id,Case_Queue_Status__c,DHS_Contact__c from DHS_Case__c where DHS_Contact__c=:subjectId and Case_Queue_Status__c != 'Closed'  WITH USER_MODE];
         boolean hasCases = false;

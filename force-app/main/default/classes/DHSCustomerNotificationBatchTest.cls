@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSCustomerNotificationBatchTest {
     @IsTest
     static void exportsCasesCompletedToday() {
@@ -22,9 +22,9 @@ private class DHSCustomerNotificationBatchTest {
             SELECT Status, NumberOfErrors, JobItemsProcessed
             FROM AsyncApexJob WHERE Id = :jobId
         ];
-        System.assertEquals('Completed', job.Status);
-        System.assertEquals(0, job.NumberOfErrors);
-        System.assertEquals(1, job.JobItemsProcessed);
+        System.assertEquals('Completed', job.Status, 'Expected the asserted condition to hold');
+        System.assertEquals(0, job.NumberOfErrors, 'Expected the asserted condition to hold');
+        System.assertEquals(1, job.JobItemsProcessed, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -33,6 +33,6 @@ private class DHSCustomerNotificationBatchTest {
         System.assertEquals(
             1,
             [SELECT COUNT() FROM AsyncApexJob WHERE JobType = 'BatchApex']
-        );
+        , 'Expected the asserted condition to hold');
     }
 }

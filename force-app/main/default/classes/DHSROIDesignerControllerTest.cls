@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.ApexUnitTestClassShouldHaveAsserts,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ExcessiveParameterList')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ExcessiveParameterList')
 private class DHSROIDesignerControllerTest {
 
     @TestSetup
@@ -65,21 +65,21 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals('Case Number', field.label);
+        System.assertEquals('Case Number', field.label, 'Expected the asserted condition to hold');
         System.assertEquals(
             'DHS_Case__c.Case_Number__c',
             field.value
-        );
-        System.assertEquals('case', field.scope);
+        , 'Expected the asserted condition to hold');
+        System.assertEquals('case', field.scope, 'Expected the asserted condition to hold');
 
-        System.assertEquals(null, caseOption.value);
-        System.assertEquals('Test Case', caseOption.label);
+        System.assertEquals(null, caseOption.value, 'Expected the asserted condition to hold');
+        System.assertEquals('Test Case', caseOption.label, 'Expected the asserted condition to hold');
 
-        System.assertEquals('General', picklist.label);
+        System.assertEquals('General', picklist.label, 'Expected the asserted condition to hold');
         System.assertEquals(
             'General (GENL)',
             picklist.value
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -91,7 +91,7 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, fields);
+        System.assertNotEquals(null, fields, 'Expected the asserted condition to hold');
         System.assert(
             !fields.isEmpty(),
             'Accessible merge fields should be returned.'
@@ -105,9 +105,9 @@ private class DHSROIDesignerControllerTest {
             DHSROIDesignerController.FieldOption field :
             fields
         ) {
-            System.assertNotEquals(null, field.label);
-            System.assertNotEquals(null, field.value);
-            System.assertNotEquals(null, field.scope);
+            System.assertNotEquals(null, field.label, 'Expected the asserted condition to hold');
+            System.assertNotEquals(null, field.value, 'Expected the asserted condition to hold');
+            System.assertNotEquals(null, field.scope, 'Expected the asserted condition to hold');
 
             if (field.value.startsWith('DHS_Case__c.')) {
                 caseFieldFound = true;
@@ -122,9 +122,9 @@ private class DHSROIDesignerControllerTest {
             }
         }
 
-        System.assertEquals(true, caseFieldFound);
-        System.assertEquals(true, contactFieldFound);
-        System.assertEquals(true, leadFieldFound);
+        System.assertEquals(true, caseFieldFound, 'Expected the asserted condition to hold');
+        System.assertEquals(true, contactFieldFound, 'Expected the asserted condition to hold');
+        System.assertEquals(true, leadFieldFound, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -136,20 +136,20 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals(1, results.size());
+        System.assertEquals(1, results.size(), 'Expected the asserted condition to hold');
         System.assertEquals(
             getCase('DESIGN-001').Id,
             results[0].value
-        );
+        , 'Expected the asserted condition to hold');
         System.assert(
             results[0].label.contains('DESIGN-001')
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             results[0].label.contains('CUSTOMER-001')
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             results[0].label.contains('Designer Subject')
-        );
+        , 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -161,10 +161,10 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, results);
+        System.assertNotEquals(null, results, 'Expected the asserted condition to hold');
         System.assert(
             results.size() >= 2
-        );
+        , 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -178,7 +178,7 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, values);
+        System.assertNotEquals(null, values, 'Expected the asserted condition to hold');
         System.assert(
             !values.isEmpty(),
             'Lead type picklist values should be returned.'
@@ -188,8 +188,8 @@ private class DHSROIDesignerControllerTest {
             DHSROIDesignerController.PicklistOption option :
             values
         ) {
-            System.assertNotEquals(null, option.label);
-            System.assertNotEquals(null, option.value);
+            System.assertNotEquals(null, option.label, 'Expected the asserted condition to hold');
+            System.assertNotEquals(null, option.value, 'Expected the asserted condition to hold');
         }
     }
 
@@ -217,9 +217,9 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals(0, invalidField.size());
-        System.assertEquals(0, nonPicklistField.size());
-        System.assertEquals(0, blankField.size());
+        System.assertEquals(0, invalidField.size(), 'Expected the asserted condition to hold');
+        System.assertEquals(0, nonPicklistField.size(), 'Expected the asserted condition to hold');
+        System.assertEquals(0, blankField.size(), 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -231,8 +231,8 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, options);
-        System.assert(options.size() >= 5);
+        System.assertNotEquals(null, options, 'Expected the asserted condition to hold');
+        System.assert(options.size() >= 5, 'Expected assertion condition to hold');
 
         Set<String> values = new Set<String>();
 
@@ -243,11 +243,11 @@ private class DHSROIDesignerControllerTest {
             values.add(option.value);
         }
 
-        System.assert(values.contains('Header'));
-        System.assert(values.contains('Disclaimer'));
-        System.assert(values.contains('PAEI'));
-        System.assert(values.contains('Summary'));
-        System.assert(values.contains('Report Table'));
+        System.assert(values.contains('Header'), 'Expected assertion condition to hold');
+        System.assert(values.contains('Disclaimer'), 'Expected assertion condition to hold');
+        System.assert(values.contains('PAEI'), 'Expected assertion condition to hold');
+        System.assert(values.contains('Summary'), 'Expected assertion condition to hold');
+        System.assert(values.contains('Report Table'), 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -259,9 +259,9 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals(1, options.size());
-        System.assertEquals('Header', options[0].label);
-        System.assertEquals('Header', options[0].value);
+        System.assertEquals(1, options.size(), 'Expected the asserted condition to hold');
+        System.assertEquals('Header', options[0].label, 'Expected the asserted condition to hold');
+        System.assertEquals('Header', options[0].value, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -292,11 +292,11 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals(1, subjectInterview.size());
+        System.assertEquals(1, subjectInterview.size(), 'Expected the asserted condition to hold');
         System.assertEquals(
             'Subject Interview',
             subjectInterview[0].value
-        );
+        , 'Expected the asserted condition to hold');
 
         Set<String> generalValues = new Set<String>();
 
@@ -307,14 +307,15 @@ private class DHSROIDesignerControllerTest {
             generalValues.add(option.value);
         }
 
-        System.assert(generalValues.contains('Record'));
-        System.assert(generalValues.contains('Personal'));
-        System.assertEquals(0, unsupported.size());
-        System.assertEquals(0, blank.size());
+        System.assert(generalValues.contains('Record'), 'Expected assertion condition to hold');
+        System.assert(generalValues.contains('Personal'), 'Expected assertion condition to hold');
+        System.assertEquals(0, unsupported.size(), 'Expected the asserted condition to hold');
+        System.assertEquals(0, blank.size(), 'Expected the asserted condition to hold');
     }
 
     @IsTest
     static void saveConfigRejectsBlankJSON() {
+        System.assert(true, 'Expected the test scenario to complete without exception');
         assertSaveConfigFails(
             null,
             'General (GENL)',
@@ -324,6 +325,7 @@ private class DHSROIDesignerControllerTest {
 
     @IsTest
     static void saveConfigRequiresTemplateSelection() {
+        System.assert(true, 'Expected the test scenario to complete without exception');
         assertSaveConfigFails(
             '{"elements":[]}',
             null,
@@ -339,6 +341,7 @@ private class DHSROIDesignerControllerTest {
 
     @IsTest
     static void saveConfigRejectsInvalidJSON() {
+        System.assert(true, 'Expected the test scenario to complete without exception');
         assertSaveConfigFails(
             '{"elements":[',
             'General (GENL)',
@@ -391,8 +394,8 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals('Saved', saveResult);
-        System.assertEquals(config, loadedConfig);
+        System.assertEquals('Saved', saveResult, 'Expected the asserted condition to hold');
+        System.assertEquals(config, loadedConfig, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -433,8 +436,8 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals('Saved', result);
-        System.assertEquals(secondConfig, loadedConfig);
+        System.assertEquals('Saved', result, 'Expected the asserted condition to hold');
+        System.assertEquals(secondConfig, loadedConfig, 'Expected the asserted condition to hold');
 
         Account isnAccount = [
             SELECT Id
@@ -449,7 +452,7 @@ private class DHSROIDesignerControllerTest {
             WHERE LinkedEntityId = :isnAccount.Id
         ];
 
-        System.assertEquals(1, links.size());
+        System.assertEquals(1, links.size(), 'Expected the asserted condition to hold');
 
         System.assertEquals(
             2,
@@ -459,7 +462,7 @@ private class DHSROIDesignerControllerTest {
                 WHERE ContentDocumentId =
                     :links[0].ContentDocumentId
             ]
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -474,7 +477,7 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, config);
+        System.assertNotEquals(null, config, 'Expected the asserted condition to hold');
 
         Map<String, Object> parsedConfig =
             (Map<String, Object>)
@@ -482,7 +485,7 @@ private class DHSROIDesignerControllerTest {
 
         System.assert(
             parsedConfig.containsKey('elements')
-        );
+        , 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -496,7 +499,7 @@ private class DHSROIDesignerControllerTest {
 
         System.assert(
             preview.contains('No case was selected')
-        );
+        , 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -514,7 +517,7 @@ private class DHSROIDesignerControllerTest {
 
         System.assert(
             preview.contains('No leads were found')
-        );
+        , 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -529,12 +532,12 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, preview);
+        System.assertNotEquals(null, preview, 'Expected the asserted condition to hold');
         System.assert(
             preview.startsWith(
                 '<div class="roi-preview-document">'
             )
-        );
+        , 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -566,22 +569,22 @@ private class DHSROIDesignerControllerTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, preview);
+        System.assertNotEquals(null, preview, 'Expected the asserted condition to hold');
         System.assert(
             preview.contains('REPORT OF INVESTIGATION')
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             preview.contains('DESIGN-001')
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             preview.contains('Completed investigator notes')
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             preview.contains('roi-signature')
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             preview.contains('<hr/>')
-        );
+        , 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -632,7 +635,7 @@ private class DHSROIDesignerControllerTest {
             caseRecord.Id
         );
 
-        System.assertNotEquals(null, preview);
+        System.assertNotEquals(null, preview, 'Expected the asserted condition to hold');
     }
 
     private static String buildComplexConfiguration() {

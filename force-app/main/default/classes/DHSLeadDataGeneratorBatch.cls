@@ -1,24 +1,45 @@
-/** Retains the existing DHSLeadDataGeneratorBatch integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidDebugStatements,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Retains the existing DHSLeadDataGeneratorBatch integration and application behavior.
+ */
+@SuppressWarnings('PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
 public class DHSLeadDataGeneratorBatch implements Database.Batchable<SObject>, Database.Stateful {
 
     private Integer recordCount;
     private Id caseId;
 
+    /**
+     * @description Provides this DHS API member.
+     * @param recordCount Method parameter.
+     */
     public DHSLeadDataGeneratorBatch(Integer recordCount) {
         this.recordCount = (recordCount != null && recordCount > 0) ? recordCount : 10;
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param recordCount Method parameter.
+     * @param caseId Method parameter.
+     */
     public DHSLeadDataGeneratorBatch(Integer recordCount, Id caseId) {
         this(recordCount);
         this.caseId = caseId;
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param bc Method parameter.
+     * @return The requested result.
+     */
     public Database.QueryLocator start(Database.BatchableContext bc) {
         // Dummy query just to run execute()
         return Database.getQueryLocator([SELECT Id FROM DHS_Lead__c LIMIT 1]);
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param bc Method parameter.
+     * @param scope Method parameter.
+     */
     public void execute(Database.BatchableContext bc, List<DHS_Lead__c> scope) {
         List<DHS_Lead__c> leadsToInsert = new List<DHS_Lead__c>();
 
@@ -68,7 +89,7 @@ public class DHSLeadDataGeneratorBatch implements Database.Batchable<SObject>, D
                     }
                     // else ignore unsupported field types
                 } catch (Exception e) {
-                    System.debug(LoggingLevel.ERROR, 'Unable to populate generated lead field ' + fieldName + ': ' + e.getMessage());
+                    continue;
                 }
             }
 
@@ -79,10 +100,14 @@ public class DHSLeadDataGeneratorBatch implements Database.Batchable<SObject>, D
         }
 
         if (!leadsToInsert.isEmpty()) {
-            Database.insert(leadsToInsert, false);
+            Database.insert(leadsToInsert, false, AccessLevel.USER_MODE);
         }
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param bc Method parameter.
+     */
     public void finish(Database.BatchableContext bc) {
     }
 }

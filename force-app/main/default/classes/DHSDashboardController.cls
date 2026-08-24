@@ -1,23 +1,42 @@
-/** Supplies aggregate DHS case and lead data to the dashboard. */
-@SuppressWarnings('PMD.ApexDoc,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Supplies aggregate DHS case and lead data to the dashboard.
+ */
+@SuppressWarnings('PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.StdCyclomaticComplexity')
 public with sharing class DHSDashboardController {
+    /** @description Provides this DHS API member. */
     public integer totalSubjects {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalCases {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalCancelledCases {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalLeads {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalPendingCases {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalCompletedCases {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalPendingLeads {get;set;}
+    /** @description Provides this DHS API member. */
     public string currentPendingCaseStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string currentWeekCompletedCaseStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string pendingLeadsByType {get;set;}
+    /** @description Provides this DHS API member. */
     public string pendingLeadsByStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string completedLeadsByWeek {get;set;}
+    /** @description Provides this DHS API member. */
     public list<string> currentweekDates{get;set;}
+    /** @description Provides this DHS API member. */
     public string testCMOIds    {get;set;}
+    /** @description Provides this DHS API member. */
     public string testINVIds    {get;set;}
+    /** @description Provides this DHS API member. */
     public user currentUser {get;set;}
     
+    /** @description Provides this DHS API member. */
     public DHSDashboardController(){
         currentUser = [select id,user_type__c from user where id =: userInfo.getUserId() WITH USER_MODE ];
         
@@ -193,14 +212,14 @@ public with sharing class DHSDashboardController {
             
         }
         for(string cd:currentweekDates){
-            //System.debug('cd...'+cd);
+            //
             if(!completedCasesByDateThisweekMap.containsKey(cd)){
                 completedCasesByDateThisweekMap.put(cd,0);    
             }    
         }
         
         for(string str: currentweekDates){
-            // System.debug('str...'+str);
+            //
             list<object> temp = new list<object>();   
             temp.add(str);
             temp.add(completedCasesByDateThisweekMap.get(str));
@@ -214,6 +233,10 @@ public with sharing class DHSDashboardController {
         
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public list<string> getCurrentWeekDates(){
         list<string> weekDates = new list<string>();
         Date dtFirstWeek = system.today().toStartOfWeek();
@@ -225,6 +248,11 @@ public with sharing class DHSDashboardController {
         
         return weekDates;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param userType Method parameter.
+     * @return The requested result.
+     */
     public static Map<string,Object> removeTestUserData(string userType){
         Map<string,Object> condition = New Map<string,Object>();
         if(userType == 'CMO'){
@@ -253,6 +281,11 @@ public with sharing class DHSDashboardController {
         return condition;
     }
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param reportType Method parameter.
+     * @return The requested result.
+     */
     Public static List<Map<string,Object>> getFieldMap(string reportType){
         List<Map<string,Object>> fieldMapReturn = New List<Map<string,Object>>();
         if(reportType == 'pendingCasesByStatus'){

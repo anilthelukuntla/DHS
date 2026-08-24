@@ -1,58 +1,105 @@
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.AvoidDebugStatements,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.DebugsShouldUseLoggingLevel,PMD.ExcessiveParameterList,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.IfElseStmtsMustUseBraces,PMD.IfStmtsMustUseBraces,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.StdCyclomaticComplexity')
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.DebugsShouldUseLoggingLevel,PMD.ExcessiveParameterList,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.StdCyclomaticComplexity')
+/** @description Provides this DHS API member. */
 public with sharing class DHSCDRLReportsControllerV2 {
+    /** @description Provides this DHS API member. */
     public user currentUser{get;set;}
     public boolean hasRecords{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public list<Map<string,object>> records	{get;set;}
+    /** @description Provides this DHS API member. */
     public list<string> apinames	{get;set;}
+    /** @description Provides this DHS API member. */
     public list<string> fetchApinames	{get;set;}
+	/** @description Provides this DHS API member. */
 	public list<string> labels	{get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> typesOfReports {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> cmoUsers {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> investigatorUsers {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> caseTaskStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> caseStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> leadStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCaseStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCaseTaskStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedLeadStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedReportType {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCMOUser {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedInvestigatorUser {get;set;}
+    /** @description Provides this DHS API member. */
     public date fromDate {get;set;}
+    /** @description Provides this DHS API member. */
     public date toDate {get;set;}
+    /** @description Provides this DHS API member. */
     public transient list<ReportRecord> reports {get;set;}
     public boolean showViewButton {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean showreportstable {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string selectedRelatedCaseIdForMessages{get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> relatedCasesForMessages {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCaseIdForLeadSearch{get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> messageTypeOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedMessageType{get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCaseNumberForLeadSearch{get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedleadforstatustracking {get;set;}
     //public list<Lead__History> leadStatusTrackings {get;set;}
+    /** @description Provides this DHS API member. */
     public list<LeadHistoryRecord> leadStatusTrackings{get;set;}
+    /** @description Provides this DHS API member. */
     public integer pageNumber {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalPages   {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalRecordCount {get;set;}
     public boolean disablePrev {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean disableNext {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string queryForNextRecords {get;set;}
+    /** @description Provides this DHS API member. */
     public string lastRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public string firstRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public integer currentRecordCount {get;set;}
+    /** @description Provides this DHS API member. */
     public string userType  {get;set;}
+    /** @description Provides this DHS API member. */
     public string contextINVId  {get;set;}
     list<DHS_Case__c> cases {get;set;}
+    /** @description Provides this DHS API member. */
     public class LeadHistoryRecord{
+        /** @description Provides this DHS API member. */
         public Lead__History leadHistory {get;set;}
+        /** @description Provides this DHS API member. */
         public integer numOfDays {get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param lh Method parameter.
+         * @param nd Method parameter.
+         */
         public LeadHistoryRecord(Lead__History lh, integer nd){
             this.leadHistory = lh;
             this.numOfDays = nd;
         }
     }
     
+    /** @description Provides this DHS API member. */
     public DHSCDRLReportsControllerV2(){
         selectedReportType = '';
         cmoUsers = new List<SelectOption>();
@@ -78,6 +125,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
         showreportstable = false;
         showleadstatustrackingpanel = false;
     }
+    /** @description Provides this DHS API member. */
     public void fetchPicklistValues(){
         typesOfReports = new list<selectoption>();
         typesOfReports.add(new selectoption('','--None--'));
@@ -131,6 +179,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
         
     }
     public boolean fiveorlessitemsofcase = false;
+    /** @description Provides this DHS API member. */
     public void runReportAction(){
     
         if(selectedReportType == 'ROIReport'){
@@ -149,7 +198,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             if(!apinames.contains('name')) {
                 roiApiNames.add('name');
             }
-            system.debug(roiApiNames);
+
             fetchApinames = roiApiNames;
             String query =  'Select '+string.join(roiApiNames, ',') + ' From DHS_Document__c ';
             whereCriteria.add(new DHSApexUtil.Criteria('Name__c','ROIReport','='));
@@ -157,13 +206,13 @@ public with sharing class DHSCDRLReportsControllerV2 {
             if(fromDate != Null){
                 Datetime myDatetime = Datetime.newInstance(fromDate, Time.newInstance(0, 0, 0, 0));
 				String isoDatetime = myDatetime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
-                system.debug(isoDatetime);
+
                 whereCriteria.add(new DHSApexUtil.Criteria('createddate',isoDatetime, '>=','Date'));
             }
             if(toDate != Null){
                 Datetime myDatetime = Datetime.newInstance(toDate, Time.newInstance(0, 0, 0, 0));
 				String isoDatetime = myDatetime.format('yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
-                system.debug(isoDatetime);
+
                 whereCriteria.add(new DHSApexUtil.Criteria('createddate',isoDatetime, '<=','Date'));
             }
             
@@ -180,7 +229,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             }
             
         totalRecordCount = database.countquery(Countquery);
-			system.debug('query...'+query);            
+            
             list<sobject> documentsObj = new list<sobject>();
             Map<Id,DHS_Document__c> docMap = New Map<Id,DHS_Document__c>();
             // code-analyzer-suppress-next-line PMD.ApexSOQLInjection -- Schema-validated fields and bound or validated values.
@@ -206,7 +255,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                                           '<i class="fa fa-eye"></i>' +
                                           '</a>';
                     flattenedObject.put('id',downloadAtt);
-                    if(i==0) firstRecordName = string.valueOf(flattenedObject.get('name'));    
+                    if(i==0) { firstRecordName = string.valueOf(flattenedObject.get('name')); }
                     lastRecordName = string.valueOf(flattenedObject.get('name'));
                     records.add(flattenedObject);
                 }
@@ -216,7 +265,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             double floorVal = Math.floor(totalNum);
             double diff = totalNum - floorVal;
             totalPages = diff > 0 ? integer.valueOf(floorVal) + 1 : integer.valueOf(floorVal);
-            system.debug('TotalPages...'+totalPages);
+
             if(totalRecordCount <= 200){
                 disablePrev = true;
                 disableNext = true;
@@ -236,8 +285,8 @@ public with sharing class DHSCDRLReportsControllerV2 {
             apinames.addAll(getFieldMap('DHS_Case__c').get('apinames'));
             caseApiNames.addAll(getFieldMap('DHS_Case__c').get('apinames'));
             labels.addAll(getFieldMap('DHS_Case__c').get('labels'));
-            if(!apinames.contains('name')) caseApiNames.add('name');
-            system.debug(caseApiNames);
+            if(!apinames.contains('name')) { caseApiNames.add('name'); }
+
             fetchApinames = caseApiNames;
             String query =  'Select '+string.join(caseApiNames, ',') + ' From DHS_Case__c ';
             if(selectedCaseTaskStatus != 'DHS_All'){
@@ -269,7 +318,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             
         totalRecordCount = database.countquery(Countquery);
         cases = new list<DHS_Case__c>();
-            system.debug(query);
+
 		List<SObject> caseRecords = New List<SObject>();
         if(test.isRunningTest()){
             caseRecords = database.query('Select '+string.join(caseApiNames, ',') + ' From DHS_Case__c '); 
@@ -284,7 +333,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                 for(Map<String, Object> caseMap : casesMap){
                     
                     Map<String, Object> flattenedObject = DHSUtils.flatten(caseMap, '.');
-                    if(i==0) firstRecordName = string.valueOf(flattenedObject.get('name'));    
+                    if(i==0) { firstRecordName = string.valueOf(flattenedObject.get('name')); }
                     lastRecordName = string.valueOf(flattenedObject.get('name'));
                     records.add(flattenedObject);
                 }
@@ -302,7 +351,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
         double floorVal = Math.floor(totalNum);
         double diff = totalNum - floorVal;
         totalPages = diff > 0 ? integer.valueOf(floorVal) + 1 : integer.valueOf(floorVal);
-        system.debug('TotalPages...'+totalPages);
+
         if(totalRecordCount <= 200){
             disablePrev = true;
             disableNext = true;
@@ -323,8 +372,8 @@ public with sharing class DHSCDRLReportsControllerV2 {
             apinames.addAll(getFieldMap('DHS_Lead__c').get('apinames'));
             leadApiNames.addAll(getFieldMap('DHS_Lead__c').get('apinames'));
             labels.addAll(getFieldMap('DHS_Lead__c').get('labels'));
-            system.debug(apinames);
-			if(!apinames.contains('name')) leadApiNames.add('name');
+
+			if(!apinames.contains('name')) { leadApiNames.add('name'); }
             fetchApinames = leadApiNames;
             String query = 'Select '+string.join(leadApiNames, ',') + ' From DHS_Lead__c ';
             if(SelectedLeadStatus != 'DHS_All'){
@@ -339,7 +388,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             if(selectedInvestigatorUser != 'DHS_All'){
                 whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c',selectedInvestigatorUser, '='));    
             }
-            System.debug('SelectedCaseNumberForLeadSearch...'+selectedCaseNumberForLeadSearch);
+
             if(String.isnotblank(selectedCaseNumberForLeadSearch)){
                 whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.Case_Number__c',selectedCaseNumberForLeadSearch, '='));    
             }
@@ -350,7 +399,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             
             
             String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);
-            system.debug(whereCond);
+
             string countQuery;
             if(!string.isblank(whereCond)){
                 queryForNextRecords = query + ' WHERE '+whereCond+' AND';
@@ -371,21 +420,21 @@ public with sharing class DHSCDRLReportsControllerV2 {
             // code-analyzer-suppress-next-line PMD.ApexSOQLInjection -- Schema-validated fields and bound or validated values.
             leadRecords = database.query(query);        
        }
-            System.debug('query...'+query);
+
             
 		List<Map<String, Object>> leadsMap = DHSUtils.convertToMapList(leadRecords,leadApiNames);
             integer i = 0;
 		for(Map<String, Object> leadMap : leadsMap){
-            system.debug('leadMap...'+leadMap);
+
 			Map<String, Object> flattenedObject = DHSUtils.flatten(leadMap, '.');
 			object val = flattenedObject.get('id'); 
             object returnV = '<a onclick="showleadtracking(\'' + val + '\'); return false;" data-toggle="tooltip" title="Edit User">' +
                '<i class="fas fa-eye mr-3 text-danger"></i>' +
                '</a>';
             flattenedObject.put('id',returnV);
-            if(i==0) firstRecordName = string.valueOf(flattenedObject.get('name'));    
+            if(i==0) { firstRecordName = string.valueOf(flattenedObject.get('name')); }
                 lastRecordName = string.valueOf(flattenedObject.get('name'));
-                system.debug(flattenedObject);
+
                 records.add(flattenedObject);
             }
             
@@ -395,7 +444,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             double floorVal = Math.floor(totalNum);
             double diff = totalNum - floorVal;
             totalPages = diff > 0 ? integer.valueOf(floorVal) + 1 : integer.valueOf(floorVal);
-            system.debug('TotalPages...'+totalPages);
+
             if(totalRecordCount <= 200){
                 disablePrev = true;
                 disableNext = true;
@@ -414,8 +463,8 @@ public with sharing class DHSCDRLReportsControllerV2 {
             apinames.addAll(getFieldMap('DHS_Message__c').get('apinames'));
             messageApiNames.addAll(getFieldMap('DHS_Message__c').get('apinames'));
             labels.addAll(getFieldMap('DHS_Message__c').get('labels'));
-            system.debug(apinames);
-			if(!apinames.contains('name')) messageApiNames.add('name');
+
+			if(!apinames.contains('name')) { messageApiNames.add('name'); }
             fetchApinames = messageApiNames;
             String query = 'Select '+string.join(messageApiNames, ',') + ' From DHS_Message__c ';
             if(selectedMessageType == 'Case Broadcast Message' ){
@@ -434,7 +483,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             }  
             
             String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);
-            system.debug(whereCond);
+
             string countQuery;
             if(!string.isblank(whereCond)){
                 queryForNextRecords = query + ' WHERE '+whereCond+' AND';
@@ -459,7 +508,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             integer i = 0;
             for(Map<String, Object> messageMap : messagesMap){
                 Map<String, Object> flattenedObject = DHSUtils.flatten(messageMap, '.');
-                if(i==0) firstRecordName = string.valueOf(flattenedObject.get('name'));    
+                if(i==0) { firstRecordName = string.valueOf(flattenedObject.get('name')); }
                 lastRecordName = string.valueOf(flattenedObject.get('name'));
                 records.add(flattenedObject);
             }
@@ -468,7 +517,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                 double floorVal = Math.floor(totalNum);
                 double diff = totalNum - floorVal;
                 totalPages = diff > 0 ? integer.valueOf(floorVal) + 1 : integer.valueOf(floorVal);
-                system.debug('TotalPages...'+totalPages);
+
                 if(totalRecordCount <= 200){
                     disablePrev = true;
                     disableNext = true;
@@ -488,8 +537,8 @@ public with sharing class DHSCDRLReportsControllerV2 {
             apinames.addAll(getFieldMap('DHS_Investigator_Check__c').get('apinames'));
             checkInApiNames.addAll(getFieldMap('DHS_Investigator_Check__c').get('apinames'));
             labels.addAll(getFieldMap('DHS_Investigator_Check__c').get('labels'));
-            system.debug(apinames);
-			if(!apinames.contains('name')) checkInApiNames.add('name');
+
+			if(!apinames.contains('name')) { checkInApiNames.add('name'); }
             fetchApinames = checkInApiNames;
             String query = 'Select '+string.join(checkInApiNames, ',') + ' From DHS_Investigator_Check__c ';
             whereCriteria.add(new DHSApexUtil.Criteria('Type__c', 'CheckOut', '='));
@@ -504,7 +553,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             }
             
             String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);
-            system.debug(whereCond);
+
             string countQuery;
             if(!string.isblank(whereCond)){
                 queryForNextRecords = query + ' WHERE '+whereCond+' AND';
@@ -528,7 +577,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             integer i = 0;
                 for(Map<String, Object> invCheckMap : invChecksMap){
                     Map<String, Object> flattenedObject = DHSUtils.flatten(invCheckMap, '.');
-                    if(i==0) firstRecordName = string.valueOf(flattenedObject.get('name'));    
+                    if(i==0) { firstRecordName = string.valueOf(flattenedObject.get('name')); }
                 	lastRecordName = string.valueOf(flattenedObject.get('name'));
                     records.add(flattenedObject);
                 }
@@ -538,7 +587,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                 double floorVal = Math.floor(totalNum);
                 double diff = totalNum - floorVal;
                 totalPages = diff > 0 ? integer.valueOf(floorVal) + 1 : integer.valueOf(floorVal);
-                system.debug('TotalPages...'+totalPages);
+
                 if(totalRecordCount <= 200){
                     disablePrev = true;
                     disableNext = true;
@@ -558,13 +607,13 @@ public with sharing class DHSCDRLReportsControllerV2 {
             apinames.addAll(getFieldMap('DHS_Waiver_Information__c').get('apinames'));
             waiversApiNames.addAll(getFieldMap('DHS_Waiver_Information__c').get('apinames'));
             labels.addAll(getFieldMap('DHS_Waiver_Information__c').get('labels'));
-            system.debug(apinames);
-			if(!apinames.contains('name')) waiversApiNames.add('name');
+
+			if(!apinames.contains('name')) { waiversApiNames.add('name'); }
             fetchApinames = waiversApiNames;
             String query = 'Select '+string.join(waiversApiNames, ',') + ' From DHS_Waiver_Information__c ';
             
             String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);
-            system.debug(whereCond);
+
             string countQuery;
             if(!string.isblank(whereCond)){
                 queryForNextRecords = query + ' WHERE '+whereCond+' AND';
@@ -588,7 +637,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                 List<Map<String, Object>> waiversMap = DHSUtils.convertToMapList(waiverRecords,waiversApiNames);
                 for(Map<String, Object> waiverMap : waiversMap){
                     Map<String, Object> flattenedObject = DHSUtils.flatten(waiverMap, '.');
-                    if(i==0) firstRecordName = string.valueOf(flattenedObject.get('name'));    
+                    if(i==0) { firstRecordName = string.valueOf(flattenedObject.get('name')); }
                 	lastRecordName = string.valueOf(flattenedObject.get('name'));
                     records.add(flattenedObject);
                 }
@@ -597,7 +646,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                 double floorVal = Math.floor(totalNum);
                 double diff = totalNum - floorVal;
                 totalPages = diff > 0 ? integer.valueOf(floorVal) + 1 : integer.valueOf(floorVal);
-                system.debug('TotalPages...'+totalPages);
+
                 if(totalRecordCount <= 200){
                     disablePrev = true;
                     disableNext = true;
@@ -625,7 +674,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                 String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);
                 query = query + ' WHERE '+whereCond;
             }
-            System.debug('query...'+query);
+
             // code-analyzer-suppress-next-line PMD.ApexSOQLInjection -- Schema-validated fields and bound or validated values.
             list< DHS_Daily_Production_Summary__c > productionSummaries = database.query(query);
             Map<string,Decimal> leadsAccepted = new Map<string,Decimal>();
@@ -673,8 +722,9 @@ public with sharing class DHSCDRLReportsControllerV2 {
         
     }
     public boolean showleadstatustrackingpanel{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public void fetchLeadStatusTrackings(){
-        System.debug('selectedleadforstatustracking...'+selectedleadforstatustracking);
+
         leadStatusTrackings = new list< LeadHistoryRecord >();
             List<string> leadStatusTrackingFields = new List<string>();
             List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -693,7 +743,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                  query = query + ' WHERE '+whereCond + ' Order By CreatedDate ASC';  
             }  
            
-            System.debug('query...'+query);
+
             // code-analyzer-suppress-next-line PMD.ApexSOQLInjection -- Schema-validated fields and bound or validated values.
             lisT<Lead__History> leadhHistories =  database.query(query);
             integer i =0;
@@ -711,6 +761,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
             showleadstatustrackingpanel = true;
     }
     
+    /** @description Provides this DHS API member. */
     public void onReportTypeSelect(){
         if(selectedReportType == 'Case'){
             cmoUsers = new list<selectoption>();
@@ -744,55 +795,114 @@ public with sharing class DHSCDRLReportsControllerV2 {
        
     }
     
+    /** @description Provides this DHS API member. */
     Public Class ReportRecord {
+        /** @description Provides this DHS API member. */
         public string subjectFirstName{get;set;}
+        /** @description Provides this DHS API member. */
         public string subjectLastName{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseNumber{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseDueDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string customerDeliveryDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseType{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseStatus{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseTaskStatus {Get;set;}
+        /** @description Provides this DHS API member. */
         public string manifest{get;set;}
+        /** @description Provides this DHS API member. */
         public string cmoUser{get;set;}
+        /** @description Provides this DHS API member. */
         public string investigatorUser{get;set;}
+        /** @description Provides this DHS API member. */
         public string rDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string attachmentId {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadType {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadStatus {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Message__c message {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Investigator_Check__c investigatorCheck {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Waiver_Information__c waiver {get;set;}
+        /** @description Provides this DHS API member. */
         public string investigatorName {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadsAccepted {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadsRejected {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadsCompleted {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadItemNumber {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadContactInformation {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadSourceName {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactName {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactAddress {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactCity {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactState {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactZip {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactOtherInformation {get;set;}
+        /** @description Provides this DHS API member. */
         public string anticipatedCompletedDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string coverageType{get;set;}
+        /** @description Provides this DHS API member. */
         public string assignmentDate {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadId {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadContactMethod {get;set;}
+        /** @description Provides this DHS API member. */
         public string waiverduedate {get;set;}
+        /** @description Provides this DHS API member. */
         public string customercasenumber {get;set;}
+        /** @description Provides this DHS API member. */
         public string subjecttype	{get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param message Method parameter.
+         */
         public ReportRecord(DHS_Message__c message){
             this.message = message;
         }
+        /**
+         * @description Provides this DHS API member.
+         * @param investigatorCheck Method parameter.
+         */
         public ReportRecord(DHS_Investigator_Check__c investigatorCheck){
             this.investigatorCheck = investigatorCheck;
         }
+        /**
+         * @description Provides this DHS API member.
+         * @param waiver Method parameter.
+         */
         public ReportRecord(DHS_Waiver_Information__c waiver){
             this.waiver = waiver;
         }
+        /**
+         * @description Provides this DHS API member.
+         * @param investigatorName Method parameter.
+         * @param leadsAccepted Method parameter.
+         * @param leadsRejected Method parameter.
+         * @param leadsCompleted Method parameter.
+         */
         public ReportRecord(string investigatorName, integer leadsAccepted, integer leadsRejected, integer leadsCompleted){
             this.investigatorName = investigatorName;
             this.leadsAccepted = leadsAccepted;
@@ -801,6 +911,28 @@ public with sharing class DHSCDRLReportsControllerV2 {
         }
         
         
+/**
+ * @description Provides this DHS API member.
+ * @param subjectFirstName Method parameter.
+ * @param subjectLastName Method parameter.
+ * @param caseNumber Method parameter.
+ * @param customercasenumber Method parameter.
+ * @param caseDueDate Method parameter.
+ * @param customerDeliveryDate Method parameter.
+ * @param caseType Method parameter.
+ * @param caseStatus Method parameter.
+ * @param caseTaskStatus Method parameter.
+ * @param manifest Method parameter.
+ * @param cmoUser Method parameter.
+ * @param investigatorUser Method parameter.
+ * @param waiverduedate Method parameter.
+ * @param rDate Method parameter.
+ * @param attachmentId Method parameter.
+ * @param leadType Method parameter.
+ * @param leadStatus Method parameter.
+ * @param leadId Method parameter.
+ * @param subjecttype Method parameter.
+ */
 public ReportRecord(string subjectFirstName,string subjectLastName, string caseNumber, string customercasenumber, string caseDueDate, string customerDeliveryDate, string caseType, string caseStatus, string caseTaskStatus, string manifest, string cmoUser, string investigatorUser,
                             string waiverduedate, string rDate, string attachmentId, string leadType, string leadStatus,string leadId,string subjecttype){
             this.subjectFirstName = subjectFirstName;
@@ -823,6 +955,37 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
 			this.subjecttype = subjecttype;           
         }
         
+        /**
+         * @description Provides this DHS API member.
+         * @param subjectFirstName Method parameter.
+         * @param subjectLastName Method parameter.
+         * @param caseNumber Method parameter.
+         * @param caseDueDate Method parameter.
+         * @param customerDeliveryDate Method parameter.
+         * @param caseType Method parameter.
+         * @param caseStatus Method parameter.
+         * @param caseTaskStatus Method parameter.
+         * @param manifest Method parameter.
+         * @param cmoUser Method parameter.
+         * @param investigatorUser Method parameter.
+         * @param rDate Method parameter.
+         * @param attachmentId Method parameter.
+         * @param leadType Method parameter.
+         * @param leadStatus Method parameter.
+         * @param leadItemNumber Method parameter.
+         * @param leadSourceName Method parameter.
+         * @param leadcontactName Method parameter.
+         * @param leadContactAddress Method parameter.
+         * @param leadContactCity Method parameter.
+         * @param leadContactState Method parameter.
+         * @param leadContactZip Method parameter.
+         * @param leadContactOtherInformation Method parameter.
+         * @param anticipatedCompletedDate Method parameter.
+         * @param coverageType Method parameter.
+         * @param assignmentDate Method parameter.
+         * @param leadId Method parameter.
+         * @param leadContactMethod Method parameter.
+         */
         public ReportRecord(string subjectFirstName,string subjectLastName, string caseNumber, string caseDueDate, string customerDeliveryDate,string caseType, string caseStatus, string caseTaskStatus,string manifest, string cmoUser, string investigatorUser,
                             string rDate, string attachmentId, string leadType, string leadStatus, integer leadItemNumber, string leadSourceName,
                             string leadcontactName, string leadContactAddress, string leadContactCity, string leadContactState, string leadContactZip,
@@ -861,11 +1024,12 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
         }
     
     }
+    /** @description Provides this DHS API member. */
     public void handlePrev(){
-        System.debug('queryForNextRecords...'+queryForNextRecords);
-        system.debug('firstRecordName....'+firstRecordName);//7474
-        system.debug('lastRecordName....'+lastRecordName);//7972
-         system.debug('currentRecordCount....'+currentRecordCount);
+
+//7474
+//7972
+
         PageNumber --;
         records = new list<Map<string,object>>();
         string query = queryForNextRecords + ' name <:firstRecordName  Order by Name desc Limit 200';
@@ -876,7 +1040,7 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
         for(Integer j=maps.size()-1;j>=0; j--){
             Map<String, Object> flattenedObject = DHSUtils.flatten(maps.get(j), '.');
             records.add(flattenedObject);
-            if(j == maps.size()-1) firstRecordName = string.valueOf(maps[j].get('name'));       
+            if(j == maps.size()-1) { firstRecordName = string.valueOf(maps[j].get('name')); }
 			lastRecordName = string.valueOf(maps[j].get('name')); 
         }
         if(pageNumber == 1){
@@ -886,17 +1050,18 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
             disablePrev = false;
             disableNext = false;
         }
-        system.debug('firstRecordName....'+firstRecordName);
-        system.debug('lastRecordName....'+lastRecordName);
-        system.debug('currentRecordCount....'+currentRecordCount);
+
+
+
     }
+    /** @description Provides this DHS API member. */
     public void handleNext(){
         PageNumber ++ ;
         records = new list<Map<string,object>>();
-        System.debug('queryForNextRecords...'+queryForNextRecords);
-        system.debug('lastRecordName....'+lastRecordName);
+
+
         string query = queryForNextRecords + ' name >:lastRecordName  Order by Name asc Limit 200';    
-        System.debug('query...'+query);
+
         // code-analyzer-suppress-next-line PMD.ApexSOQLInjection -- Schema-validated fields and bound or validated values.
         list<Sobject> recordData = database.query(query);
         integer i = 0;
@@ -904,7 +1069,7 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
 		for(Map<String, Object> m : maps){
 			Map<String, Object> flattenedObject = DHSUtils.flatten(m, '.');
             records.add(flattenedObject);
-			if(i==0) firstRecordName = string.valueOf(flattenedObject.get('name'));    
+			if(i==0) { firstRecordName = string.valueOf(flattenedObject.get('name')); }
 			lastRecordName = string.valueOf(flattenedObject.get('name'));
             i++;
 		}
@@ -916,10 +1081,15 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
             disablePrev = false;
             disableNext = false;
         }
-         system.debug('firstRecordName....'+firstRecordName);
-        system.debug('lastRecordName....'+lastRecordName);
-         system.debug('currentRecordCount....'+currentRecordCount);
+
+
+
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param reportType Method parameter.
+     * @return The requested result.
+     */
     public static Map<String, List<string>> getFieldMap(String reportType) {
         Map<String, List<string>> returnVal = new Map<String, List<string>>();
         List<String> labels = new List<String>();

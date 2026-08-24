@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSProfilePageControllerTest {
     @IsTest
     static void loadsCurrentUsersProfile() {
@@ -11,8 +11,8 @@ private class DHSProfilePageControllerTest {
         controller.updatefieldfisibility();
         PageReference result = controller.updateuserrecordaction();
 
-        System.assertEquals(null, result);
-        System.assertEquals(true, controller.showFields);
-        System.assertEquals(UserInfo.getUserId(), controller.userRecord.Id);
+        System.assertEquals(null, result, 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.showFields, 'Expected the asserted condition to hold');
+        System.assertEquals(UserInfo.getUserId(), controller.userRecord.Id, 'Expected the asserted condition to hold');
     }
 }

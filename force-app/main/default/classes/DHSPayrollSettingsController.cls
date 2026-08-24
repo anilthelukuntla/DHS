@@ -1,10 +1,15 @@
-/** Controls display and update of DHS payroll settings. */
-@SuppressWarnings('PMD.ApexDoc')
+/**
+ * @description Controls display and update of DHS payroll settings.
+ */
+
 public with sharing class DHSPayrollSettingsController {
+    /** @description Provides this DHS API member. */
     public list<DHS_PayrollSetting__c> payrollSettings {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSPayrollSettingsController(){
         fetchPayrollSettings();   
     }
+    /** @description Provides this DHS API member. */
     public void fetchPayrollSettings(){
         payrollSettings = new list<DHS_PayrollSetting__c>();
         List<string> payrollSettingsFields = new List<string>();
@@ -13,6 +18,7 @@ public with sharing class DHSPayrollSettingsController {
         payrollSettings = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
     }
     
+    /** @description Provides this DHS API member. */
     public void updatePayrollSettings(){
         database.update(payrollSettings,false,AccessLevel.USER_MODE);
     }

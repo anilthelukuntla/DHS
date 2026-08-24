@@ -1,12 +1,21 @@
-/** Provides DHS multi-file upload and document-linking remoting actions. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidGlobalModifier,PMD.AvoidHardcodingId,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessiveParameterList,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity,PMD.UnusedMethod')
+/**
+ * @description Provides DHS multi-file upload and document-linking remoting actions.
+ */
+@SuppressWarnings('PMD.AvoidGlobalModifier,PMD.AvoidHardcodingId,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessiveParameterList,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity,PMD.UnusedMethod')
 global without sharing class DHSMultifileuploadPageController {
+    /** @description Provides this DHS API member. */
     public string recordId {get;set;}
+    /** @description Provides this DHS API member. */
     public string networkId {get;set;}
+    /** @description Provides this DHS API member. */
     public string caseId {get;set;}
+    /** @description Provides this DHS API member. */
     public string parentId {get;set;}
+    /** @description Provides this DHS API member. */
     public string fId {get;set;}
+    /** @description Provides this DHS API member. */
     public string sessionId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSMultifileuploadPageController(){
         networkId = Network.getNetworkId();
         recordId = 'a02cn000000xbhtAAA';
@@ -16,8 +25,13 @@ global without sharing class DHSMultifileuploadPageController {
         ));
         parentId = caseId;
     }
+    /** @description Provides this DHS API member. */
     public integer attachmentcount {get;set;}
     //public string caseId {get;set;}
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference uploadAndRedirect() {
         PageReference redirect = new PageReference('/apex/DHSCasedetail?id='+caseId+'&tab=Documents');
         redirect.setRedirect(true);
@@ -25,6 +39,11 @@ global without sharing class DHSMultifileuploadPageController {
     }
 	        
     @RemoteAction
+   /**
+    * @description Provides this DHS API member.
+    * @param parentid Method parameter.
+    * @return The requested result.
+    */
    global static integer attachmentcountmethod(string parentid){
        integer attachmentcount = 0;
        list<attachment> attachments = new list<attachment>();
@@ -36,6 +55,11 @@ global without sharing class DHSMultifileuploadPageController {
    }
    
    @RemoteAction
+   /**
+    * @description Provides this DHS API member.
+    * @param parentid Method parameter.
+    * @return The requested result.
+    */
    global static string attachmentnames(string parentid){
       
        string attachmentnames = '';
@@ -54,6 +78,11 @@ global without sharing class DHSMultifileuploadPageController {
    }
     
     @RemoteAction
+   /**
+    * @description Provides this DHS API member.
+    * @param caseid Method parameter.
+    * @return The requested result.
+    */
    global static string createDocumentRecord(string caseid){
 		DHS_Document__c document = new DHS_Document__c();
 		document.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() WITH USER_MODE ].Name;
@@ -66,6 +95,16 @@ global without sharing class DHSMultifileuploadPageController {
     
     @RemoteAction
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param parentId Method parameter.
+     * @param attachmentId Method parameter.
+     * @param fileName Method parameter.
+     * @param contentType Method parameter.
+     * @param base64BlobValue Method parameter.
+     * @param descriptioncheck Method parameter.
+     * @return The requested result.
+     */
     global static String attachBlob(String parentId, String attachmentId, String fileName, String contentType, String base64BlobValue, string descriptioncheck){
         try {
             DHS_Case__c caseRecord;
@@ -149,8 +188,15 @@ global without sharing class DHSMultifileuploadPageController {
     
     
     // Custom exception class for upload errors
+    /** @description Provides this DHS API member. */
     public class CustomException extends Exception {}
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     * @param fileName Method parameter.
+     * @return The requested result.
+     */
     public static String processUploadedFiles(string caseId,string fileName) {
 		caseId = String.valueOf(Id.valueOf(caseId.escapeHtml4()));
 		fileName = fileName.escapeHtml4();

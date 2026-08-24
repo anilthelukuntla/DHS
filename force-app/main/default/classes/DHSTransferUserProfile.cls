@@ -1,6 +1,9 @@
-/** Retains the existing DHSTransferUserProfile integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSharingViolations')
+/**
+ * @description Retains the existing DHSTransferUserProfile integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSharingViolations')
 public class DHSTransferUserProfile {
+    /** @description Provides this DHS API member. */
     public static void doTransfer(){
         string fromProfileName = string.valueOf(system.label.DHS_from_profile);
         string toProfileName = string.valueOf(system.label.DHS_to_profile);

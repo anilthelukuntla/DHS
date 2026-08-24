@@ -1,7 +1,14 @@
-/** JavaScript Remoting controller for chunked DHS report-designer uploads. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidGlobalModifier,PMD.ExcessiveParameterList,PMD.OperationWithLimitsInLoop')
+/**
+ * @description JavaScript Remoting controller for chunked DHS report-designer uploads.
+ */
+@SuppressWarnings('PMD.AvoidGlobalModifier,PMD.ExcessiveParameterList,PMD.OperationWithLimitsInLoop')
 global without sharing class DHSRD_FileUploadController {
    @RemoteAction
+   /**
+    * @description Provides this DHS API member.
+    * @param parentid Method parameter.
+    * @return The requested result.
+    */
    global static integer attachmentcountmethod(string parentid){
       
        integer attachmentcount = 0;
@@ -14,6 +21,11 @@ global without sharing class DHSRD_FileUploadController {
    }
    
    @RemoteAction
+   /**
+    * @description Provides this DHS API member.
+    * @param parentid Method parameter.
+    * @return The requested result.
+    */
    global static string attachmentnames(string parentid){
       
        string attachmentnames = '';
@@ -34,6 +46,16 @@ global without sharing class DHSRD_FileUploadController {
    
     
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param parentId Method parameter.
+     * @param attachmentId Method parameter.
+     * @param fileName Method parameter.
+     * @param contentType Method parameter.
+     * @param base64BlobValue Method parameter.
+     * @param descriptioncheck Method parameter.
+     * @return The requested result.
+     */
     global static String attachBlob(String parentId, String attachmentId, String fileName, String contentType, String base64BlobValue, string descriptioncheck){
         /*
         parentId: The sfdc object Id this file will be attached to

@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSUpdateACDDateControllerTest {
     @IsTest
     static void loadsOrdersAndWrapperValues() {
@@ -46,14 +46,14 @@ private class DHSUpdateACDDateControllerTest {
         controller.SaveOrderAction();
         System.assertEquals(1,
             controller.FetchCasesofCustomerOrder(
-                new List<String>{ executedOrder.Id }).size());
-        System.assert(!controller.FetchOrderInformation('Executed').isEmpty());
+                new List<String>{ executedOrder.Id }).size(), 'Expected the asserted condition to hold');
+        System.assert(!controller.FetchOrderInformation('Executed').isEmpty(), 'Expected assertion condition to hold');
         DHSUpdateACDDateController.OrderRecord wrapper =
             new DHSUpdateACDDateController.OrderRecord(
                 null, new DHS_Customer_Order__c(), 'log', null);
-        System.assertEquals('log', wrapper.logMessage);
-        System.assertNotEquals(null, controller.UploadedcustomerOrders);
-        System.assertNotEquals(null, controller.deliverables);
+        System.assertEquals('log', wrapper.logMessage, 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.UploadedcustomerOrders, 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.deliverables, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -69,9 +69,9 @@ private class DHSUpdateACDDateControllerTest {
         System.assertEquals(1, [
             SELECT count() FROM DHS_Customer_Order__c
             WHERE Status__c = 'Uploaded'
-        ]);
+        ], 'Expected the asserted condition to hold');
         System.assertEquals(1, [
             SELECT count() FROM DHS_Customer_Order_Upload_Log__c
-        ]);
+        ], 'Expected the asserted condition to hold');
     }
 }

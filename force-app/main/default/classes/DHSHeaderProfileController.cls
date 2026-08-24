@@ -1,9 +1,15 @@
-/** Determines whether the current DHS user can access the report designer. */
+/**
+ * @description Determines whether the current DHS user can access the report designer.
+ */
 public with sharing class DHSHeaderProfileController {
-    /** Indicates whether the current user can open the DHS designer. */
+    /**
+     * @description Indicates whether the current user can open the DHS designer.
+     */
     public Boolean canAccessDhsDesigner { get; private set; }
 
-    /** Loads the current user's DHS type and Salesforce profile. */
+    /**
+     * @description Loads the current user's DHS type and Salesforce profile.
+     */
     public DHSHeaderProfileController() {
         canAccessDhsDesigner = false;
         List<User> users = [

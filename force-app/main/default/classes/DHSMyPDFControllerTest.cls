@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSMyPDFControllerTest {
     @IsTest
     static void setsDownloadHeader() {
@@ -12,6 +12,6 @@ private class DHSMyPDFControllerTest {
         System.assertEquals(
             'attachment; filename=CustomReport.pdf',
             ApexPages.currentPage().getHeaders().get('Content-Disposition')
-        );
+        , 'Expected the asserted condition to hold');
     }
 }

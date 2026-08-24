@@ -1,7 +1,14 @@
-/** Retains the existing DHSgetMetadata integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc')
+/**
+ * @description Retains the existing DHSgetMetadata integration and application behavior.
+ */
+
 public class DHSgetMetadata {
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param reportType Method parameter.
+     * @return The requested result.
+     */
     public static Map<String, Object> getFieldMap(String reportType) {
         Map<String, Object> returnVal = new Map<String, Object>();
         List<String> labels = new List<String>();

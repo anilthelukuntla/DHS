@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSAttachmentTriggerTest {
     @IsTest
     static void handlesAttachmentInsert() {
@@ -11,6 +11,6 @@ private class DHSAttachmentTriggerTest {
             Body = Blob.valueOf('test')
         );
         insert record;
-        System.assertNotEquals(null, record.Id);
+        System.assertNotEquals(null, record.Id, 'Expected the asserted condition to hold');
     }
 }

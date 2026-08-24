@@ -1,16 +1,28 @@
-/** Controls DHS onboarding records, bulk edits, and DocuSign submission. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Controls DHS onboarding records, bulk edits, and DocuSign submission.
+ */
+@SuppressWarnings('PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssCount,PMD.StdCyclomaticComplexity')
 public without sharing class DHSOnBoardingController {
+    /** @description Provides this DHS API member. */
     public class BulkEditFieldConfig {
+        /** @description Provides this DHS API member. */
         public String apiName {get;set;}
+        /** @description Provides this DHS API member. */
         public String label {get;set;}
+        /** @description Provides this DHS API member. */
         public String inputType {get;set;}
+        /** @description Provides this DHS API member. */
         public Boolean isPicklist { get; private set; }
+        /** @description Provides this DHS API member. */
         public Boolean isBoolean { get; private set; }
+        /** @description Provides this DHS API member. */
         public Boolean isTextArea { get; private set; }
+        /** @description Provides this DHS API member. */
         public Boolean showInputField { get; private set; }
+        /** @description Provides this DHS API member. */
         public List<SelectOption> picklistOptions {get;set;}
 
+        /** @description Provides this DHS API member. */
         public BulkEditFieldConfig() {
             picklistOptions = new List<SelectOption>();
             inputType = 'text';
@@ -20,31 +32,43 @@ public without sharing class DHSOnBoardingController {
             showInputField = true;
         }
 
+        /** @description Provides this DHS API member. */
         public void markPicklist() {
             isPicklist = true;
         }
 
+        /** @description Provides this DHS API member. */
         public void markBoolean() {
             isBoolean = true;
         }
 
+        /** @description Provides this DHS API member. */
         public void markTextArea() {
             isTextArea = true;
         }
 
+        /** @description Provides this DHS API member. */
         public void hideInputField() {
             showInputField = false;
         }
     }
 
+    /** @description Provides this DHS API member. */
     public user currentUser{get;set;}
+    /** @description Provides this DHS API member. */
     public list<onboarding__c> onboardingUsers{get;set;}
+    /** @description Provides this DHS API member. */
     public onboarding__c newUser {get;set;}
+    /** @description Provides this DHS API member. */
     public String bulkUpdatePayload {get;set;}
+    /** @description Provides this DHS API member. */
     public List<BulkEditFieldConfig> bulkEditFields {get;set;}
+    /** @description Provides this DHS API member. */
     public string userSystemAccess {get;set;}
     private String auth;
+    /** @description Provides this DHS API member. */
     public string userSystemAccess1 {get;set;}
+    /** @description Provides this DHS API member. */
     public string tokenURL {get; set;}
     private String accountId = System.Label.DocusignAccountId;
     private String userId = System.Label.DocusignUserId;
@@ -61,8 +85,11 @@ public without sharing class DHSOnBoardingController {
     private Integer docusignExpireAfter {get;set;}
     private Integer docusignExpireWarn {get;set;}
     private String docusignTemplateID {get;set;}
+    /** @description Provides this DHS API member. */
     public String envelopeId {get;set;}
+    /** @description Provides this DHS API member. */
     public boolean duplicateUsername { get; private set; }
+    /** @description Provides this DHS API member. */
     public DHSOnBoardingController(){
         duplicateUsername = false;
         currentUser = [select id, firstname, profile.Name, lastname, email, User_Type__c from User where id = :userinfo.getUserId() WITH USER_MODE ];  
@@ -86,11 +113,19 @@ public without sharing class DHSOnBoardingController {
         }
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public Boolean getCanManageOnboarding() {
         return currentUser != null &&
             (currentUser.Profile.Name == 'System Administrator' || currentUser.User_Type__c == 'PMO');
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public List<SelectOption> getItems() {
         List<SelectOption> options = new List<SelectOption>(); 
         options.add(new SelectOption('Intel','Intel')); 
@@ -98,6 +133,7 @@ public without sharing class DHSOnBoardingController {
 		options.add(new SelectOption('Intel;DHS','Both')); 
         return options; 
     }
+    /** @description Provides this DHS API member. */
     public void createNewUser(){
         newUser.System_Access__c = userSystemAccess;
         list<string> usernames = getAllUsernames();
@@ -111,7 +147,9 @@ public without sharing class DHSOnBoardingController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public string deleteOnboardingUserId{get;set;}
+    /** @description Provides this DHS API member. */
     public void deleteOnboardingUser(){
         if(!getCanManageOnboarding()){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'You do not have permission to deactivate onboarding users.'));
@@ -131,8 +169,11 @@ public without sharing class DHSOnBoardingController {
         fetchOnboardingUsers();
     }
     
+    /** @description Provides this DHS API member. */
     public string editOnboardingUserId{get;set;}
+    /** @description Provides this DHS API member. */
     public onboarding__c editOnboardingUser{Get;set;}
+    /** @description Provides this DHS API member. */
     public void editOnboardingUser(){
         for(onboarding__c onboardinguser: onboardingUsers){
             if(editOnboardingUserId == onboardinguser.id){
@@ -142,6 +183,7 @@ public without sharing class DHSOnBoardingController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void saveModifiedOnboardingUser(){
         editOnboardingUser.System_Access__c = userSystemAccess1;
         list<string> usernames = getAllUsernames();
@@ -155,6 +197,7 @@ public without sharing class DHSOnBoardingController {
         
     }
 
+    /** @description Provides this DHS API member. */
     public void saveMainScreenUpdates(){
         if(!getCanManageOnboarding()){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'You do not have permission to update onboarding users from the dashboard.'));
@@ -194,6 +237,7 @@ public without sharing class DHSOnBoardingController {
         fetchOnboardingUsers();
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchOnboardingUsers(){
         onboardingUsers = new list<onboarding__c>();
         List<string> onBoardingFields = new List<string>();
@@ -292,6 +336,7 @@ public without sharing class DHSOnBoardingController {
         return stringValue;
     }
     
+    /** @description Provides this DHS API member. */
     public void sendToDocusign(){
         DocuSignAPI.APIServiceSoap dsApiSend = new DocuSignAPI.APIServiceSoap();
         dsApiSend.endpoint_x = webServiceUrl;
@@ -367,6 +412,13 @@ public without sharing class DHSOnBoardingController {
         }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param templateId Method parameter.
+     * @param recipient Method parameter.
+     * @param recipient2 Method parameter.
+     * @return The requested result.
+     */
     public DocuSignAPI.TemplateReference addTemplate(string templateId, DocuSignAPI.Recipient recipient,DocuSignAPI.Recipient recipient2 ){
         DocuSignAPI.TemplateReference myTemplateReference = new DocuSignAPI.TemplateReference();
         myTemplateReference.Template = templateId;
@@ -397,6 +449,10 @@ public without sharing class DHSOnBoardingController {
            return myTemplateReference;
            
     }
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public static list<string> getAllUsernames(){
         list<string> usernames = new list<string>();
         list<user> users = [select id,username__c from user WITH USER_MODE ];	

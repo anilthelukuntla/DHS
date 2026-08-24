@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ExcessiveParameterList,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ExcessiveParameterList')
 private class DHSCaseMessageEditorControllerTest {
 
     private static final String CMO_EMAIL = 'cmo.user@test.example';
@@ -114,11 +114,11 @@ private class DHSCaseMessageEditorControllerTest {
             PageReference result = controller.saveMessage();
             Test.stopTest();
 
-            System.assertEquals(null, result);
-            System.assertEquals(false, controller.hasError);
-            System.assertEquals('', controller.errorMessage);
-            System.assertEquals(true, controller.isCMOOrPMO);
-            System.assertEquals(false, controller.isInvestigator);
+            System.assertEquals(null, result, 'Expected the asserted condition to hold');
+            System.assertEquals(false, controller.hasError, 'Expected the asserted condition to hold');
+            System.assertEquals('', controller.errorMessage, 'Expected the asserted condition to hold');
+            System.assertEquals(true, controller.isCMOOrPMO, 'Expected the asserted condition to hold');
+            System.assertEquals(false, controller.isInvestigator, 'Expected the asserted condition to hold');
 
             DHS_Message__c updatedMessage = [
                 SELECT Subject__c, Message_Body__c
@@ -129,11 +129,11 @@ private class DHSCaseMessageEditorControllerTest {
             System.assertEquals(
                 'Subject edited by CMO',
                 updatedMessage.Subject__c
-            );
+            , 'Expected the asserted condition to hold');
             System.assertEquals(
                 'Body edited by CMO',
                 updatedMessage.Message_Body__c
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 
@@ -155,9 +155,9 @@ private class DHSCaseMessageEditorControllerTest {
             controller.saveMessage();
             Test.stopTest();
 
-            System.assertEquals(false, controller.hasError);
-            System.assertEquals(true, controller.isInvestigator);
-            System.assertEquals(false, controller.isCMOOrPMO);
+            System.assertEquals(false, controller.hasError, 'Expected the asserted condition to hold');
+            System.assertEquals(true, controller.isInvestigator, 'Expected the asserted condition to hold');
+            System.assertEquals(false, controller.isCMOOrPMO, 'Expected the asserted condition to hold');
 
             DHS_Message__c updatedMessage = [
                 SELECT Subject__c, Message_Body__c
@@ -168,11 +168,11 @@ private class DHSCaseMessageEditorControllerTest {
             System.assertEquals(
                 'Investigator edited subject',
                 updatedMessage.Subject__c
-            );
+            , 'Expected the asserted condition to hold');
             System.assertEquals(
                 'Investigator edited body',
                 updatedMessage.Message_Body__c
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 
@@ -196,11 +196,11 @@ private class DHSCaseMessageEditorControllerTest {
             controller.saveMessage();
             Test.stopTest();
 
-            System.assertEquals(true, controller.hasError);
+            System.assertEquals(true, controller.hasError, 'Expected the asserted condition to hold');
             System.assertEquals(
                 'You do not have permission to edit this message.',
                 controller.errorMessage
-            );
+            , 'Expected the asserted condition to hold');
 
             DHS_Message__c unchangedMessage = [
                 SELECT Subject__c, Message_Body__c
@@ -211,11 +211,11 @@ private class DHSCaseMessageEditorControllerTest {
             System.assertEquals(
                 'Original subject',
                 unchangedMessage.Subject__c
-            );
+            , 'Expected the asserted condition to hold');
             System.assertEquals(
                 'Original message body',
                 unchangedMessage.Message_Body__c
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 
@@ -238,13 +238,13 @@ private class DHSCaseMessageEditorControllerTest {
             controller.saveMessage();
             Test.stopTest();
 
-            System.assertEquals(true, controller.hasError);
+            System.assertEquals(true, controller.hasError, 'Expected the asserted condition to hold');
             System.assertEquals(
                 'You do not have permission to edit this message.',
                 controller.errorMessage
-            );
-            System.assertEquals(false, controller.isCMOOrPMO);
-            System.assertEquals(false, controller.isInvestigator);
+            , 'Expected the asserted condition to hold');
+            System.assertEquals(false, controller.isCMOOrPMO, 'Expected the asserted condition to hold');
+            System.assertEquals(false, controller.isInvestigator, 'Expected the asserted condition to hold');
         }
     }
 
@@ -265,7 +265,7 @@ private class DHSCaseMessageEditorControllerTest {
             DHSCaseMessageEditorController.deleteMessage(messageRecord.Id);
             Test.stopTest();
 
-            System.assertEquals(true, canDelete);
+            System.assertEquals(true, canDelete, 'Expected the asserted condition to hold');
             System.assertEquals(
                 0,
                 [
@@ -273,7 +273,7 @@ private class DHSCaseMessageEditorControllerTest {
                     FROM DHS_Message__c
                     WHERE Id = :messageRecord.Id
                 ]
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 
@@ -303,8 +303,8 @@ private class DHSCaseMessageEditorControllerTest {
 
             Test.stopTest();
 
-            System.assertEquals(false, canDelete);
-            System.assertEquals(true, exceptionThrown);
+            System.assertEquals(false, canDelete, 'Expected the asserted condition to hold');
+            System.assertEquals(true, exceptionThrown, 'Expected the asserted condition to hold');
             System.assertEquals(
                 1,
                 [
@@ -312,7 +312,7 @@ private class DHSCaseMessageEditorControllerTest {
                     FROM DHS_Message__c
                     WHERE Id = :messageRecord.Id
                 ]
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 
@@ -332,10 +332,10 @@ private class DHSCaseMessageEditorControllerTest {
             controller.saveMessage();
             Test.stopTest();
 
-            System.assertEquals(true, controller.hasError);
+            System.assertEquals(true, controller.hasError, 'Expected the asserted condition to hold');
             System.assert(
                 controller.errorMessage.startsWith('Error saving message:')
-            );
+            , 'Expected assertion condition to hold');
         }
     }
 }

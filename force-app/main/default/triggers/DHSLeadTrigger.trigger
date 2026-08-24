@@ -46,7 +46,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
             list<DHS_Lead__c> existingLeads = caseIdNleads.get(l.DHS_Case__c); 
             if(existingLeads != Null){ 
                 for(DHS_Lead__c el: existingLeads){
-                    if(el.Item_number__c == l.Item_number__c && l.Item_number__c != Null){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                    if(el.Item_number__c == l.Item_number__c && l.Item_number__c != Null){
                         l.addError(System.label.DHS_Duplicate_Item_Number_Message);
                     }
                 }
@@ -76,9 +76,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
   
         for(DHS_Lead__c l: Trigger.New){
             l.DHS_Contact__c = casesMap.get(l.DHS_Case__c).DHS_Contact__c;
-            if(caseIdNnumberOfleads.containsKey(l.DHS_Case__c)){ // NOPMD - Legacy trigger behavior retained for compatibility.
-                //l.Item_number__c =  caseIdNnumberOfleads.get(l.DHS_Case__c)+1;   
-            }else{
+            if(!caseIdNnumberOfleads.containsKey(l.DHS_Case__c)){
                    //l.Item_number__c = 1;
                    DHS_Case_History__c ch = new DHS_Case_History__c();
                    ch.DHS_Case__c = l.DHS_Case__c;
@@ -106,7 +104,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                 l.Status__c = 'In-Progress';
             }
         }
-        System.debug('investigatorIds...'+ investigatorIds); // NOPMD - Legacy trigger behavior retained for compatibility.
+
         
         List<DHS_Daily_Production_Summary__c> dailyProductionSummaries = new List<DHS_Daily_Production_Summary__c>();
         Map<String, DHS_Daily_Production_Summary__c> investigatorSummaryMap = new Map<String, DHS_Daily_Production_Summary__c>();
@@ -119,6 +117,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
              investigatorSummaryMap.put(dps.DHS_Reviewer__c,dps);   
         }
         
+        List<DHS_Daily_Production_Summary__c> summariesToInsert = new List<DHS_Daily_Production_Summary__c>();
         for(string invId: investigatorIds){
             if(!investigatorSummaryMap.containsKey(invId)){
                 DHS_Daily_Production_Summary__c dps = new DHS_Daily_Production_Summary__c();
@@ -127,18 +126,21 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                 dps.Leads_Completed__c  = 0;     
                 dps.Leads_Rejected__c  = 0;     
                 dps.Summary_Date__c  = System.Today();  
-                insert dps; // NOPMD - Legacy trigger behavior retained for compatibility.
+                summariesToInsert.add(dps);
                 investigatorSummaryMap.put(invId,dps); 
             }
+        }
+        if (!summariesToInsert.isEmpty()) {
+            Database.insert(summariesToInsert, AccessLevel.USER_MODE);
         }
         Map<Id,User> userMap = new Map<Id,User>([Select Id,Name from User]); // NOPMD - Legacy trigger behavior retained for compatibility.
         
          for(DHS_Lead__c l: trigger.new){
             if(l.Status__c == 'Completed' && trigger.oldmap.get(l.id).Status__c != 'Completed'){
-                if(l.Completed_Date__c  == null){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(l.Completed_Date__c  == null){
                     l.Completed_Date__c = system.today();
                 }else{
-                    system.debug('Lead already has Completed_Date__c'); // NOPMD - Legacy trigger behavior retained for compatibility.
+
                 }
                 
             }
@@ -160,7 +162,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                 mail.setHtmlBody(body);
                 assignedMsgs.add(mail);
                 //DHSMailUtilities.sendHTMLEmailWithTargetObjectId(investigator.id,subject,Body,null);
-                if(String.isBlank(l.Lead_Log__c)){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(String.isBlank(l.Lead_Log__c)){
                     l.Lead_Log__c = System.now() + ': lead assigned to '+userMap.get(l.DHS_Assigned_To__c).Name+'<br/>';
                 }else{
                     l.Lead_Log__c = l.Lead_Log__c + System.now() + ': lead assigned to '+userMap.get(l.DHS_Assigned_To__c).Name+'<br/>';
@@ -174,7 +176,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                 DHS_Daily_Production_Summary__c dps = investigatorSummaryMap.get(l.DHS_Assigned_To__c);
                 dps.Leads_Accepted__c = dps.Leads_Accepted__c+1;
                 dailyProductionSummariesToUpdate.put(dps.id,dps);
-                if(String.isBlank(l.Lead_Log__c)){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(String.isBlank(l.Lead_Log__c)){
                     l.Lead_Log__c = System.now() + ': lead accepted by '+userMap.get(l.DHS_Assigned_To__c).Name+'<br/>';
                 }else{
                     l.Lead_Log__c = l.Lead_Log__c + System.now() + ': lead accepted by '+userMap.get(l.DHS_Assigned_To__c).Name+'<br/>';
@@ -208,17 +210,17 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                 
                 //DHSMailUtilities.sendHTMLEmail(toAddress,subject,Body,null);
                
-                if(String.isBlank(l.Lead_Log__c)){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(String.isBlank(l.Lead_Log__c)){
                     l.Lead_Log__c = '<b style="color:red">'+System.now() + ': lead rejected by '+userMap.get(trigger.oldmap.get(l.id).DHS_Assigned_To__c).Name+'</b><br/>';
                 }else{
-                    System.debug('l.DHS_Assigned_To__c...'+l.DHS_Assigned_To__c); // NOPMD - Legacy trigger behavior retained for compatibility.
-                    System.debug('lead...Assigned_To_Name__c'+l); // NOPMD - Legacy trigger behavior retained for compatibility.
+
+
                     l.Lead_Log__c = l.Lead_Log__c + '<b style="color:red">'+ System.now() +  ': lead rejected by '+userMap.get(trigger.oldmap.get(l.id).DHS_Assigned_To__c).Name+'</b><br/>';
                 }
                 l.DHS_Assigned_To__c = null;  
             }
             if(l.Status__c != 'Completed' && trigger.oldmap.get(l.id).Status__c == 'Completed'){
-                if(investigatorSummaryMap.get(l.DHS_Assigned_To__c) != null){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(investigatorSummaryMap.get(l.DHS_Assigned_To__c) != null){
                     DHS_Daily_Production_Summary__c dps = investigatorSummaryMap.get(l.DHS_Assigned_To__c);
                     if(dps.Leads_Completed__c == null){
                         dps.Leads_Completed__c = 0;
@@ -227,7 +229,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                     dailyProductionSummariesToUpdate.put(dps.id,dps);
                 }
                 
-                if(String.isBlank(l.Lead_Log__c)){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(String.isBlank(l.Lead_Log__c)){
                     l.Lead_Log__c = System.now() + ': lead completed by '+userMap.get(l.DHS_Assigned_To__c).Name+'<br/>';
                 }else{
                     l.Lead_Log__c = l.Lead_Log__c + System.now() + ': lead completed by '+userMap.get(l.DHS_Assigned_To__c).Name+'<br/>';
@@ -254,14 +256,14 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                 
                 //DHSMailUtilities.sendHTMLEmail(toAddress,subject,Body,null);
                
-                if(String.isBlank(l.Lead_Log__c)){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(String.isBlank(l.Lead_Log__c)){
                     l.Lead_Log__c = System.now() + ': lead rejected by QA'+'<br/>';
                 }else{
                     l.Lead_Log__c = l.Lead_Log__c + System.now() + ': lead rejected by QA'+'<br/>';
                 }
             }
             if(l.Status__c != 'QA Review Completed' && trigger.oldmap.get(l.id).Status__c == 'QA Review Completed'){
-                if(String.isBlank(l.Lead_Log__c)){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(String.isBlank(l.Lead_Log__c)){
                     l.Lead_Log__c = System.now() + ': lead QA review completed'+'<br/>';
                 }else{
                     l.Lead_Log__c = l.Lead_Log__c + System.now() + ': lead QA review completed'+'<br/>';
@@ -269,11 +271,8 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
             }
 
         }
-        if(assignedMsgs != null){ // NOPMD - Legacy trigger behavior retained for compatibility.
-            //Messaging.sendEmail(assignedMsgs);
-        }
         if(!dailyProductionSummariesToUpdate.values().isEmpty()){
-            update dailyProductionSummariesToUpdate.values();
+            Database.update(dailyProductionSummariesToUpdate.values(), AccessLevel.USER_MODE);
         }
     }
     if(trigger.isUpdate && trigger.isBefore){
@@ -295,7 +294,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                 leadNMessages.put(msg.DHS_Lead__c,msg);
             }
             if(msg.Subject__c != null){
-                if(msg.Subject__c.contains(' -  Issues, discrepancies, or developed activities discussed')){ // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(msg.Subject__c.contains(' -  Issues, discrepancies, or developed activities discussed')){
                     leadTypeNMessage.put(msg.DHS_Lead__c,msg);
                 }
             }
@@ -304,15 +303,15 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
         List<DHS_Message__c> messagesToUpdate = New List<DHS_Message__c>();
         for(DHS_Lead__c l: Trigger.new){
             If(Trigger.newMap.get(l.Id).Status__c == 'Completed'){
-                If (l.Issues_Discrep_Developed__c== 'Yes'){ // NOPMD - Legacy trigger behavior retained for compatibility.
-                    system.debug('l.Issues_Discrep_Developed__c...'+l.Issues_Discrep_Developed__c); // NOPMD - Legacy trigger behavior retained for compatibility.
+                If (l.Issues_Discrep_Developed__c== 'Yes'){
+
                     if(leadTypeNMessage.containsKey(l.Id)){
                         DHS_Message__c m = leadTypeNMessage.get(l.Id);
-                        system.debug('updated message...'+m.Id); // NOPMD - Legacy trigger behavior retained for compatibility.
+
                         m.Message_Body__c = l.Issue_Description__c;
                         messagesToUpdate.add(m);
                     }else{
-                        system.debug('inserted'); // NOPMD - Legacy trigger behavior retained for compatibility.
+
                         DHS_Message__c message = new DHS_Message__c();
                         message.Message_Body__c = l.Issue_Description__c;
                         message.Subject__c = l.LeadType__c + ' -  Issues, discrepancies, or developed activities discussed';
@@ -323,15 +322,15 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                     }
                 }
             }
-            system.debug('Trigger.newMap.get(l.Id).Status__c...'+Trigger.newMap.get(l.Id).Status__c); // NOPMD - Legacy trigger behavior retained for compatibility.
+
             If(Trigger.newMap.get(l.Id).Status__c == 'Completed' && l.LeadType__c == 'Subject Interview (ESI/TESI)'){
-                if(leadNMessages.containsKey(l.Id)){ // NOPMD - Legacy trigger behavior retained for compatibility.
-                    system.debug('Trigger.newMap.get(l.Id).Expl_Leads_Not_Obtained__c updated...'+l.Id+Trigger.newMap.get(l.Id).Expl_Leads_Not_Obtained__c); // NOPMD - Legacy trigger behavior retained for compatibility.
+                if(leadNMessages.containsKey(l.Id)){
+
                     DHS_Message__c m = leadNMessages.get(l.Id);
                     m.Message_Body__c = Trigger.newMap.get(l.Id).Expl_Leads_Not_Obtained__c;
                     messagesToUpdate.add(m);
                 }else{
-                    system.debug('New Message created for LEADS FROM ESI with lead id...'+l.Id); // NOPMD - Legacy trigger behavior retained for compatibility.
+
                     DHS_Message__c message = new DHS_Message__c();
                     message.Message_Body__c = Trigger.newMap.get(l.Id).Expl_Leads_Not_Obtained__c;
                     message.Subject__c = 'LEADS FROM ESI';
@@ -343,10 +342,10 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
             }
         }
         if(!messagesToInsert.isEmpty()){
-            insert messagesToInsert; // NOPMD - Legacy trigger behavior retained for compatibility.
+            Database.insert(messagesToInsert, AccessLevel.USER_MODE);
         }
         if(!messagesToUpdate.isEmpty()){
-            update messagesToUpdate; // NOPMD - Legacy trigger behavior retained for compatibility.
+            Database.update(messagesToUpdate, AccessLevel.USER_MODE);
         }
     
     
@@ -391,7 +390,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                  c.Current_Task__c = 'investigations review';
                  c.Investigations_Review_Date__c = system.today();
                  casesToUpdate.add(c);  
-                 System.debug('casesToUpdate..allLeadsAreAssigned...'+casesToUpdate); // NOPMD - Legacy trigger behavior retained for compatibility.
+
                  
                  DHS_Case_History__c ch = new DHS_Case_History__c();
                    ch.DHS_Case__c = c.id;
@@ -413,7 +412,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                  c.Current_Task__c = 'QA and review';
                  c.QA_and_Review_Date__c = system.today();
                  casesToUpdate.add(c);    
-                System.debug('casesToUpdate..allLeadsAreCompleted...'+casesToUpdate); // NOPMD - Legacy trigger behavior retained for compatibility.
+
                 
                  DHS_Case_History__c ch = new DHS_Case_History__c();
                    ch.DHS_Case__c = c.id;
@@ -438,17 +437,17 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
     }
     
     if(!caseHistoriesToInsert.isEmpty()){
-        insert caseHistoriesToInsert; // NOPMD - Legacy trigger behavior retained for compatibility.
+        Database.insert(caseHistoriesToInsert, AccessLevel.USER_MODE);
     } 
     if(!waiverInformationToCreate.isEmpty()){
-        insert waiverInformationToCreate; // NOPMD - Legacy trigger behavior retained for compatibility.
+        Database.insert(waiverInformationToCreate, AccessLevel.USER_MODE);
     }
     if(!casesToUpdate.isEmpty()){
         Map<Id, DHS_Case__c> casesToUpdateById = new Map<Id, DHS_Case__c>();
         for (DHS_Case__c caseRecord : casesToUpdate) {
             casesToUpdateById.put(caseRecord.Id, caseRecord);
         }
-        update casesToUpdateById.values();
+        Database.update(casesToUpdateById.values(), AccessLevel.USER_MODE);
     }
     if((trigger.isInsert || trigger.isUpdate || trigger.isDelete || trigger.isUndelete) && trigger.isAfter){
         DHSLeadTriggerHandler.updateCaseLeadSummaryCounts(
@@ -473,7 +472,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
             ld.Source_Name__c = cs.DHS_Contact__r.First_Name__c+' '+cs.DHS_Contact__r.Last_Name__c;
             updateLeads.add(ld);
         }
-        	update updateLeads;
+        	Database.update(updateLeads, AccessLevel.USER_MODE);
     }*/
     
     if(Trigger.isupdate && Trigger.isAfter){
@@ -483,7 +482,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
             List<DHS_TimeSheet__c> invTimeSheet = [select id,Associated_Leads__c from DHS_TimeSheet__c where DHS_User__c =: userinfo.getuserid() and Date__c =: system.today() limit 1]; // NOPMD - Legacy trigger behavior retained for compatibility.
             
             List<DHS_Lead__c> leads = [select id,DHS_Case__r.Case_Number__c,LeadType__c,Coverage_Type__c,Item_number__c from DHS_Lead__c where Id IN:Trigger.NewMap.keyset()]; // NOPMD - Legacy trigger behavior retained for compatibility.
-            if(!invTimeSheet.isEMpty()){ // NOPMD - Legacy trigger behavior retained for compatibility.
+            if(!invTimeSheet.isEMpty()){
                 for(DHS_Lead__c l : leads){
                     string key = l.DHS_Case__r.Case_Number__c+'_'+l.LeadType__c+'_'+l.Coverage_Type__c+'_'+l.Item_number__c;
                     if(invTimeSheet[0].Associated_Leads__c != null){
@@ -495,7 +494,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
                     }
                     
             	}
-            			update invTimeSheet[0];
+            			Database.update(invTimeSheet[0], AccessLevel.USER_MODE);
             }
             
         }
@@ -505,7 +504,7 @@ trigger DHSLeadTrigger on DHS_Lead__c (before insert, before update, after inser
         dt(system.today(),true);
         dt(system.today(),true,false);
         for(DHS_Lead__c l : Trigger.New){
-            system.debug(l.Status__c+' ===> '+l.Id); // NOPMD - Legacy trigger behavior retained for compatibility.
+
         }
     }
     public static datetime dt(date dte){ // NOPMD - Legacy trigger behavior retained for compatibility.

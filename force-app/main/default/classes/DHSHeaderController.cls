@@ -1,6 +1,9 @@
-/** Supplies DHS navigation state, unread-message counts, and session timing actions. */
-@SuppressWarnings('PMD.ApexDoc,PMD.NcssConstructorCount,PMD.UnusedMethod')
+/**
+ * @description Supplies DHS navigation state, unread-message counts, and session timing actions.
+ */
+@SuppressWarnings('PMD.NcssConstructorCount,PMD.UnusedMethod')
 public with sharing class DHSHeaderController {
+    /** @description Provides this DHS API member. */
     public User currentUser {get;set;}
     public boolean isPMOUser {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean isCMOUser {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
@@ -8,11 +11,16 @@ public with sharing class DHSHeaderController {
     public boolean isQAUser {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean isSecurityUser {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean isCustomerUser {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public integer unreadmessagecount {Get;set;}
+    /** @description Provides this DHS API member. */
     public integer unreadmessagecountfrommymessages{get;set;}
+    /** @description Provides this DHS API member. */
     public integer unreadmessagecountforotherpages{get;set;}
+    /** @description Provides this DHS API member. */
     public string pagename{get;set;}
     public boolean hasAccessToLeadUpload{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public DHSHeaderController(){
         hasAccessToLeadUpload = false;
         currentUser = [Select Id, User_Type__c from User where Id=:userinfo.getuserid() WITH USER_MODE];
@@ -44,6 +52,7 @@ public with sharing class DHSHeaderController {
         }    
     }
     
+      /** @description Provides this DHS API member. */
       public void fetchMessages(){
         list<DHS_Message__c> allMessages = new list<DHS_Message__c>(); 
         List<string> messageFields = new List<string>();
@@ -81,6 +90,7 @@ public with sharing class DHSHeaderController {
         unreadmessagecountforotherpages = messageLogs.size();
     }
      @RemoteAction
+    /** @description Provides this DHS API member. */
     public static void updateLogoutTime(){
         id contextUser = userinfo.getuserid();
         date todayDate = system.today();
@@ -99,6 +109,10 @@ public with sharing class DHSHeaderController {
         
     }
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param idleMinutes Method parameter.
+     */
     public static void updateIdleTime(Integer idleMinutes) {
         if (idleMinutes == null || idleMinutes <= 0) {
             return;

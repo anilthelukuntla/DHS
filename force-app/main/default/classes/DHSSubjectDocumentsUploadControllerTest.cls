@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSSubjectDocumentsUploadControllerTest {
     @IsTest
     static void loadsAndSubmitsDocumentRequest() {
@@ -19,6 +19,6 @@ private class DHSSubjectDocumentsUploadControllerTest {
         DHSSubjectDocumentsUploadController controller =
             new DHSSubjectDocumentsUploadController();
         controller.submitaction();
-        System.assertEquals('Documents Received', controller.documentRequest.Status__c);
+        System.assertEquals('Documents Received', controller.documentRequest.Status__c, 'Expected the asserted condition to hold');
     }
 }

@@ -1,13 +1,19 @@
-/** Provides reusable Salesforce Files creation and linking operations. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSharingViolations,PMD.AvoidDebugStatements,PMD.UnusedMethod')
+/**
+ * @description Provides reusable Salesforce Files creation and linking operations.
+ */
+@SuppressWarnings('PMD.ApexSharingViolations,PMD.UnusedMethod')
 public class DHSFilesRecipes {
     /**
+     * @description Provides this DHS API member.
      * An inner class representing a file to be created and linked to a given record.
      * Useful for bulk-creating files and linking them.
      */
     public class FileAndLinkObject {
+        /** @description Provides this DHS API member. */
         public Blob fileContents { get; set; }
+        /** @description Provides this DHS API member. */
         public Id attachedTo { get; set; }
+        /** @description Provides this DHS API member. */
         public String fileName { get; set; }
     }
 
@@ -33,13 +39,13 @@ public class DHSFilesRecipes {
     /**
      * @description creates a file attachment containing the given string and
      * links it to the object specified in firstLocation
-     * @param  text          String to write to the file
-     * @param  firstLocation object to immediately link this file to
+ * @param  text          String to write to the file
+ * @param  firstLocation object to immediately link this file to
      * @example
      * ```
      * Account acct = [SELECT Id FROM Account LIMIT 1];
      * DHSFilesRecipes.createFileFromStringAttachedToRecord('Hello World', acct.Id);
-     * System.debug('Look for files assoicated with account: ' + acct.id);
+     * 
      * ```
      */
     public static void createFileFromStringAttachedToRecord(
@@ -56,9 +62,9 @@ public class DHSFilesRecipes {
 
     /**
      * @description        Creates a file and links it to a given record
-     * @param fileContents the binary blob of the files contents
-     * @param attachedTo   the record to link this file to, initially
-     * @param fileName     the name of the file. Note that the system determines
+ * @param fileContents the binary blob of the files contents
+ * @param attachedTo   the record to link this file to, initially
+ * @param fileName     the name of the file. Note that the system determines
      *  the filetype from the file extension here
      * @example
      * ```
@@ -69,8 +75,10 @@ public class DHSFilesRecipes {
      *      firstLocation,
      *      'AwesomeFile1'
      *  );
-     * System.debug('Look for files assoicated with account: ' + acct.id);
+     * 
      * ```
+ * @return The requested result.
+ * @return The requested result.
      */
     public static Database.SaveResult createFileAttachedToRecord(
         Blob fileContents,
@@ -86,17 +94,14 @@ public class DHSFilesRecipes {
         fileToUpload.VersionData = fileContents;
         fileToUpload.FirstPublishLocationId = attachedTo;
         Database.SaveResult saveResult;
-        try {
-            saveResult = Database.insert(fileToUpload, AccessLevel.USER_MODE);
-        } catch (DmlException DMLe) {
-            System.debug(LoggingLevel.ERROR, 'Unable to create DHS file: ' + DMLe.getMessage());
-        }
+        saveResult = Database.insert(fileToUpload, AccessLevel.USER_MODE);
         return saveResult;
     }
 
     /**
      * @description    Convenience method for creating a file and linking it to a given record
-     * @param toCreate a FileAndLinkObject (inner class above) object representing the file to be created and linked
+ * @param toCreate a FileAndLinkObject (inner class above) object representing the file to be created and linked
+ * @return The requested result.
      */
     public static Database.SaveResult createFileAttachedToRecord(
         DHSFilesRecipes.FileAndLinkObject toCreate
@@ -110,7 +115,8 @@ public class DHSFilesRecipes {
 
     /**
      * @description    Bulk method for inserting multiple files and link them to records
-     * @param toCreate
+ * @param toCreate
+ * @return The requested result.
      */
     public static List<Database.SaveResult> createFilesAttachedToRecords(
         List<DHSFilesRecipes.FileAndLinkObject> toCreate
@@ -127,11 +133,7 @@ public class DHSFilesRecipes {
         }
 
         List<Database.SaveResult> saveResult = new List<Database.SaveResult>();
-        try {
-            saveResult = Database.insert(filesToCreate, AccessLevel.USER_MODE);
-        } catch (DmlException DMLe) {
-            System.debug(LoggingLevel.ERROR, 'Unable to create DHS files: ' + DMLe.getMessage());
-        }
+        saveResult = Database.insert(filesToCreate, AccessLevel.USER_MODE);
         return saveResult;
     }
 
@@ -144,14 +146,15 @@ public class DHSFilesRecipes {
      * Query from accessing fields and objects that they don't have permission
      * to access. This is a form of inline CRUD/FLS Check.
      *
-     * @param genericFileType Enum of image, audio, document
-     * @param recordId        Record ID to limit searching to
+ * @param genericFileType Enum of image, audio, document
+ * @param recordId        Record ID to limit searching to
      * @example
      * ```
      * Account acct = [SELECT Id FROM Account LIMIT 1];
      * DHSFilesRecipes.createFileFromStringAttachedToRecord('Hello World', acct.Id);
-     * System.debug('Found the following ContentVersion Ids: ' + DHSFilesRecipes.getFilteredAttachmentsForRecord(DHSFilesRecipes.GenericFileType.ALL, acct.id));
+     * 
      * ```
+ * @return The requested result.
      */
     public static List<ContentVersion> getFilteredAttachmentsForRecord(
         DHSFilesRecipes.GenericFileType genericFileType,
@@ -202,15 +205,16 @@ public class DHSFilesRecipes {
 
     /**
      * @description Given a content document link, publish the content version
-     * @param cdl   Content Document link record to publish
+ * @param cdl   Content Document link record to publish
      * @exception   FilesRecipesException
      * @example
      * ```
      * Account acct = [SELECT Id FROM Account LIMIT 1];
      * DHSFilesRecipes.createFileFromStringAttachedToRecord('Hello World', acct.Id);
      * ContentDocumentLink cdl = [SELECT LinkedEntityId, ContentDocument.LatestPublishedVersionId FROM ContentDocumentLink WHERE LinkedEntityId = :acct.id LIMIT 1];
-     * System.debug('Found the following ContentVersion Ids: ' + DHSFilesRecipes.getFilteredAttachmentsForRecord(DHSFilesRecipes.GenericFileType.ALL, acct.id));
+     *
      * ```
+ * @return The requested result.
      */
     public static Database.SaveResult publishContent(ContentDocumentLink cdl) {
         ContentDistribution dist = new ContentDistribution();

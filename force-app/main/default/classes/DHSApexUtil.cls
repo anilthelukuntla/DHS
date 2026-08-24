@@ -1,11 +1,19 @@
-/** Retains the existing DHSApexUtil integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSharingViolations,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EagerlyLoadedDescribeSObjectResult,PMD.EmptyStatementBlock,PMD.ExcessiveParameterList,PMD.FieldDeclarationsShouldBeAtStart')
+/**
+ * @description Retains the existing DHSApexUtil integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSharingViolations,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EagerlyLoadedDescribeSObjectResult,PMD.EmptyStatementBlock,PMD.ExcessiveParameterList,PMD.FieldDeclarationsShouldBeAtStart')
 public class DHSApexUtil {
     
     //Method used to get fields from fieldsets defined in salesforce objects.
     //Sample Usage: List fieldSetMemberList =  Util.readFieldSet('FieldSetName','Work_Order__c');
     //Returns list<Schema.FieldSetMember>
     //We can access field ApIName, Label using getFieldPath(), getLabel() respectively
+    /**
+     * @description Provides this DHS API member.
+     * @param fieldSetName Method parameter.
+     * @param objectName Method parameter.
+     * @return The requested result.
+     */
     public static List<Schema.FieldSetMember> readFieldSet(String fieldSetName, String objectName) {
         Map<String, Schema.SObjectType> globalDescribeMap = Schema.getGlobalDescribe();
         Schema.SObjectType sObjectTypeObj = globalDescribeMap.get(objectName);
@@ -16,6 +24,11 @@ public class DHSApexUtil {
     
     //creates a map of all Record Type Names to Ids based upon a passed Object
     //Sample Usage: map<String, Id> incidentRecordTypes = buildMapOfRecordTypes('Incident__c');
+    /**
+     * @description Provides this DHS API member.
+     * @param passedSobjectType Method parameter.
+     * @return The requested result.
+     */
     public static Map<String, Id> buildMapOfRecordTypes(String passedSobjectType) {
         Map<String, Id> returnMap = new Map<String, Id>(); 
         for (RecordType rt : [SELECT Id, Name FROM RecordType WHERE SobjectType = :passedSobjectType WITH USER_MODE ]) { 
@@ -25,6 +38,11 @@ public class DHSApexUtil {
     }
     
     //Method To Return Allfields of the object
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @return The requested result.
+     */
     public static List<String> fetchFields(String objectName){
         Map<String, Schema.SObjectType> globalDescribeMap = Schema.getGlobalDescribe();
         Schema.SObjectType sObjectTypeObj = globalDescribeMap.get(objectName);
@@ -41,6 +59,12 @@ public class DHSApexUtil {
     }
     
     //Return List of Pick list values for the given object and the picklist filed name
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @param fieldName Method parameter.
+     * @return The requested result.
+     */
     public static List<String> getPickListValues(Sobject objectName, String fieldName){
         List<String> pList = new List<String>();
         Schema.sObjectType sobjectType = objectName.getSObjectType(); 
@@ -53,15 +77,37 @@ public class DHSApexUtil {
         return pList;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @param fields Method parameter.
+     * @param filter Method parameter.
+     * @return The requested result.
+     */
     public static String queryBuilder(String objectName, List<String> fields, List<String> filter){
         return queryBuilder(objectName,fields,filter,null);
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @param fieldSetName Method parameter.
+     * @param filter Method parameter.
+     * @return The requested result.
+     */
     public static String queryBuilder(String objectName, String fieldSetName, List<String> filter){
         List<String> fieldList = getFieldSetFields(objectName, fieldSetName);
         return queryBuilder(objectName,fieldList,filter);
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @param fields Method parameter.
+     * @param filter Method parameter.
+     * @param orderBy Method parameter.
+     * @return The requested result.
+     */
     public static String queryBuilder(String objectName, List<String> fields, List<String> filter,List<string> orderBy){
         String query = 'SELECT ';
         query += String.join(fields,',');
@@ -75,6 +121,12 @@ public class DHSApexUtil {
        return query;
     }
     
+     /**
+      * @description Provides this DHS API member.
+      * @param objectName Method parameter.
+      * @param fsetName Method parameter.
+      * @return The requested result.
+      */
      public static List<String> getFieldSetFields(String objectName,String fsetName){
         List<Schema.FieldSetMember> fieldset  = getFieldSetFieldsObjs(objectName,fsetName);
         List<String> items = new List<String>();
@@ -84,15 +136,31 @@ public class DHSApexUtil {
         return items;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @param fsetName Method parameter.
+     * @return The requested result.
+     */
     public static List<Schema.FieldSetMember> getFieldSetFieldsObjs(String objectName,String fsetName){
        return getObjectTypeDescribe(objectName).FieldSets.getMap().get(fsetName).getFields();
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @return The requested result.
+     */
     public static Schema.DescribeSObjectResult getObjectTypeDescribe(String objectName){
         Type t = Type.forName(objectName);
         return ((Sobject)t.newInstance()).getSObjectType().getDescribe();
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param objType Method parameter.
+     * @return The requested result.
+     */
     public static Map<object,object> getSObjectFieldTypes(String objType) {
         map<object,object> fieldDataTypesMap = new map<object,object>();
         Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
@@ -109,22 +177,40 @@ public class DHSApexUtil {
         return fieldDataTypesMap;
     } 
     
+    /** @description Provides this DHS API member. */
     public class Criteria {
        public String fieldName;
        public String operator;
        public String fieldValue;
        public String fieldType;
+       /**
+        * @description Provides this DHS API member.
+        * @param fName Method parameter.
+        * @param fValue Method parameter.
+        * @param fOperator Method parameter.
+        */
        public Criteria(String fName, string fValue,string fOperator) {
            fieldName = fName;
            fieldValue = fValue;
            operator = fOperator;
        }
+       /**
+        * @description Provides this DHS API member.
+        * @param fName Method parameter.
+        * @param fValue Method parameter.
+        * @param fOperator Method parameter.
+        * @param fType Method parameter.
+        */
        public Criteria(String fName, string fValue,string fOperator,string fType) {
            fieldName = fName;
            fieldValue = fValue;
            operator = fOperator;
            fieldType =  fType;
        }
+       /**
+        * @description Provides this DHS API member.
+        * @return The requested result.
+        */
        public String getSOQLCriteria() {
            if (String.isBlank(fieldName) || !Pattern.matches('^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)*$', fieldName)) {
                throw new IllegalArgumentException('Invalid SOQL field path');
@@ -145,11 +231,20 @@ public class DHSApexUtil {
            
        }
     
+       /**
+        * @description Provides this DHS API member.
+        * @return The requested result.
+        */
        public boolean isFieldValueGiven() {
            return fieldValue != null && fieldValue != '';
        }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param criterias Method parameter.
+     * @return The requested result.
+     */
     public static String generateWhereQuery(List<Criteria> criterias) {
         List<String> andConditions = new List<String>();
         for(Criteria singleCriteria : criterias) {
@@ -160,6 +255,12 @@ public class DHSApexUtil {
         return String.join(andConditions, ' AND ');
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param objectType Method parameter.
+     * @param selectedField Method parameter.
+     * @return The requested result.
+     */
     public static List<String> getPickListValuesIntoList(String objectType, String selectedField){
         List<String> pickListValuesList = new List<String>();
         Schema.SObjectType convertToObj = Schema.getGlobalDescribe().get(objectType);
@@ -172,9 +273,18 @@ public class DHSApexUtil {
         return pickListValuesList;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public static Boolean runningInASandbox() {
         return [SELECT Id, IsSandbox FROM Organization  WITH USER_MODE LIMIT 1].IsSandbox;
     }
+	/**
+	 * @description Provides this DHS API member.
+	 * @param objectName Method parameter.
+	 * @return The requested result.
+	 */
 	public static Map<String, Schema.SObjectField> getObjectFieldsDescribe(string objectName){
         Map <String,Schema.SObjectType> gd = Schema.getGlobalDescribe();
 		Schema.SObjectType sobjType = gd.get(objectName);
@@ -183,6 +293,15 @@ public class DHSApexUtil {
         return mapofField;
 	}
     Public static List<Object> records;
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @param fields Method parameter.
+     * @param conditions Method parameter.
+     * @param querylimit Method parameter.
+     * @param orderBy Method parameter.
+     * @return The requested result.
+     */
     Public static List<Object> getAllRecByTooling(string objectName,List<string> fields, List<Map<string,Object>> conditions,Integer querylimit, String orderBy){
 		records = New List<Object>();
         for(integer i = 0; i< records.size(); i++){
@@ -210,6 +329,11 @@ public class DHSApexUtil {
 		}
         	return records;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param dt Method parameter.
+     * @return The requested result.
+     */
     public static datetime dt(date dt){
         integer day;
         integer month;

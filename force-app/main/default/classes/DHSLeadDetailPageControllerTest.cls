@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage,PMD.UnusedLocalVariable')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSLeadDetailPageControllerTest {
 
     @TestSetup
@@ -78,16 +78,16 @@ public class DHSLeadDetailPageControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals(null, controller.errorMessage);
+        System.assertEquals(null, controller.errorMessage, 'Expected the asserted condition to hold');
         System.assertEquals(
             'Accepted',
             controller.leadRecord
                 .Lead_Accepted_or_Rejected__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             UserInfo.getUserId(),
             controller.leadRecord.DHS_Assigned_To__c
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -109,12 +109,12 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             true,
             controller.showstandardisedissuesotherexplanation
-        );
+        , 'Expected the asserted condition to hold');
         System.assert(
             controller.leadRecord
                 .Standardised_Issues_Picklist__c
                 .contains('Other')
-        );
+        , 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -134,7 +134,7 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             false,
             controller.showstandardisedissuesotherexplanation
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -164,17 +164,17 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             'QA Rejected',
             rejectedLead.Status__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'Test rejection',
             rejectedLead.QA_Rejection_Comments__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             Date.today(),
             rejectedLead.QA_Rejected_Date__c
-        );
-        System.assertNotEquals(null, result);
-        System.assertEquals(true, result.getRedirect());
+        , 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
+        System.assertEquals(true, result.getRedirect(), 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -202,18 +202,19 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             'Applied For Waiver',
             updatedLead.Status__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'Test waiver',
             updatedLead.Reason_for_Waiver__c
-        );
-        System.assertNotEquals(null, result);
+        , 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
 
         List<DHS_Case_History__c> caseHistory = [
             SELECT Id, Value__c
             FROM DHS_Case_History__c
             WHERE DHS_Case__c = :lead.DHS_Case__c
         ];
+        System.assertNotEquals(null, caseHistory, 'Expected the case history query to complete');
 
     }
 
@@ -238,9 +239,9 @@ public class DHSLeadDetailPageControllerTest {
                 FROM DHS_Lead__c
                 WHERE Id = :lead.Id
             ]
-        );
-        System.assertNotEquals(null, result);
-        System.assertEquals(true, result.getRedirect());
+        , 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
+        System.assertEquals(true, result.getRedirect(), 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -267,7 +268,8 @@ public class DHSLeadDetailPageControllerTest {
 
         System.assertNotEquals(
             null,
-            controller.selectedMessage
+            controller.selectedMessage,
+            'Expected the selected message to be cleared'
         );
 
         controller.selectedMessage.Subject__c =
@@ -284,7 +286,7 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             'Updated subject',
             updatedMessage.Subject__c
-        );
+        , 'Expected the asserted condition to hold');
 
         controller.deleteMessage();
 
@@ -297,7 +299,7 @@ public class DHSLeadDetailPageControllerTest {
                 FROM DHS_Message__c
                 WHERE Id = :messageRecord.Id
             ]
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -320,7 +322,8 @@ public class DHSLeadDetailPageControllerTest {
 
         System.assertEquals(
             null,
-            controller.selectedMessage
+            controller.selectedMessage,
+            'Expected the selected message to be cleared'
         );
     }
 
@@ -355,15 +358,15 @@ public class DHSLeadDetailPageControllerTest {
             WHERE DHS_Lead__c = :lead.Id
         ];
 
-        System.assertEquals(1, requests.size());
+        System.assertEquals(1, requests.size(), 'Expected the asserted condition to hold');
         System.assertEquals(
             'Documents Requested',
             requests[0].Status__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'test@test.com',
             requests[0].To_Address__c
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -393,9 +396,9 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             'QA Review Completed',
             updatedLead.Status__c
-        );
-        System.assertNotEquals(null, result);
-        System.assertEquals(true, result.getRedirect());
+        , 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
+        System.assertEquals(true, result.getRedirect(), 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -426,16 +429,16 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             'Completed',
             completedLead.Status__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             1,
             completedLead.Hours_of_completion__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             30,
             completedLead.Minutes_of_completion__c
-        );
-        System.assertNotEquals(null, result);
+        , 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -450,7 +453,7 @@ public class DHSLeadDetailPageControllerTest {
                     'Id,Name',
                     null
                 )
-        );
+        , 'Expected the asserted condition to hold');
 
         System.assertEquals(
             '',
@@ -458,12 +461,12 @@ public class DHSLeadDetailPageControllerTest {
                     'Id,Name',
                     null
                 )
-        );
+        , 'Expected the asserted condition to hold');
 
         System.assertEquals(
             '',
             DHSLeadDetailPageController.getLeadGrammarRecord(null)
-        );
+        , 'Expected the asserted condition to hold');
 
         String created =
             DHSLeadDetailPageController.createLeadGrammarRecord(
@@ -471,7 +474,7 @@ public class DHSLeadDetailPageControllerTest {
                     lead.Id
                 );
 
-        System.assertEquals('Id,Name', created);
+        System.assertEquals('Id,Name', created, 'Expected the asserted condition to hold');
 
         String updated =
             DHSLeadDetailPageController.updateLeadGrammarRecord(
@@ -482,7 +485,7 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             'Id,Name,Status__c',
             updated
-        );
+        , 'Expected the asserted condition to hold');
 
         String fetched =
             DHSLeadDetailPageController.getLeadGrammarRecord(lead.Id);
@@ -490,7 +493,7 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             'Id,Name,Status__c',
             fetched
-        );
+        , 'Expected the asserted condition to hold');
 
         Test.stopTest();
     }
@@ -514,7 +517,7 @@ public class DHSLeadDetailPageControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals('Updated fields', result);
+        System.assertEquals('Updated fields', result, 'Expected the asserted condition to hold');
 
         System.assertEquals(
             1,
@@ -523,7 +526,7 @@ public class DHSLeadDetailPageControllerTest {
                 FROM DHS_Lead_Grammar_Check__c
                 WHERE DHS_Lead__c = :lead.Id
             ]
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -536,13 +539,13 @@ public class DHSLeadDetailPageControllerTest {
                     Date.newInstance(2026, 6, 16)
                 );
 
-            System.assertNotEquals(null, result);
+            System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
         } catch (Exception e) {
             /*
              * The controller currently passes day, month and year
              * to Datetime.newInstance in the wrong order.
              */
-            System.assertNotEquals(null, e.getMessage());
+            System.assertNotEquals(null, e.getMessage(), 'Expected the asserted condition to hold');
         }
 
         Test.stopTest();
@@ -578,26 +581,26 @@ public class DHSLeadDetailPageControllerTest {
         System.assertEquals(
             200,
             controller.messages.size()
-        );
-        System.assertEquals(1, controller.pageNumber);
-        System.assertEquals(false, controller.disableNext);
+        , 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.pageNumber, 'Expected the asserted condition to hold');
+        System.assertEquals(false, controller.disableNext, 'Expected the asserted condition to hold');
 
         controller.handleNext();
 
-        System.assertEquals(2, controller.pageNumber);
-        System.assertEquals(5, controller.messages.size());
-        System.assertEquals(true, controller.disableNext);
-        System.assertEquals(false, controller.disablePrev);
+        System.assertEquals(2, controller.pageNumber, 'Expected the asserted condition to hold');
+        System.assertEquals(5, controller.messages.size(), 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.disableNext, 'Expected the asserted condition to hold');
+        System.assertEquals(false, controller.disablePrev, 'Expected the asserted condition to hold');
 
         controller.handlePrev();
 
-        System.assertEquals(1, controller.pageNumber);
+        System.assertEquals(1, controller.pageNumber, 'Expected the asserted condition to hold');
         System.assertEquals(
             200,
             controller.messages.size()
-        );
-        System.assertEquals(true, controller.disablePrev);
-        System.assertEquals(false, controller.disableNext);
+        , 'Expected the asserted condition to hold');
+        System.assertEquals(true, controller.disablePrev, 'Expected the asserted condition to hold');
+        System.assertEquals(false, controller.disableNext, 'Expected the asserted condition to hold');
 
         Test.stopTest();
     }
@@ -618,16 +621,16 @@ public class DHSLeadDetailPageControllerTest {
 
         Test.stopTest();
 
-        System.assertEquals(3, options.size());
-        System.assertEquals('', options[0].getValue());
+        System.assertEquals(3, options.size(), 'Expected the asserted condition to hold');
+        System.assertEquals('', options[0].getValue(), 'Expected the asserted condition to hold');
         System.assertEquals(
             'Subject not available',
             options[1].getValue()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'Other',
             options[2].getValue()
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -665,17 +668,17 @@ public class DHSLeadDetailPageControllerTest {
         lifecycle.artifacts.add(
             new DHSLeadDetailPageController.ArtifactDetail(artifact));
 
-        System.assertEquals('Test meeting', summary.subject);
-        System.assertEquals(1, lifecycle.participants.size());
-        System.assertEquals(1, lifecycle.artifacts.size());
+        System.assertEquals('Test meeting', summary.subject, 'Expected the asserted condition to hold');
+        System.assertEquals(1, lifecycle.participants.size(), 'Expected the asserted condition to hold');
+        System.assertEquals(1, lifecycle.artifacts.size(), 'Expected the asserted condition to hold');
         System.assertEquals(0,
-            DHSLeadDetailPageController.getLeadMeetings(null).size());
+            DHSLeadDetailPageController.getLeadMeetings(null).size(), 'Expected the asserted condition to hold');
 
         try {
             DHSLeadDetailPageController.getMeetingLifecycleDetails(null, null);
             System.assert(false, 'Expected required-ID exception');
         } catch (AuraHandledException expected) {
-            System.assertNotEquals(null, expected.getMessage());
+            System.assertNotEquals(null, expected.getMessage(), 'Expected the asserted condition to hold');
         }
     }
 
@@ -693,7 +696,7 @@ public class DHSLeadDetailPageControllerTest {
         insert schedule;
         List<DHSLeadDetailPageController.MeetingSummary> meetings =
             DHSLeadDetailPageController.getLeadMeetings(lead.Id);
-        System.assertEquals(1, meetings.size());
-        System.assertEquals('Coverage meeting', meetings[0].subject);
+        System.assertEquals(1, meetings.size(), 'Expected the asserted condition to hold');
+        System.assertEquals('Coverage meeting', meetings[0].subject, 'Expected the asserted condition to hold');
     }
 }

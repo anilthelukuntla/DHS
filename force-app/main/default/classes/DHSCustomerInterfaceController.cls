@@ -1,11 +1,19 @@
-/** Visualforce controller for DHS customer order and related case information. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.UnusedMethod')
+/**
+ * @description Visualforce controller for DHS customer order and related case information.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.UnusedMethod')
 public with sharing class DHSCustomerInterfaceController {
+    /** @description Provides this DHS API member. */
     public List<OrderRecord> customerOrders {get;set;}
+    /** @description Provides this DHS API member. */
     public List<OrderRecord> uploadedcustomerOrders {get;set;}
+    /** @description Provides this DHS API member. */
     public List<OrderRecord> executedCustomerOrders {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<Id,List<DHS_Case__c>> executedCustomerOrdersandCasesMap {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<Id,DHS_Customer_Order__c> executedCustomerOrdersMap {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSCustomerInterfaceController(){
         uploadedcustomerOrders = new List<OrderRecord> ();
         executedCustomerOrders = new List<OrderRecord> ();
@@ -26,6 +34,11 @@ public with sharing class DHSCustomerInterfaceController {
             }
         }
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param orderids Method parameter.
+     * @return The requested result.
+     */
     public list<DHS_Case__c> fetchCasesofCustomerOrder(list<string> orderids){
         List<string> caseFields = new List<string>();
         caseFields = DHSApexUtil.FetchFields('DHS_Case__c');
@@ -37,15 +50,28 @@ public with sharing class DHSCustomerInterfaceController {
         list<DHS_Case__c> cases = database.query(query);
         return cases;
     }
+    /** @description Provides this DHS API member. */
     public class OrderRecord{
+        /** @description Provides this DHS API member. */
         public string attachmentId{get;set;}   
+        /** @description Provides this DHS API member. */
         public DHS_Customer_Order__c order{get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param attachmentId Method parameter.
+         * @param order Method parameter.
+         */
         public OrderRecord(string attachmentId, DHS_Customer_Order__c order){
             this.order = order;    
             this.attachmentId = attachmentId;
         }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param status Method parameter.
+     * @return The requested result.
+     */
     public List<OrderRecord> fetchOrderInformation(string status){
         List<OrderRecord> customerOrders = new List<OrderRecord> ();
         List<string> orderFields = new List<string>();

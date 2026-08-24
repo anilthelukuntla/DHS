@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSCustomerInterfaceControllerTest {
     @IsTest
     static void groupsExecutedOrdersAndTheirCases() {
@@ -19,11 +19,11 @@ private class DHSCustomerInterfaceControllerTest {
         DHSCustomerInterfaceController controller =
             new DHSCustomerInterfaceController();
 
-        System.assertEquals(1, controller.UploadedcustomerOrders.size());
-        System.assertEquals(1, controller.executedCustomerOrders.size());
+        System.assertEquals(1, controller.UploadedcustomerOrders.size(), 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.executedCustomerOrders.size(), 'Expected the asserted condition to hold');
         System.assertEquals(
             caseRecord.Id,
             controller.executedCustomerOrdersandCasesMap.get(executed.Id)[0].Id
-        );
+        , 'Expected the asserted condition to hold');
     }
 }

@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSLeadTriggerTest {
     @IsTest
     static void initializesAndUpdatesLeadLifecycle() {
@@ -20,12 +20,12 @@ private class DHSLeadTriggerTest {
             SELECT Status__c, Last_Status_Change__c, DHS_Contact__c
             FROM DHS_Lead__c WHERE Id = :lead.Id
         ];
-        System.assertEquals('Unassigned', lead.Status__c);
-        System.assertEquals(subject.Id, lead.DHS_Contact__c);
+        System.assertEquals('Unassigned', lead.Status__c, 'Expected the asserted condition to hold');
+        System.assertEquals(subject.Id, lead.DHS_Contact__c, 'Expected the asserted condition to hold');
         lead.Coverage_Type__c = 'Personal';
         update lead;
         delete lead;
         undelete lead;
-        System.assertNotEquals(null, lead.Last_Status_Change__c);
+        System.assertNotEquals(null, lead.Last_Status_Change__c, 'Expected the asserted condition to hold');
     }
 }

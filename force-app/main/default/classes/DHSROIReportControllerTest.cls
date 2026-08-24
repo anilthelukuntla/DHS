@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSROIReportControllerTest {
     @IsTest
     static void buildsReportForCaseWithoutLeads() {
@@ -36,9 +36,9 @@ private class DHSROIReportControllerTest {
         Test.setCurrentPage(Page.DHSROIReport);
         ApexPages.currentPage().getParameters().put('id', parentCase.Id);
         DHSROIReportController controller = new DHSROIReportController();
-        System.assertEquals(parentCase.Id, controller.caseRecord.Id);
-        System.assertEquals(leadTypes.size(), controller.totalLeads);
-        System.assertEquals(1, controller.subjectInterviewList.size());
-        System.assertNotEquals(null, controller.investigationDates);
+        System.assertEquals(parentCase.Id, controller.caseRecord.Id, 'Expected the asserted condition to hold');
+        System.assertEquals(leadTypes.size(), controller.totalLeads, 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.subjectInterviewList.size(), 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.investigationDates, 'Expected the asserted condition to hold');
     }
 }

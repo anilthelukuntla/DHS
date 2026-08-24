@@ -1,7 +1,22 @@
-/** Controls DHS lead detail workflows, messages, meetings, and document actions. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidDeeplyNestedIfStmts,PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessiveClassLength,PMD.ExcessiveParameterList,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssConstructorCount,PMD.NcssCount')
+/**
+ * @description Controls DHS lead detail workflows, messages, meetings, and document actions.
+ */
+@SuppressWarnings('PMD.AvoidDeeplyNestedIfStmts,PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessiveClassLength,PMD.ExcessiveParameterList,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssConstructorCount,PMD.NcssCount')
 global with sharing class DHSLeadDetailPageController {
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param subject Method parameter.
+     * @param bodyHtml Method parameter.
+     * @param attendeeEmails Method parameter.
+     * @param startDateTimeValue Method parameter.
+     * @param endDateTimeValue Method parameter.
+     * @param microsoftTimeZone Method parameter.
+     * @param recordAutomatically Method parameter.
+     * @param enableTranscription Method parameter.
+     * @param leadId Method parameter.
+     * @return The requested result.
+     */
     global static String scheduleTeamsMeeting(
         String subject,
         String bodyHtml,
@@ -30,6 +45,11 @@ global with sharing class DHSLeadDetailPageController {
     }
 
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param leadId Method parameter.
+     * @return The requested result.
+     */
     global static List<MeetingSummary> getLeadMeetings(Id leadId) {
         if (leadId == null) {
             return new List<MeetingSummary>();
@@ -60,6 +80,16 @@ global with sharing class DHSLeadDetailPageController {
     }
 
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param scheduleId Method parameter.
+     * @param leadId Method parameter.
+     * @param subject Method parameter.
+     * @param attendeeEmails Method parameter.
+     * @param startDateTimeValue Method parameter.
+     * @param endDateTimeValue Method parameter.
+     * @param microsoftTimeZone Method parameter.
+     */
     global static void updateLeadMeeting(
         Id scheduleId,
         Id leadId,
@@ -81,6 +111,12 @@ global with sharing class DHSLeadDetailPageController {
     }
 
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param scheduleId Method parameter.
+     * @param leadId Method parameter.
+     * @param cancellationReason Method parameter.
+     */
     global static void cancelLeadMeeting(
         Id scheduleId,
         Id leadId,
@@ -94,6 +130,12 @@ global with sharing class DHSLeadDetailPageController {
     }
 
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param scheduleId Method parameter.
+     * @param leadId Method parameter.
+     * @param deletionJustification Method parameter.
+     */
     global static void deleteLeadMeeting(
         Id scheduleId,
         Id leadId,
@@ -106,6 +148,7 @@ global with sharing class DHSLeadDetailPageController {
         );
     }
 
+    /** @description Provides this DHS API member. */
     global class MeetingSummary {
         global String id;
         global String subject;
@@ -118,6 +161,10 @@ global with sharing class DHSLeadDetailPageController {
         global String teamsJoinUrl;
         global String webLink;
 
+        /**
+         * @description Provides this DHS API member.
+         * @param schedule Method parameter.
+         */
         global MeetingSummary(MS_Team_Call_Schedule__c schedule) {
             id = schedule.Id;
             subject = schedule.Subject__c;
@@ -133,6 +180,12 @@ global with sharing class DHSLeadDetailPageController {
     }
 
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param scheduleId Method parameter.
+     * @param leadId Method parameter.
+     * @return The requested result.
+     */
     global static MeetingLifecycleDetails getMeetingLifecycleDetails(
         Id scheduleId,
         Id leadId
@@ -198,6 +251,7 @@ global with sharing class DHSLeadDetailPageController {
         return details;
     }
 
+    /** @description Provides this DHS API member. */
     global class MeetingLifecycleDetails {
         global String subject;
         global String status;
@@ -209,6 +263,10 @@ global with sharing class DHSLeadDetailPageController {
         global List<ParticipantDetail> participants;
         global List<ArtifactDetail> artifacts;
 
+        /**
+         * @description Provides this DHS API member.
+         * @param schedule Method parameter.
+         */
         global MeetingLifecycleDetails(MS_Team_Call_Schedule__c schedule) {
             subject = schedule.Subject__c;
             status = schedule.Status__c;
@@ -222,6 +280,7 @@ global with sharing class DHSLeadDetailPageController {
         }
     }
 
+    /** @description Provides this DHS API member. */
     global class ParticipantDetail {
         global String displayName;
         global String email;
@@ -235,6 +294,10 @@ global with sharing class DHSLeadDetailPageController {
         global Decimal totalAttendanceSeconds;
         global List<AttendanceIntervalDetail> intervals;
 
+        /**
+         * @description Provides this DHS API member.
+         * @param participant Method parameter.
+         */
         global ParticipantDetail(
             MS_Team_Meeting_Participant__c participant
         ) {
@@ -253,11 +316,16 @@ global with sharing class DHSLeadDetailPageController {
         }
     }
 
+    /** @description Provides this DHS API member. */
     global class AttendanceIntervalDetail {
         global Datetime joinedAt;
         global Datetime leftAt;
         global Decimal durationSeconds;
 
+        /**
+         * @description Provides this DHS API member.
+         * @param interval Method parameter.
+         */
         global AttendanceIntervalDetail(
             MS_Team_Attendance_Interval__c interval
         ) {
@@ -267,6 +335,7 @@ global with sharing class DHSLeadDetailPageController {
         }
     }
 
+    /** @description Provides this DHS API member. */
     global class ArtifactDetail {
         global String artifactType;
         global String graphArtifactId;
@@ -276,6 +345,10 @@ global with sharing class DHSLeadDetailPageController {
         global String processingStatus;
         global String lastError;
 
+        /**
+         * @description Provides this DHS API member.
+         * @param artifact Method parameter.
+         */
         global ArtifactDetail(MS_Team_Meeting_Artifact__c artifact) {
             artifactType = artifact.Artifact_Type__c;
             graphArtifactId = artifact.Graph_Artifact_ID__c;
@@ -288,10 +361,22 @@ global with sharing class DHSLeadDetailPageController {
     }
 
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param inputText Method parameter.
+     * @param apiName Method parameter.
+     * @return The requested result.
+     */
     global static String grammarSendRequest(String inputText, String apiName) {
         return DHSGrammarCheckController.sendRequest(inputText, apiName);
     }
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param fields Method parameter.
+     * @param leadId Method parameter.
+     * @return The requested result.
+     */
     public static string createLeadGrammarRecord(string fields,string leadId){
         if (String.isBlank(leadId)) {
             return '';
@@ -315,6 +400,12 @@ global with sharing class DHSLeadDetailPageController {
         return temp.Fields__c;
     }
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param fields Method parameter.
+     * @param leadId Method parameter.
+     * @return The requested result.
+     */
     public static string updateLeadGrammarRecord(string fields,string leadId){
         if (String.isBlank(leadId)) {
             return '';
@@ -336,6 +427,11 @@ global with sharing class DHSLeadDetailPageController {
         return existingRecords[0].Fields__c;
     }
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param leadId Method parameter.
+     * @return The requested result.
+     */
     public static string getLeadGrammarRecord(string leadId){
         if (String.isBlank(leadId)) {
             return '';
@@ -354,42 +450,72 @@ global with sharing class DHSLeadDetailPageController {
 
         return existingRecords[0].Fields__c;
     } 
+    /** @description Provides this DHS API member. */
     public string leadId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Lead__c leadRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Lead_RTA_Extension__c leadRecordRTAExtension {get;set;}
+    /** @description Provides this DHS API member. */
     public integer hoursofleadcompletion{get;set;}
+    /** @description Provides this DHS API member. */
     public integer minutesofleadcompletion{get;set;}
     public boolean collectEffortDuringCompletion {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public User currentUser {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Document_Request__c documentRequest {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<Id,DHS_Document_Request__c> documentrequestsmap{get;set;}
+    /** @description Provides this DHS API member. */
     public Map<Id,List<Attachment>> documentrequestnattachmentsmap {get;set;}
+    /** @description Provides this DHS API member. */
     public list<string> documentrequestids {get;set;}
+    /** @description Provides this DHS API member. */
     public string waiverreason {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<string,string> urlparametersMap {get;set;}
+    /** @description Provides this DHS API member. */
     public string urlparametersString {get;set;}
     public boolean fromCase{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string leadrejectionreason{get;set;}
+    /** @description Provides this DHS API member. */
     public string messageSubject{get;set;}
+    /** @description Provides this DHS API member. */
     public string messageBody{get;set;}
+    /** @description Provides this DHS API member. */
     public string caseId{get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord{get;set;}
+    /** @description Provides this DHS API member. */
     public List<DHS_Message__c> messages {get;set;}
     public boolean isValidForRTAExtension{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public string nextURL;
+    /** @description Provides this DHS API member. */
     public integer pageNumber {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalPages   {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalRecordCount {get;set;}
     public boolean disablePrev {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean disableNext {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string queryForNextRecords {get;set;}
+    /** @description Provides this DHS API member. */
     public string lastRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public string firstRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public integer currentRecordCount {get;set;}
+    /** @description Provides this DHS API member. */
     public string otherreason {get;set;}
+    /** @description Provides this DHS API member. */
     public string justification {get;set;}
     
+    /** @description Provides this DHS API member. */
     public User_Permission__mdt currentUserPermissions {get;set;}
+    /** @description Provides this DHS API member. */
     public List<SelectOption> standardisedIssueOptions {
         get {
             List<SelectOption> options = new List<SelectOption>();
@@ -401,6 +527,10 @@ global with sharing class DHSLeadDetailPageController {
         set;
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public List<SelectOption> getItems() {
         List<SelectOption> options = new List<SelectOption>();
         options.add(new SelectOption('','--None--'));
@@ -410,6 +540,7 @@ global with sharing class DHSLeadDetailPageController {
     }
     
     public boolean showstandardisedissuesotherexplanation{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public void standardisedissuesaction(){
         if(standardisedIssueItems.contains('Other')){
             showstandardisedissuesotherexplanation = true;
@@ -418,6 +549,7 @@ global with sharing class DHSLeadDetailPageController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public String[] standardisedIssueItems { 
         get {
             String[] selected = new List<String>();
@@ -443,6 +575,7 @@ global with sharing class DHSLeadDetailPageController {
         }
     }
    
+    /** @description Provides this DHS API member. */
     public DHSLeadDetailPageController(){
         currentUser = [Select Id, User_Type__c, Candidate_type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE];
         currentUserPermissions = DHSPermissionsUtil.GetUserPermssions(currentUser.User_Type__c);
@@ -490,6 +623,7 @@ global with sharing class DHSLeadDetailPageController {
         fetchCaseInformation();
         fetchCaseMessages();
     }
+    /** @description Provides this DHS API member. */
     public void fetchCaseInformation(){
         List<string> caseFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -515,6 +649,12 @@ global with sharing class DHSLeadDetailPageController {
             caseRecord = cases[0];    
         }    
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param caseRecord Method parameter.
+     * @param currentUser Method parameter.
+     * @return The requested result.
+     */
     public static list<string> fetchToAddressOfCase(DHS_Case__c caseRecord, user currentUser){
         list<string> toUserIds = new list<string>();
         if(currentuser.user_type__c != 'PMO'){
@@ -537,6 +677,7 @@ global with sharing class DHSLeadDetailPageController {
         return toUserIds;
     }
    
+    /** @description Provides this DHS API member. */
     public void sendMessage(){
         List<String> toAddressList = new list<String>();
         toAddressList.addAll(fetchToAddressOfCase(caseRecord,currentUser));
@@ -569,6 +710,7 @@ global with sharing class DHSLeadDetailPageController {
         messageBody = null;   
     }
      
+    /** @description Provides this DHS API member. */
     public void fetchCaseMessages(){
         pageNumber = 1;
         disablePrev = true;
@@ -625,6 +767,7 @@ global with sharing class DHSLeadDetailPageController {
         } 
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchLeadInformation(){
         List<string> leadFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -668,6 +811,10 @@ global with sharing class DHSLeadDetailPageController {
         } 
     }
     public boolean toInsertleadRecordRTAExtension {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public pagereference completeleadaction(){
         leadRecord.Status__c = 'Completed';
         leadRecord.Hours_of_completion__c = hoursofleadcompletion;
@@ -710,7 +857,9 @@ global with sharing class DHSLeadDetailPageController {
         return redirectPage;
     }
     
+    /** @description Provides this DHS API member. */
     public string errorMessage {get;set;}
+    /** @description Provides this DHS API member. */
     public void updateleadaction(){
         try{
             errorMessage = null;
@@ -733,6 +882,10 @@ global with sharing class DHSLeadDetailPageController {
         }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public pagereference reviewcompletedaction(){
         leadRecord.Status__c = 'QA Review Completed';
         Database.update(leadRecord, AccessLevel.USER_MODE);
@@ -753,6 +906,7 @@ global with sharing class DHSLeadDetailPageController {
         return redirectPage; 
     }
     
+    /** @description Provides this DHS API member. */
     public void selfassignaction(){
          leadRecord.DHS_Assigned_To__c = currentuser.id;
          leadRecord.Status__c = 'Assigned';
@@ -772,6 +926,10 @@ global with sharing class DHSLeadDetailPageController {
          
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public pagereference deleteleadaction(){
         Database.delete(leadRecord, AccessLevel.USER_MODE);
         //database.delete(leadRecord,false,AccessLevel.USER_MODE);
@@ -780,10 +938,12 @@ global with sharing class DHSLeadDetailPageController {
         return redirectPage;     
     }
     
+    /** @description Provides this DHS API member. */
     public void dummyaction(){
     
     }
     
+     /** @description Provides this DHS API member. */
      public void createdocumentrequestaction(){
         documentRequest.Status__c = 'Documents Requested';
          Database.insert(documentRequest, AccessLevel.USER_MODE);
@@ -794,6 +954,7 @@ global with sharing class DHSLeadDetailPageController {
         fetchDocumentRequests();
     }
     
+    /** @description Provides this DHS API member. */
     public  void fetchDocumentRequests(){
         documentrequestsmap = new Map<Id,DHS_Document_Request__c>([SELECT Id,Name,Status__c,To_Address__c, Additional_To_Address__c, Investigator_Comments__c FROM DHS_Document_Request__c WHERE DHS_Lead__c=:leadId WITH USER_MODE order by createddate desc ]);
         documentrequestnattachmentsmap = new Map<Id,List<Attachment>>();
@@ -812,6 +973,10 @@ global with sharing class DHSLeadDetailPageController {
         }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference applyforwaiveraction(){
         leadRecord.Status__c = 'Applied For Waiver';
         leadRecord.Reason_for_Waiver__c = waiverreason;
@@ -839,6 +1004,10 @@ global with sharing class DHSLeadDetailPageController {
         
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public pagereference rejectleadaction(){
         leadRecord.Status__c = 'QA Rejected';
         leadRecord.QA_Rejection_Comments__c = leadrejectionreason;
@@ -873,6 +1042,7 @@ global with sharing class DHSLeadDetailPageController {
         return redirectPage; 
     }
     
+    /** @description Provides this DHS API member. */
     public void reopenleadaction(){
         leadRecord.Status__c = 'In-Progress';
         Database.update(leadRecord, AccessLevel.USER_MODE);
@@ -882,7 +1052,7 @@ global with sharing class DHSLeadDetailPageController {
     /*public string sourcefieldtopopulatenarrative{get;set;}
     public string sourcefieldvaluetopopulatenarrative{get;set;}
     public void populatenarrativeaction(){
-        System.debug('sourcefieldtopopulatenarrative...'+sourcefieldtopopulatenarrative);
+
        
         List<string> reportMatrixFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -904,9 +1074,9 @@ global with sharing class DHSLeadDetailPageController {
         
         String where_cond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+where_cond; 
-        System.debug('query...'+query);
+
         list<ROI_Report_Matrix__c> reportMatrices = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
-        System.debug('reportMatrices...'+reportMatrices);
+
         if(!reportMatrices.isEmpty()){
             String textToPopulate = reportMatrices[0].Text_To_Populate__c;
             leadRecord.Narrator_Comments__c = MergeFieldsofROI();
@@ -928,7 +1098,7 @@ global with sharing class DHSLeadDetailPageController {
         
         String where_cond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+where_cond; 
-        System.debug('query...'+query);
+
         list<ROI_Report_Matrix__c> reportMatrices = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
         
         for(ROI_Report_Matrix__c roi: reportMatrices){
@@ -937,10 +1107,10 @@ global with sharing class DHSLeadDetailPageController {
             String unMergedText = roi.Text_To_Populate__c;
             Matcher m = p.matcher(unMergedText);
             while(m.find()) {
-                System.debug(m.group(0));
+
                 mergeFieldsMap.put(m.group(0),string.valueof(leadRecord.get(m.group(0).replaceAll('%',''))));
             }
-            System.debug('mergeFieldsMap....'+mergeFieldsMap);
+
             for(String str: mergeFieldsMap.keyset()){
                 if(string.isNotBlank(mergeFieldsMap.get(str))){
                     unMergedText = unMergedText.replace(str,mergeFieldsMap.get(str)); 
@@ -960,6 +1130,7 @@ global with sharing class DHSLeadDetailPageController {
         return mergedText;
     }*/
     
+    /** @description Provides this DHS API member. */
     public void autoSaveLeadAction(){
      if(leadRecord.LeadType__c == 'Subject Interview (ESI/TESI)'){
          try{
@@ -976,6 +1147,7 @@ global with sharing class DHSLeadDetailPageController {
     
 
     
+    /** @description Provides this DHS API member. */
     public void handlePrev(){
             messages = new list<DHS_Message__c>();
         
@@ -1003,6 +1175,7 @@ global with sharing class DHSLeadDetailPageController {
             disableNext = false;
         }
     } 
+    /** @description Provides this DHS API member. */
     public void handleNext(){
         messages = new list<DHS_Message__c>();
         PageNumber ++ ;
@@ -1039,11 +1212,15 @@ global with sharing class DHSLeadDetailPageController {
         }
     } 
     
+    /** @description Provides this DHS API member. */
     public DHS_Message__c selectedMessage { get; set; }
+    /** @description Provides this DHS API member. */
     public String modalAction { get; set; }
+    /** @description Provides this DHS API member. */
     public Id selectedMessageId { get; set; }
 
     // Called by actionFunction before opening modal
+    /** @description Provides this DHS API member. */
     public void openModal() {
         if(modalAction == 'edit' && selectedMessageId != null){
             selectedMessage = [
@@ -1055,12 +1232,14 @@ global with sharing class DHSLeadDetailPageController {
         }
     }
 
+    /** @description Provides this DHS API member. */
     public void updateMessage() {
         if(selectedMessage != null){
             Database.update(selectedMessage, AccessLevel.USER_MODE);
         }
     }
 
+    /** @description Provides this DHS API member. */
     public void deleteMessage() {
         if(selectedMessageId != null){
             try {
@@ -1073,6 +1252,11 @@ global with sharing class DHSLeadDetailPageController {
         } else {
         }
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param dt Method parameter.
+     * @return The requested result.
+     */
     public static datetime convertToDt(date dt){
         integer day;
         integer month;

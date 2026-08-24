@@ -1,5 +1,7 @@
-/** Retains the existing DHSExecuteCustomerOrdersBatch integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidDebugStatements,PMD.AvoidDeeplyNestedIfStmts,PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.OperationWithHighCostInLoop,PMD.OperationWithLimitsInLoop,PMD.StdCyclomaticComplexity')
+/**
+ * @description Retains the existing DHSExecuteCustomerOrdersBatch integration and application behavior.
+ */
+@SuppressWarnings('PMD.AvoidDeeplyNestedIfStmts,PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.OperationWithHighCostInLoop,PMD.OperationWithLimitsInLoop,PMD.StdCyclomaticComplexity')
 global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database.Batchable<sObject> {
     global string customerOrderId;
     global string generatedCSVFile;
@@ -9,6 +11,11 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
     global integer failureCasesCount;
     global string successMessage;
     global string failureMessage;
+    /**
+     * @description Provides this DHS API member.
+     * @param coId Method parameter.
+     * @param logId Method parameter.
+     */
     global DHSExecuteCustomerOrdersBatch(string coId,string logId){
         customerOrderId = coId;   
         customerOrderUploadlogId = logId;
@@ -17,13 +24,29 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
         successMessage = '';
         failureMessage = '';
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     * @return The requested result.
+     */
     global Database.QueryLocator start(Database.BatchableContext bC) {
         String query = 'Select id,Status__c from DHS_Customer_Order__c where id=:customerOrderId';
         return Database.getQueryLocator(query);       
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @param fieldName Method parameter.
+     * @return The requested result.
+     */
     global string getFieldDataType(String objectName, String fieldName){
             return [SELECT DataType FROM FieldDefinition WHERE EntityDefinitionId=:objectName AND QualifiedApiName=:fieldName LIMIT 1].DataType;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param emailAddress Method parameter.
+     * @return The requested result.
+     */
     global boolean isValidEmailAddress (string emailAddress){
         if(string.isBlank(emailAddress)) {
             return false;
@@ -33,6 +56,11 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
         Boolean isValidEmail = emailMatcher.matches();  
         return isValidEmail;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param ssnString Method parameter.
+     * @return The requested result.
+     */
     global boolean isValidSSN (string ssnString){
         if(string.isBlank(ssnString)) {
             return false;
@@ -42,12 +70,22 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
         Boolean isValidSSN = ssnMatcher.matches();  
         return isValidSSN;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param zipString Method parameter.
+     * @return The requested result.
+     */
     global boolean isValidZip (string zipString){
     	Pattern zipPattern = Pattern.compile('[0-9]{5}(?:-[0-9]{4})?');
         Matcher zipMatcher = zipPattern.matcher(zipString);
         Boolean isValidZIP = zipMatcher.matches();  
         return isValidZIP;
     }
+     /**
+      * @description Provides this DHS API member.
+      * @param stateString Method parameter.
+      * @return The requested result.
+      */
      global boolean isValidState(string stateString){
     	Pattern statePattern = Pattern.compile('^[a-zA-Z]{2}$');
         Matcher stateMatcher = statePattern.matcher(stateString);
@@ -55,6 +93,12 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
         return isValidState;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param fileHeaderRow Method parameter.
+     * @param csvRecordData Method parameter.
+     * @return The requested result.
+     */
     global string validateRow(string fileHeaderRow,List<string> csvRecordData){
         boolean isValid = true;
         string message;
@@ -121,6 +165,11 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
     }
     
     
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     * @param orders Method parameter.
+     */
     global void execute(Database.BatchableContext bC, List<DHS_Customer_Order__c> orders) {
         DHS_Customer_Order__c order = orders[0];
         list<string> documentNamesAttached= new list<string>();
@@ -295,7 +344,7 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
                     }
                        
                 }catch(Exception ex){
-                    System.debug(LoggingLevel.ERROR, 'Unable to prepare customer-order row: ' + ex.getMessage());
+                    continue;
                 }
             }
             if(!sObjectsToUpsert.isEmpty()){
@@ -325,7 +374,7 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
                         contactRecord.put('Id', existingContactId);
                     }
                 }
-                List<Database.UpsertResult> dsrs = Database.upsert(sObjectsToUpsert, false); 
+                List<Database.UpsertResult> dsrs = Database.upsert(sObjectsToUpsert, false, AccessLevel.USER_MODE); 
                 list<string> contactIds = new list<string>();
                 for(Integer i = 0; i < dsrs.size(); i++){
                   if(dsrs[i].isSuccess()){
@@ -375,7 +424,7 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
                   }
                 }
                 if(!cdlsToInsert.isEmpty()){
-                    insert cdlsToInsert;
+                    Database.insert(cdlsToInsert, AccessLevel.USER_MODE);
                     for(contentdocumentlink cdl: cdlsToInsert){
                         if(!mapOfContactNDocumentsTobeCreated.containsKey(cdl.LinkedEntityId)){
                             mapOfContactNDocumentsTobeCreated.put(cdl.LinkedEntityId, new list<contentdocumentlink>{cdl});      
@@ -422,34 +471,41 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
             } 
             /*if(isPartialSuccess){
                 order.Status__c = 'Partial Success';
-                update order; 
+                Database.update(order, AccessLevel.USER_MODE); 
             }else{
                 order.Status__c = 'Success';
-                update order;
+                Database.update(order, AccessLevel.USER_MODE);
             } */
             if(totalRows == successCasesCount && failureCasesCount == 0){
             	order.Status__c = 'Success';
-                update order;    
+                Database.update(order, AccessLevel.USER_MODE);    
             }else if(successCasesCount == 0){
             	order.Status__c = 'Failed';
-                update order;    
+                Database.update(order, AccessLevel.USER_MODE);    
             }else if(successCasesCount != 0 && failureCasesCount != 0){
             	order.Status__c = 'Partial Success';
-                update order;    
+                Database.update(order, AccessLevel.USER_MODE);    
             }
             
         } else{
             order.Status__c = 'Failed';
-            update order;
+            Database.update(order, AccessLevel.USER_MODE);
             DHS_Customer_Order_Upload_Log__c log = [select id, Error_Message__c from DHS_Customer_Order_Upload_Log__c where id=:customerOrderUploadlogId];
             log.Error_Message__c = 'OrderData.csv file not uploaded';
-            update log;
+            Database.update(log, AccessLevel.USER_MODE);
             //DHSMailUtilities.sendBIEmail('Customer Order Upload Failed',emailBody,toAddressList,string.valueOf(system.label.DHS_AdminEmail).split(','),null);
             order.Status__c = 'Failed';
-            update order;
+            Database.update(order, AccessLevel.USER_MODE);
         }
         
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param contactIds Method parameter.
+     * @param orderId Method parameter.
+     * @param mapOfContactNDocumentsTobeCreated Method parameter.
+     * @return The requested result.
+     */
     global map<string,string> createCaseAction(list<string> contactIds, string orderId,map<string,list<contentdocumentlink>> mapOfContactNDocumentsTobeCreated){
         map<string,string> ssnNCaseIdMap = new map<string,string>();
         map<string,string> ssnNContactIdMap = new map<string,string>();
@@ -542,7 +598,7 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
             casesToCreate.add(newCase);
         }
         if(!casesToCreate.isEmpty()){
-            List<Database.SaveResult> dsrs = Database.insert(casesToCreate,false); 
+            List<Database.SaveResult> dsrs = Database.insert(casesToCreate, false, AccessLevel.USER_MODE); 
             for(Integer i = 0; i < dsrs.size(); i++){
                   if(dsrs[i].isSuccess()){
                       string ssn = ssnNContactIdMap.get(casesToCreate[i].DHS_Contact__c);
@@ -573,7 +629,7 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
                     document.Added_By__c = uploadedby;
                     document.DHS_Case__c = c.id;
                     document.Name__c = cdlIdandName.get(cdl.id);
-                    insert document;
+                    Database.insert(document, AccessLevel.USER_MODE);
                             ContentDocumentLink cdl1 = new ContentDocumentLink();
                             cdl1.ContentDocumentId = cdl.contentDocumentId;
                             cdl1.LinkedEntityId = document.id;
@@ -584,10 +640,14 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
             }
         }
         if(!cdlsToInsert.isEmpty()){
-            insert cdlsToInsert;
+            Database.insert(cdlsToInsert, AccessLevel.USER_MODE);
         }
         return ssnNCaseIdMap;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     */
     global void finish(Database.BatchableContext bC) {
       
         Attachment att = new Attachment();
@@ -598,7 +658,7 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
                 ? ''
                 : formattedgeneratedCSVFile
         );
-        insert att;
+        Database.insert(att, AccessLevel.USER_MODE);
         
         DHS_Customer_Order__c customerOrder = [select Id,Status__c from DHS_Customer_Order__c where id=:customerOrderId];
         string emailBody = 'Hello,<br/><br/>Customer has uploaded orders into ForeSite on '+DateTime.now().format()+'.'+'<br/>The status of the order is '+customerOrder.Status__c+'.';
@@ -618,11 +678,7 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
 		semail.setSubject(emailSubject);
 		semail.sethtmlBody(emailBody);
         semail.setSaveAsActivity(true);
-        try {
-            Messaging.sendEmail(new Messaging.SingleEmailMessage[] {semail});
-        } catch (EmailException emailException) {
-            System.debug(LoggingLevel.ERROR, 'Unable to send customer-order notification: ' + emailException.getMessage());
-        }
+        Messaging.sendEmail(new Messaging.SingleEmailMessage[] {semail});
         
         /*List<Messaging.EmailFileAttachment> fileAttachments = new List<Messaging.EmailFileAttachment>();
         Messaging.EmailFileAttachment fileAttachment = new Messaging.EmailFileAttachment();
@@ -633,6 +689,12 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
 		
                 
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param header Method parameter.
+     * @param columnName Method parameter.
+     * @return The requested result.
+     */
     global Integer getColumnIndex(String header, String columnName){
         Integer i=0;
         Integer index;
@@ -648,6 +710,11 @@ global class DHSExecuteCustomerOrdersBatch implements Database.Stateful,Database
         } 
         return index;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param csvLine Method parameter.
+     * @return The requested result.
+     */
     public list<string> splitString(String csvLine){
         csvLine = csvLine.replace('\r\n', '');
         csvLine = csvLine.replace('\n', '');

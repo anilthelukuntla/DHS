@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.UnusedLocalVariable')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSLeadDashboardControllerTest {
      @TestSetup static void setup() {
          DHS_Contact__c con = new DHS_Contact__c();
@@ -29,7 +29,7 @@ public class DHSLeadDashboardControllerTest {
         Test.setCurrentPage(leadDashboardPage);
         DHSLeadDashboardController leadDashboardCtrl = new DHSLeadDashboardController(); 
         leadDashboardPage.getParameters().put('searchUnassigned','true');
-        DHSLeadDashboardController leaddashboardCtrl2 = new DHSLeadDashboardController();
+        DHSLeadDashboardController leaddashboardCtrl2 = new DHSLeadDashboardController(); System.assertNotEquals(null, leaddashboardCtrl2, 'Expected leaddashboardCtrl2 to be initialized');
         leadDashboardPage.getParameters().clear();
         leadDashboardPage.getParameters().put('searchUnassigned','false'); 
         leadDashboardPage.getParameters().put('ZipSearchEntry','test'); 
@@ -41,16 +41,16 @@ public class DHSLeadDashboardControllerTest {
         leadDashboardPage.getParameters().put('caseNumberSearchEntry','test'); 
         leadDashboardPage.getParameters().put('leadStatusSearchEntry','test'); 
         leadDashboardPage.getParameters().put('leadTypeSearchEntry','test'); 
-        DHSLeadDashboardController leaddashboardCtrl3 = new DHSLeadDashboardController(); 
+        DHSLeadDashboardController leaddashboardCtrl3 = new DHSLeadDashboardController(); System.assertNotEquals(null, leaddashboardCtrl3, 'Expected leaddashboardCtrl3 to be initialized'); 
         leadDashboardPage.getParameters().clear();
         leadDashboardPage.getParameters().put('searchmyavailableleads','true');  
-        DHSLeadDashboardController leaddashboardCtrl4 = new DHSLeadDashboardController();
+        DHSLeadDashboardController leaddashboardCtrl4 = new DHSLeadDashboardController(); System.assertNotEquals(null, leaddashboardCtrl4, 'Expected leaddashboardCtrl4 to be initialized');
         leadDashboardPage.getParameters().clear();
         leadDashboardPage.getParameters().put('searchmyassigned','true');  
-        DHSLeadDashboardController leaddashboardCtrl5 = new DHSLeadDashboardController();   
+        DHSLeadDashboardController leaddashboardCtrl5 = new DHSLeadDashboardController(); System.assertNotEquals(null, leaddashboardCtrl5, 'Expected leaddashboardCtrl5 to be initialized');   
         leadDashboardCtrl.searchUnassigned = true;
         leadDashboardCtrl.SearchAction();
-        system.assertEquals(1,leadDashboardCtrl.leadsSearched.size());
+        system.assertEquals(1,leadDashboardCtrl.leadsSearched.size(), 'Expected the asserted condition to hold');
         leadDashboardCtrl.selectedUserIdForAssignment = userinfo.getUserId();
         leadDashboardCtrl.leadsSearched[0].isSelected = true;
         leadDashboardCtrl.AssignLeadsAction();
@@ -71,7 +71,7 @@ public class DHSLeadDashboardControllerTest {
         Test.setCurrentPage(leadDashboardPage);
         DHSLeadDashboardController leadDashboardCtrl = new DHSLeadDashboardController(); 
         leadDashboardPage.getParameters().put('searchUnassigned','true');
-        DHSLeadDashboardController leaddashboardCtrl2 = new DHSLeadDashboardController();
+        DHSLeadDashboardController leaddashboardCtrl2 = new DHSLeadDashboardController(); System.assertNotEquals(null, leaddashboardCtrl2, 'Expected leaddashboardCtrl2 to be initialized');
         leadDashboardPage.getParameters().clear();
         leadDashboardPage.getParameters().put('searchUnassigned','false'); 
         leadDashboardPage.getParameters().put('ZipSearchEntry','test'); 
@@ -83,16 +83,16 @@ public class DHSLeadDashboardControllerTest {
         leadDashboardPage.getParameters().put('caseNumberSearchEntry','test'); 
         leadDashboardPage.getParameters().put('leadStatusSearchEntry','test'); 
         leadDashboardPage.getParameters().put('leadTypeSearchEntry','test'); 
-        DHSLeadDashboardController leaddashboardCtrl3 = new DHSLeadDashboardController(); 
+        DHSLeadDashboardController leaddashboardCtrl3 = new DHSLeadDashboardController(); System.assertNotEquals(null, leaddashboardCtrl3, 'Expected leaddashboardCtrl3 to be initialized'); 
         leadDashboardPage.getParameters().clear();
         leadDashboardPage.getParameters().put('searchmyavailableleads','true');  
-        DHSLeadDashboardController leaddashboardCtrl4 = new DHSLeadDashboardController();
+        DHSLeadDashboardController leaddashboardCtrl4 = new DHSLeadDashboardController(); System.assertNotEquals(null, leaddashboardCtrl4, 'Expected leaddashboardCtrl4 to be initialized');
         leadDashboardPage.getParameters().clear();
         leadDashboardPage.getParameters().put('searchmyassigned','true');  
-        DHSLeadDashboardController leaddashboardCtrl5 = new DHSLeadDashboardController();   
+        DHSLeadDashboardController leaddashboardCtrl5 = new DHSLeadDashboardController(); System.assertNotEquals(null, leaddashboardCtrl5, 'Expected leaddashboardCtrl5 to be initialized');   
         leadDashboardCtrl.searchUnassigned = true;
         leadDashboardCtrl.SearchAction();
-        system.assertEquals(1,leadDashboardCtrl.leadsSearched.size());
+        system.assertEquals(1,leadDashboardCtrl.leadsSearched.size(), 'Expected the asserted condition to hold');
         leadDashboardCtrl.selectedUserIdForAssignment = userinfo.getUserId();
         leadDashboardCtrl.leadsSearched[0].isSelected = true;
         leadDashboardCtrl.AssignLeadsAction();

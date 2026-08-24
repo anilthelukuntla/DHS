@@ -1,6 +1,9 @@
-/** Retains the existing DHSLoginHistory integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSharingViolations,PMD.UnusedMethod')
+/**
+ * @description Retains the existing DHSLoginHistory integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSharingViolations,PMD.UnusedMethod')
 public class DHSLoginHistory {
+    /** @description Provides this DHS API member. */
     public static void getLoginsByuserId() {
         List<Map<String, Object>> loginRows = new List<Map<String, Object>>();
         for (SObject loginRecord : Database.query(

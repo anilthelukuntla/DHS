@@ -1,6 +1,9 @@
-/** Retains the existing DHSGenerateReportColumn integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSharingViolations')
+/**
+ * @description Retains the existing DHSGenerateReportColumn integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSharingViolations')
 public class DHSGenerateReportColumn{
+    /** @description Provides this DHS API member. */
     public static void generateCDRLColumns(){
         Map<String, List<SObject>> reportTypeToMetadataMap = new Map<String, List<SObject>>{
         'Case__c' => DHS_CDRL_Case_Export__mdt.getAll().values(),
@@ -29,6 +32,7 @@ public class DHSGenerateReportColumn{
         }
         			Database.insert(temp, AccessLevel.USER_MODE);
 	}
+    /** @description Provides this DHS API member. */
     public static void createROIColumns(){
         Map<String, String> fieldLabelToApiName = new Map<String, String>{
             'Subject First Name' => 'DHS_Case__r.DHS_Contact__r.First_Name__c',

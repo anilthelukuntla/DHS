@@ -1,9 +1,15 @@
 @IsTest
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.AvoidGlobalModifier,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.AvoidGlobalModifier')
 global class DHSGrammarCheckControllerTest {
 
     // Mock class for ConnectApi
+    /** @description Provides this DHS API member. */
     global class EinsteinLLMMock implements HttpCalloutMock {
+        /**
+         * @description Provides this DHS API member.
+         * @param req Method parameter.
+         * @return The requested result.
+         */
         global HTTPResponse respond(HTTPRequest req) {
             HttpResponse res = new HttpResponse();
             res.setHeader('Content-Type', 'application/json');
@@ -55,6 +61,6 @@ global class DHSGrammarCheckControllerTest {
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'The controller returns a safe fallback response');
-        System.assert(result.contains('Grammar check is unavailable'));
+        System.assert(result.contains('Grammar check is unavailable'), 'Expected assertion condition to hold');
     }
 }

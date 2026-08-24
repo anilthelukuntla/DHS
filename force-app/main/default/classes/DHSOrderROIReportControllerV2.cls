@@ -1,14 +1,24 @@
-/** Retains the existing DHSOrderROIReportControllerV2 integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.IfElseStmtsMustUseBraces,PMD.IfStmtsMustUseBraces,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Retains the existing DHSOrderROIReportControllerV2 integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
 public class DHSOrderROIReportControllerV2 {
+    /** @description Provides this DHS API member. */
     public string caseId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public List<LeadRecord> leadRecords {get;set;}
+    /** @description Provides this DHS API member. */
     public list<AllLeads> leadRecordss {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> orderOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<string,list<selectoption>> subheaderOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public string type{get;set;}
     public boolean showOnlyConsiderasPersonal { get; set; } // NOPMD - Boolean is required by the Visualforce contract.
+    /** @description Provides this DHS API member. */
     public DHSOrderROIReportControllerV2(){
         showOnlyConsiderasPersonal = false;
         caseId = String.valueOf(Id.valueOf(ApexPages.currentPage().getParameters().get('id').escapeHtml4()));
@@ -28,30 +38,41 @@ public class DHSOrderROIReportControllerV2 {
             initializePreview();
         }
     }
+    /** @description Provides this DHS API member. */
     public class AllLeads{
+        /** @description Provides this DHS API member. */
         public boolean issubheader { get; private set; }
+        /** @description Provides this DHS API member. */
         public boolean hasSequence { get; private set; }
+        /** @description Provides this DHS API member. */
         public string subheaderNumber {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Lead__c leadrecord {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadNumber {get;set;}
         public boolean headerTitle { get; set; } // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
 
+        /** @description Provides this DHS API member. */
         public void clearSubheader() {
             issubheader = false;
         }
 
+        /** @description Provides this DHS API member. */
         public void markSubheader() {
             issubheader = true;
         }
 
+        /** @description Provides this DHS API member. */
         public void markHasSequence() {
             hasSequence = true;
         }
 
+        /** @description Provides this DHS API member. */
         public void markHeaderTitle() {
             headerTitle = true;
         }
     }
+    /** @description Provides this DHS API member. */
     public void fetchCaseInformation(){
         List<string> caseFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -79,6 +100,7 @@ public class DHSOrderROIReportControllerV2 {
         }    
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchLeadInformation(){
         Map<string,integer> personalsNCount = New Map<string,integer>();
         orderOptions.add(new selectoption('','--None--'));
@@ -113,21 +135,21 @@ public class DHSOrderROIReportControllerV2 {
                 if(l.Coverage_Type__c != 'Personal' && l.Consider_As_Personal__c == false){
                     ld.clearSubheader();
                     ld.markHasSequence();
-                    if(!subheaderOptions.containsKey(l.LeadType__c))subheaderOptions.put(l.LeadType__c,New list<selectoption>());
+                    if(!subheaderOptions.containsKey(l.LeadType__c)) { subheaderOptions.put(l.LeadType__c,New list<selectoption>()); }
                     subheaderOptions.get(l.LeadType__c).add(new selectoption(string.valueof(l.Item_number__c),string.valueof(l.Item_number__c)));
                     
                     orderOptions.add(new selectoption(string.valueof(i),string.valueof(i)));
                     i++;
                 }else{
                     if(subheaderLeads.contains(l.LeadType__c)){
-                        if(!personalsNCount.containskey(l.LeadType__c))personalsNCount.put(l.LeadType__c,0);
+                        if(!personalsNCount.containskey(l.LeadType__c)) { personalsNCount.put(l.LeadType__c,0); }
                         integer count = personalsNCount.get(l.LeadType__c);
                         integer increment = count +1;
                         personalsNCount.put(l.LeadType__c,increment);
                     }
                     ld.markHasSequence();
                     ld.markSubheader();
-                    if(!subheaderOptions.containsKey(l.LeadType__c))subheaderOptions.put(l.LeadType__c,new list<selectoption>());
+                    if(!subheaderOptions.containsKey(l.LeadType__c)) { subheaderOptions.put(l.LeadType__c,new list<selectoption>()); }
                     
                 }
             }else{
@@ -135,7 +157,7 @@ public class DHSOrderROIReportControllerV2 {
                 ld.clearSubheader();
                 orderOptions.add(new selectoption(string.valueof(i),string.valueof(i)));
                 i++;
-                if(!subheaderOptions.containsKey(l.LeadType__c))subheaderOptions.put(l.LeadType__c,new list<selectoption>());
+                if(!subheaderOptions.containsKey(l.LeadType__c)) { subheaderOptions.put(l.LeadType__c,new list<selectoption>()); }
             }
             
             leadRecordss.add(ld);
@@ -166,15 +188,24 @@ public class DHSOrderROIReportControllerV2 {
             }
     }
     
+    /** @description Provides this DHS API member. */
     public class LeadRecord{
+        /** @description Provides this DHS API member. */
         public DHS_Lead__c lead{get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadNumber {get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param l Method parameter.
+         * @param ln Method parameter.
+         */
         public LeadRecord(DHS_Lead__c l, integer  ln){
             this.lead = l;
             
             this.leadnumber = ln;
         }
     }
+    /** @description Provides this DHS API member. */
     public void updateLeads(){
         List<DHS_Lead__c> updateLeads = New List<DHS_Lead__c>();
         for(allleads lr: leadRecordss){
@@ -185,12 +216,18 @@ public class DHSOrderROIReportControllerV2 {
         fetchLeadInformation();
     }
     
+    /** @description Provides this DHS API member. */
     public void reloadLeads(){
         fetchCaseInformation();
         fetchLeadInformation();
     }
     
+    /** @description Provides this DHS API member. */
     public string roiOrderId {get;set;}
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference generateROIReport(){
         /*Map<string,Map<string,List<string>>> subHeaderNLeadsMap = New Map<string,Map<string,List<string>>>();
         Map<string,List<string>> noSubHeaderMap = New Map<string,List<string>>();
@@ -214,7 +251,7 @@ public class DHSOrderROIReportControllerV2 {
         }
         
         leadNumbers.sort();
-        //System.debug('leadnumbers...'+leadnumbers);
+        //
         //String leaditemnumbers;
         list<integer> sequenceItemNumbers = New list<integer>();
         Map<integer,List<integer>> subHeaderMap = New Map<integer,List<integer>>();
@@ -222,7 +259,7 @@ public class DHSOrderROIReportControllerV2 {
             allleads lr = allLeadMap.get(ln);
             sequenceItemNumbers.add(integer.valueOf(lr.leadrecord.Item_number__c));
             
-            if(!subHeaderMap.containskey(integer.valueOf(lr.leadrecord.Item_number__c)))subHeaderMap.put(integer.valueOf(lr.leadrecord.Item_number__c),new List<integer>());
+            if(!subHeaderMap.containskey(integer.valueOf(lr.leadrecord.Item_number__c))) { subHeaderMap.put(integer.valueOf(lr.leadrecord.Item_number__c),new List<integer>()); }
         }
         for(allleads lr: leadRecordss){
             if(lr.subheaderNumber != null){
@@ -255,6 +292,10 @@ public class DHSOrderROIReportControllerV2 {
         return redirectPage;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference generateNattachROIReport(){
         DHS_ROI_Report_Order__c roiOrder = new DHS_ROI_Report_Order__c();
         roiOrder.DHS_Case__c = caseRecord.id;
@@ -301,6 +342,10 @@ public class DHSOrderROIReportControllerV2 {
         return redirectPage;
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference previewUsingDhsDesigner(){
         generateROIDraft();
         PageReference redirectPage = Page.DHSROIReportDesignerPreviewLauncher;
@@ -312,6 +357,11 @@ public class DHSOrderROIReportControllerV2 {
         return redirectPage;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     * @param sequenceId Method parameter.
+     */
     public static void myFutureMethod(String caseId, String sequenceId) {
         System.enqueueJob(new RoiReportPdfQueueable(caseId, sequenceId));
     }
@@ -327,6 +377,10 @@ public class DHSOrderROIReportControllerV2 {
             this.sequenceId = sequenceId;
         }
 
+        /**
+         * @description Provides this DHS API member.
+         * @param context Method parameter.
+         */
         public void execute(QueueableContext context) {
             System.attachFinalizer(new RoiReportPdfFinalizer());
             generateRoiReportPdf(caseId, sequenceId);
@@ -334,6 +388,10 @@ public class DHSOrderROIReportControllerV2 {
     }
 
     private class RoiReportPdfFinalizer implements Finalizer {
+        /**
+         * @description Provides this DHS API member.
+         * @param context Method parameter.
+         */
         public void execute(FinalizerContext context) {
             context.getResult();
         }
@@ -376,11 +434,13 @@ public class DHSOrderROIReportControllerV2 {
         //database.insert(att,false,AccessLevel.USER_MODE);
         Database.insert(att, AccessLevel.USER_MODE);
     }
+    /** @description Provides this DHS API member. */
     public string currentsequenceid {get;set;}
+    /** @description Provides this DHS API member. */
     public void generateROIDraft(){
         Map<integer,List<integer>> subHeaderMap = New Map<integer,List<integer>>();
         for(allleads lr: leadRecordss){
-            if(!subHeaderMap.containskey(integer.valueOf(lr.leadrecord.Item_number__c)))subHeaderMap.put(integer.valueOf(lr.leadrecord.Item_number__c),new List<integer>());
+            if(!subHeaderMap.containskey(integer.valueOf(lr.leadrecord.Item_number__c))) { subHeaderMap.put(integer.valueOf(lr.leadrecord.Item_number__c),new List<integer>()); }
         }
         List<integer> leadNumberNHideTitle = New List<integer>();
         if(!Test.isrunningTest()){
@@ -406,7 +466,7 @@ public class DHSOrderROIReportControllerV2 {
                     values.add(i+'='+subHeaderMap.get(i));
                 }
                 value += string.join(values,', ')+'}';
-        //system.debug(subHeaderMap);
+        //
         
         /*
         
@@ -439,7 +499,7 @@ public class DHSOrderROIReportControllerV2 {
             if(subheaderLeads.contains(lr.leadrecord.LeadType__c)){
                 if(lr.leadrecord.Coverage_Type__c != 'Personal'){
                     Map<string,List<string>> checkExistingItemNumber = subHeaderNLeadsMap.get(lr.leadrecord.LeadType__c);
-                    system.debug(checkExistingItemNumber);
+
                     if(!checkExistingItemNumber.containskey(string.valueOf(lr.leadrecord.Item_number__c))){
                         if(!noSubHeaderMap.containskey(lr.leadrecord.LeadType__c)) noSubHeaderMap.put(lr.leadrecord.LeadType__c,New List<string>());
                         noSubHeaderMap.get(lr.leadrecord.LeadType__c).add(string.valueOf(lr.leadrecord.Item_number__c));
@@ -477,9 +537,15 @@ public class DHSOrderROIReportControllerV2 {
         showroireport = true;
 
     }
+    /** @description Provides this DHS API member. */
     public boolean showroireport { get; private set; }
+    /** @description Provides this DHS API member. */
     public boolean showPreview { get; private set; }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference backToReport() {
         PageReference redirectPage = Page.DHSOrderROIReportV2;
         redirectPage.setRedirect(true);
@@ -488,6 +554,7 @@ public class DHSOrderROIReportControllerV2 {
         return redirectPage;
     }
     
+    /** @description Provides this DHS API member. */
     public void initializePreview() {
         showPreview = true;
         if (currentsequenceid == null) {

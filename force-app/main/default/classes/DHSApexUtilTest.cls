@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSApexUtilTest {
 
     @IsTest
@@ -19,23 +19,23 @@ private class DHSApexUtilTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, accountFields);
-        System.assert(!accountFields.isEmpty());
-        System.assert(containsIgnoreCase(accountFields, 'Id'));
-        System.assert(containsIgnoreCase(accountFields, 'Name'));
+        System.assertNotEquals(null, accountFields, 'Expected the asserted condition to hold');
+        System.assert(!accountFields.isEmpty(), 'Expected assertion condition to hold');
+        System.assert(containsIgnoreCase(accountFields, 'Id'), 'Expected assertion condition to hold');
+        System.assert(containsIgnoreCase(accountFields, 'Name'), 'Expected assertion condition to hold');
 
         System.assertEquals(
             'Account',
             accountDescribe.getName()
-        );
+        , 'Expected the asserted condition to hold');
 
-        System.assertNotEquals(null, describedFields);
+        System.assertNotEquals(null, describedFields, 'Expected the asserted condition to hold');
         System.assert(
             containsFieldIgnoreCase(describedFields, 'Name'),
             'Account Name should be returned'
         );
 
-        System.assertNotEquals(null, fieldTypes);
+        System.assertNotEquals(null, fieldTypes, 'Expected the asserted condition to hold');
         System.assert(
             containsObjectKeyIgnoreCase(fieldTypes, 'Name'),
             'Account Name field type should be returned'
@@ -49,11 +49,11 @@ private class DHSApexUtilTest {
             DHSApexUtil.buildMapOfRecordTypes('Account');
         Test.stopTest();
 
-        System.assertNotEquals(null, recordTypeMap);
+        System.assertNotEquals(null, recordTypeMap, 'Expected the asserted condition to hold');
 
         for (String recordTypeName : recordTypeMap.keySet()) {
-            System.assertNotEquals(null, recordTypeName);
-            System.assertNotEquals(null, recordTypeMap.get(recordTypeName));
+            System.assertNotEquals(null, recordTypeName, 'Expected the asserted condition to hold');
+            System.assertNotEquals(null, recordTypeMap.get(recordTypeName), 'Expected the asserted condition to hold');
         }
     }
 
@@ -75,8 +75,8 @@ private class DHSApexUtilTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(null, accountTypeValues);
-        System.assertNotEquals(null, accountTypeValuesByName);
+        System.assertNotEquals(null, accountTypeValues, 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, accountTypeValuesByName, 'Expected the asserted condition to hold');
 
         System.assertEquals(
             accountTypeValues.size(),
@@ -115,7 +115,8 @@ private class DHSApexUtilTest {
         System.assertEquals(
             'SELECT Id,Name FROM Account' +
             ' WHERE Name != null and IsDeleted = false',
-            generatedQuery
+            generatedQuery,
+            'Expected the query builder to compose the requested clauses'
         );
     }
 
@@ -134,7 +135,8 @@ private class DHSApexUtilTest {
 
         System.assertEquals(
             'SELECT Id,FirstName,LastName FROM Contact',
-            generatedQuery
+            generatedQuery,
+            'Expected the query builder to compose the requested clauses'
         );
     }
 
@@ -156,7 +158,8 @@ private class DHSApexUtilTest {
             'SELECT Id,Name FROM Account' +
             ' WHERE Name != null' +
             ' ORDER BY Name ASC,CreatedDate DESC',
-            generatedQuery
+            generatedQuery,
+            'Expected the query builder to compose the requested clauses'
         );
     }
 
@@ -171,10 +174,11 @@ private class DHSApexUtilTest {
 
         System.assertEquals(
             'Name = \'Test Account\'',
-            criterion.getSOQLCriteria()
+            criterion.getSOQLCriteria(),
+            'Expected the text criterion to be rendered as SOQL'
         );
 
-        System.assertEquals(true, criterion.IsFieldValueGiven());
+        System.assertEquals(true, criterion.IsFieldValueGiven(), 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -206,17 +210,17 @@ private class DHSApexUtilTest {
         System.assertEquals(
             'NumberOfEmployees >=100',
             integerCriterion.getSOQLCriteria()
-        );
+        , 'Expected the asserted condition to hold');
 
         System.assertEquals(
             'AnnualRevenue >5000.50',
             doubleCriterion.getSOQLCriteria()
-        );
+        , 'Expected the asserted condition to hold');
 
         System.assertEquals(
             'CreatedDate >=2026-01-01',
             dateCriterion.getSOQLCriteria()
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -238,10 +242,10 @@ private class DHSApexUtilTest {
         System.assertEquals(
             'ParentId = null',
             nullCriterion.getSOQLCriteria()
-        );
+        , 'Expected the asserted condition to hold');
 
-        System.assertEquals(false, nullCriterion.IsFieldValueGiven());
-        System.assertEquals(false, emptyCriterion.IsFieldValueGiven());
+        System.assertEquals(false, nullCriterion.IsFieldValueGiven(), 'Expected the asserted condition to hold');
+        System.assertEquals(false, emptyCriterion.IsFieldValueGiven(), 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -276,7 +280,7 @@ private class DHSApexUtilTest {
             ' AND NumberOfEmployees >=10' +
             ' AND ParentId = null',
             whereClause
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -290,7 +294,7 @@ private class DHSApexUtilTest {
 
         Test.stopTest();
 
-        System.assertEquals('', whereClause);
+        System.assertEquals('', whereClause, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -306,7 +310,7 @@ private class DHSApexUtilTest {
         DHSApexUtil.dt(System.today());
         Test.stopTest();
 
-        System.assertEquals(expectedValue, actualValue);
+        System.assertEquals(expectedValue, actualValue, 'Expected the asserted condition to hold');
     }
 
     private static Boolean containsIgnoreCase(

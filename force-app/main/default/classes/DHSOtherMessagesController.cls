@@ -1,16 +1,29 @@
-/** Controls DHS incoming and outgoing message searches. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.NcssConstructorCount')
+/**
+ * @description Controls DHS incoming and outgoing message searches.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.NcssConstructorCount')
 public with sharing class DHSOtherMessagesController{
+    /** @description Provides this DHS API member. */
     public user currentUser {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> fromUserList {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> toUserList {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> typeOfMessages {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedFromUserId {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedToUserId {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedTypeofMessage {get;set;}
+    /** @description Provides this DHS API member. */
     public Date selectedDate {get;set;}
+    /** @description Provides this DHS API member. */
     public list<DHS_Message__c> allIncomingMessages{get;set;}
+    /** @description Provides this DHS API member. */
     public list<DHS_Message__c> allOutgoingMessages{get;set;}
+    /** @description Provides this DHS API member. */
     public DHSOtherMessagesController(){
         fromUserList = new list<selectoption>();
         toUserList = new list<selectoption>();
@@ -59,6 +72,7 @@ public with sharing class DHSOtherMessagesController{
             
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchmessages(){
         if(selectedTypeofMessage == 'DHS_All' || selectedTypeofMessage == 'Incoming'){
             fetchIncomingmessages();
@@ -68,6 +82,7 @@ public with sharing class DHSOtherMessagesController{
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchIncomingmessages(){
         allIncomingMessages = new list<DHS_Message__c>();
         list<DHS_Message__c> messages = new list<DHS_Message__c>(); 
@@ -102,6 +117,7 @@ public with sharing class DHSOtherMessagesController{
             allIncomingMessages.add(doc);
         }
     }
+    /** @description Provides this DHS API member. */
     public void fetchOutgoingmessages(){
         allOutgoingMessages = new list<DHS_Message__c>();
         list<DHS_Message__c> messages = new list<DHS_Message__c>(); 

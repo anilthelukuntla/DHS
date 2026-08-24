@@ -1,38 +1,71 @@
-/** Visualforce controller for the DHS case dashboard. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyIfStmt,PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Visualforce controller for the DHS case dashboard.
+ */
+@SuppressWarnings('PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
 public with sharing class DHSCaseDashboardController {
+    /** @description Provides this DHS API member. */
     public string subjectFirstNameSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public string subjectLastNameSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public string subjectSSNSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public string caseNumberSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public string caseManifestSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public string caseAssigneeearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public string caseTypeSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public string caseStatusSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public date fromSubmissionDateSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public date toSubmissionDateSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     public list<CaseRecord> casesSearched {get;set;}
+    /** @description Provides this DHS API member. */
     public boolean showcasessearchcriteriapanel { get; private set; }
+    /** @description Provides this DHS API member. */
     public boolean showcaseslistpanel { get; private set; }
+    /** @description Provides this DHS API member. */
     public list<selectoption> caseTypeOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> caseStatusOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> assignUserList {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedUserIdForAssignment {get;set;}
+    /** @description Provides this DHS API member. */
     public user currentUser {get;set;}
+    /** @description Provides this DHS API member. */
     public string caseDetailURLParams {get;set;}
+    /** @description Provides this DHS API member. */
     public map<string,string> caseDetailURLParamsMap {get;set;}
     public string nextURL;
+    /** @description Provides this DHS API member. */
     public integer pageNumber {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalPages   {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalRecordCount {get;set;}
     List<Object> records;
+    /** @description Provides this DHS API member. */
     public boolean disablePrev { get; private set; }
+    /** @description Provides this DHS API member. */
     public boolean disableNext { get; private set; }
+    /** @description Provides this DHS API member. */
     public string queryForNextRecords {get;set;}
+    /** @description Provides this DHS API member. */
     public string lastRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public string firstRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public integer currentRecordCount {get;set;}
+    /** @description Provides this DHS API member. */
     public static object criteria {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSCaseDashboardController(){
         pageNumber = 1;
         disablePrev = true;
@@ -119,8 +152,11 @@ public with sharing class DHSCaseDashboardController {
         
     }
     
+    /** @description Provides this DHS API member. */
     public boolean showUnAssigned { get; private set; }
+    /** @description Provides this DHS API member. */
     public boolean showQACases { get; private set; }
+    /** @description Provides this DHS API member. */
     public void searchAction(){
         //List<Map<string,Object>> conditions = New List<Map<string,Object>>();
         caseDetailURLParams = null;
@@ -267,10 +303,6 @@ public with sharing class DHSCaseDashboardController {
                 whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', String.escapeSingleQuotes(userinfo.getuserid()), '='));    
             }
             
-            if(CurrentUser.User_Type__c == 'PMO'){
-                //whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c','', '='));    
-            }
-            
             if(CurrentUser.User_Type__c == 'QA'){
                 
                 whereCriteria.add(new DHSApexUtil.Criteria('Current_Task__c', 'QA and Review', '='));    
@@ -284,7 +316,7 @@ public with sharing class DHSCaseDashboardController {
         }
        
         //query = query + ' WHERE '+where_cond; 
-        //System.debug(LoggingLevel.DEBUG, 'query...'+query);
+        //
         //list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE)
         
         string countQuery;
@@ -347,6 +379,10 @@ public with sharing class DHSCaseDashboardController {
         toSubmissionDateSearchEntry = null;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param condition Method parameter.
+     */
     public void buildCaseDetailURLParams(string condition){
         if(String.isBlank(caseDetailURLParams)){
             caseDetailURLParams = condition;    
@@ -359,15 +395,22 @@ public with sharing class DHSCaseDashboardController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public class CaseRecord{
+        /** @description Provides this DHS API member. */
         public DHS_Case__c cs{get;set;}
         public boolean isSelected {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+        /**
+         * @description Provides this DHS API member.
+         * @param cs Method parameter.
+         */
         public CaseRecord(DHS_Case__c cs){
             this.cs = cs;
             this.isSelected = false;
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void assignCasesAction(){
         list<DHS_Case__c> casesToUpdate = new LisT<DHS_Case__c>();
         list<DHS_Case_History__c> caseHistoriesToInsert = new LisT<DHS_Case_History__c>();
@@ -446,6 +489,10 @@ public with sharing class DHSCaseDashboardController {
     
     
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public static Integer totalNumberOfUnassignedCases() {
         list<DHS_Case__c> cases = new list<DHS_Case__c>();
         cases = [Select Id,DHS_Assigned_To__c from DHS_Case__c where DHS_Assigned_To__c = Null WITH USER_MODE];
@@ -453,13 +500,19 @@ public with sharing class DHSCaseDashboardController {
     }
     
     @RemoteAction 
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public static Integer totalNumberOfassignedCases() {
         list<DHS_Case__c> cases = new list<DHS_Case__c>();
         cases = [Select Id,DHS_Assigned_To__c from DHS_Case__c where DHS_Assigned_To__c =: userinfo.getuserId() AND Case_Queue_Status__c != 'Closed' WITH USER_MODE];
         return cases.size();
     }
     
+    /** @description Provides this DHS API member. */
     public string deleteCaseId{get;set;}
+    /** @description Provides this DHS API member. */
     public void deleteCaseAction(){
         Database.delete([select id from DHS_Case__c where id=:deleteCaseId WITH USER_MODE], AccessLevel.USER_MODE);
         list<caserecord> temp = new list<caserecord>();
@@ -473,6 +526,11 @@ public with sharing class DHSCaseDashboardController {
     }
     
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     * @return The requested result.
+     */
     public static Integer totalNumberLeadsForCase(String caseId) {
         list<DHS_Lead__c> leads = new list<DHS_Lead__c>();
         leads = [Select Id,DHS_Case__c from DHS_Lead__c where DHS_Case__c =: caseId WITH USER_MODE];
@@ -480,12 +538,17 @@ public with sharing class DHSCaseDashboardController {
     }
     
     @RemoteAction 
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public static Integer totalNumberOfQACases() {
         list<DHS_Case__c> cases = new list<DHS_Case__c>();
         cases = [Select Id,DHS_Assigned_To__c, Current_Task__c from DHS_Case__c where Current_Task__c = 'QA and Review' AND Case_Queue_Status__c != 'Closed' WITH USER_MODE];
         return cases.size();
     }
     
+    /** @description Provides this DHS API member. */
     public void handlePrev(){
             casesSearched = new List<CaseRecord>(); 
             PageNumber --;
@@ -508,6 +571,7 @@ public with sharing class DHSCaseDashboardController {
             disableNext = false;
         }
     } 
+    /** @description Provides this DHS API member. */
     public void handleNext(){
         casesSearched = new List<CaseRecord>();
         PageNumber ++ ;

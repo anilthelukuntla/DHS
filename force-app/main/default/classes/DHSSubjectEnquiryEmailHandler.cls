@@ -1,6 +1,14 @@
-/** Retains the existing DHSSubjectEnquiryEmailHandler integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidNonRestrictiveQueries,PMD.ExcessiveParameterList,PMD.OperationWithLimitsInLoop')
+/**
+ * @description Retains the existing DHSSubjectEnquiryEmailHandler integration and application behavior.
+ */
+@SuppressWarnings('PMD.AvoidNonRestrictiveQueries,PMD.ExcessiveParameterList,PMD.OperationWithLimitsInLoop')
 public with sharing class DHSSubjectEnquiryEmailHandler implements Messaging.InboundEmailHandler {
+      /**
+       * @description Provides this DHS API member.
+       * @param email Method parameter.
+       * @param envelope Method parameter.
+       * @return The requested result.
+       */
       public Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, Messaging.InboundEnvelope envelope) {
           Messaging.InboundEmailResult result = new Messaging.InboundEmailresult();
           

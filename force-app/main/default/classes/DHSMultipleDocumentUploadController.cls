@@ -1,8 +1,16 @@
-/** Provides DHS multi-document upload JavaScript Remoting actions. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidGlobalModifier,PMD.ExcessiveParameterList,PMD.UnusedMethod')
+/**
+ * @description Provides DHS multi-document upload JavaScript Remoting actions.
+ */
+@SuppressWarnings('PMD.AvoidGlobalModifier,PMD.ExcessiveParameterList,PMD.UnusedMethod')
 global without sharing class DHSMultipleDocumentUploadController {
+ /** @description Provides this DHS API member. */
  public integer attachmentcount {get;set;}
+    /** @description Provides this DHS API member. */
     public string caseId {get;set;}
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference uploadAndRedirect() {
         PageReference redirect = new PageReference('/apex/DHSCasedetail?id='+caseId+'&tab=Documents');
         redirect.setRedirect(true);
@@ -10,6 +18,11 @@ global without sharing class DHSMultipleDocumentUploadController {
     }
         
     @RemoteAction
+   /**
+    * @description Provides this DHS API member.
+    * @param parentid Method parameter.
+    * @return The requested result.
+    */
    global static integer attachmentcountmethod(string parentid){
        integer attachmentcount = 0;
        list<attachment> attachments = new list<attachment>();
@@ -21,6 +34,11 @@ global without sharing class DHSMultipleDocumentUploadController {
    }
    
    @RemoteAction
+   /**
+    * @description Provides this DHS API member.
+    * @param parentid Method parameter.
+    * @return The requested result.
+    */
    global static string attachmentnames(string parentid){
       
        string attachmentnames = '';
@@ -39,6 +57,11 @@ global without sharing class DHSMultipleDocumentUploadController {
    }
     
     @RemoteAction
+   /**
+    * @description Provides this DHS API member.
+    * @param caseid Method parameter.
+    * @return The requested result.
+    */
    global static string createDocumentRecord(string caseid){
 		DHS_Document__c document = new DHS_Document__c();
 		document.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() WITH USER_MODE ].Name;
@@ -50,6 +73,16 @@ global without sharing class DHSMultipleDocumentUploadController {
    
     
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param parentId Method parameter.
+     * @param attachmentId Method parameter.
+     * @param fileName Method parameter.
+     * @param contentType Method parameter.
+     * @param base64BlobValue Method parameter.
+     * @param descriptioncheck Method parameter.
+     * @return The requested result.
+     */
     global static String attachBlob(String parentId, String attachmentId, String fileName, String contentType, String base64BlobValue, string descriptioncheck){
         DHS_Case__c caseRecord;
         List<DHS_Case__c> cases = [Select Subject_Type__c,Case_Number__c ,Case_Type__c, DHS_Contact__r.SSN__c from DHS_Case__c where Id=: parentId WITH USER_MODE ];

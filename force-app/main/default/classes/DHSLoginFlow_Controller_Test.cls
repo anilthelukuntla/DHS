@@ -1,9 +1,9 @@
 @istest
 
-@SuppressWarnings('PMD.AnnotationsNamingConventions,PMD.ApexAssertionsShouldIncludeMessage,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexUnitTestMethodShouldHaveIsTestAnnotation')
+@SuppressWarnings('PMD.AnnotationsNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSLoginFlow_Controller_Test {
 
-    TestMethod static void getdata()
+    @IsTest static void getdata()
 
     {
 
@@ -15,7 +15,7 @@ public class DHSLoginFlow_Controller_Test {
 
         List<DHS_OTP__c> otpRecord = [select id,OTP__c,DHS_User__c,Status__c,Expired__c from DHS_OTP__c where DHS_User__c =: UserInfo.getUserId() AND  Status__c = 'Generated' AND Expired__c = false];
 
-                      system.assertEquals(1,otpRecord.size());
+                      system.assertEquals(1,otpRecord.size(), 'Expected the asserted condition to hold');
 
        
 

@@ -1,12 +1,21 @@
 /**
+ * @description Provides this DHS API member.
  * An apex page controller that exposes the change password functionality
  */
-@SuppressWarnings('PMD.ApexDoc,PMD.CognitiveComplexity,PMD.EmptyStatementBlock')
+@SuppressWarnings('PMD.CognitiveComplexity,PMD.EmptyStatementBlock')
 public without sharing class DHSChangePasswordController {
+    /** @description Provides this DHS API member. */
     public String oldPassword {get; set;}
+    /** @description Provides this DHS API member. */
     public String newPassword {get; set;}
+    /** @description Provides this DHS API member. */
     public String verifyNewPassword {get; set;} 
+    /** @description Provides this DHS API member. */
     public string errorMessage {get;set;}       
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference changePassword() {
         errorMessage = null;
         boolean isResetFailed = false;
@@ -38,5 +47,6 @@ public without sharing class DHSChangePasswordController {
         
     }     
     
+    /** @description Provides this DHS API member. */
     public DHSChangePasswordController() {}
 }

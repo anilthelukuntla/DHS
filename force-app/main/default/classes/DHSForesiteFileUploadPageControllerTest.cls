@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSForesiteFileUploadPageControllerTest {
     @IsTest
     static void savesAttachmentForCase() {
@@ -28,8 +28,8 @@ private class DHSForesiteFileUploadPageControllerTest {
             );
         PageReference result = controller.saveAndRedirect();
 
-        System.assertNotEquals(null, result);
-        System.assert(result.getUrl().contains(String.valueOf(caseRecord.Id)));
+        System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
+        System.assert(result.getUrl().contains(String.valueOf(caseRecord.Id)), 'Expected assertion condition to hold');
         DHS_Document__c document = [
             SELECT Id
             FROM DHS_Document__c
@@ -40,6 +40,6 @@ private class DHSForesiteFileUploadPageControllerTest {
             SELECT COUNT()
             FROM Attachment
             WHERE ParentId = :document.Id
-        ]);
+        ], 'Expected the asserted condition to hold');
     }
 }

@@ -1,16 +1,28 @@
-/** Controls CSV-based DHS lead uploads and batch submission. */
-@SuppressWarnings('PMD.ApexDoc,PMD.UnusedMethod')
+/**
+ * @description Controls CSV-based DHS lead uploads and batch submission.
+ */
+@SuppressWarnings('PMD.UnusedMethod')
 public with sharing class DHSLeadsUploadPageController {
     @TestVisible private static Boolean skipBatchExecution = false;
+    /** @description Provides this DHS API member. */
     public transient Blob csvFileBody{get;set;}
+    /** @description Provides this DHS API member. */
     public string csvAsString{get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> csvFileLines{get;set;}
+    /** @description Provides this DHS API member. */
     public Id batchId {get;set;}
+    /** @description Provides this DHS API member. */
     public String fileContentType {get;set;}
+    /** @description Provides this DHS API member. */
     public Integer dataLoadBatchSize {get;set;}
+    /** @description Provides this DHS API member. */
     public string errorMessage {get;set;}
+    /** @description Provides this DHS API member. */
     public string successMessage {get;set;}
+    /** @description Provides this DHS API member. */
     public string leadUploadDocumentId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSLeadsUploadPageController(){
         csvFileLines = new List<String>();
         batchId = null;
@@ -22,6 +34,10 @@ public with sharing class DHSLeadsUploadPageController {
             leadUploadDocumentId = documents[0].id;
         }
     }
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference startBatchJob() {
         if(fileContentType != Null){
             if(fileContentType.contains('csv')||fileContentType=='application/vnd.ms-excel'){

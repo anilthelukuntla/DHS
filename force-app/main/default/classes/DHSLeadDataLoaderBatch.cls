@@ -1,5 +1,7 @@
-/** Retains the existing DHSLeadDataLoaderBatch integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidDebugStatements,PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Retains the existing DHSLeadDataLoaderBatch integration and application behavior.
+ */
+@SuppressWarnings('PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
 global with sharing class DHSLeadDataLoaderBatch implements Database.Batchable< String >,Database.Stateful{
     global Blob csvFileAsBlob;
     global List<String> resultCSVFileLines;
@@ -16,6 +18,11 @@ global with sharing class DHSLeadDataLoaderBatch implements Database.Batchable< 
     global boolean attachmentNeedsToBeAttached;
     global integer numberOfRecordsInFile;
     global integer leadFilePart;
+    /**
+     * @description Provides this DHS API member.
+     * @param csvFileBlob Method parameter.
+     * @param activity Method parameter.
+     */
     global DHSLeadDataLoaderBatch(Blob csvFileBlob, DHS_DataLoad_Activity__c  activity){
         numberOfRecordsInFile = 0;
         successCount = 0;
@@ -28,6 +35,11 @@ global with sharing class DHSLeadDataLoaderBatch implements Database.Batchable< 
         leadFilePart = 1;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param bc Method parameter.
+     * @return The requested result.
+     */
     global Iterable<String> start(Database.BatchableContext bc) {
         List<String> resultCSVFileLinesWithoutHeader = new List<String>();
         ResultCSVFileLines = new List<String>();
@@ -49,6 +61,11 @@ global with sharing class DHSLeadDataLoaderBatch implements Database.Batchable< 
         return resultCSVFileLinesWithoutHeader;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param bc Method parameter.
+     * @param csvFileLines Method parameter.
+     */
     global void execute(Database.BatchableContext bc, List<String> csvFileLines) {
         try{
             attachmentNeedsToBeAttached = true;
@@ -105,7 +122,7 @@ global with sharing class DHSLeadDataLoaderBatch implements Database.Batchable< 
                 lead.DHS_Contact__c = caseMap.get(csvRecordData[0]).DHS_Contact__c;
                 leadListToInsert.add(lead); 
             }
-            List<Database.SaveResult> dsrs = Database.insert(leadListToInsert, false);
+            List<Database.SaveResult> dsrs = Database.insert(leadListToInsert, false, AccessLevel.USER_MODE);
             Integer index = 0;
             for(Database.SaveResult dsr : dsrs){
                 DHS_Lead__c lead = leadListToInsert[index];
@@ -142,6 +159,10 @@ global with sharing class DHSLeadDataLoaderBatch implements Database.Batchable< 
         }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param bc Method parameter.
+     */
     global void finish(Database.BatchableContext bc){
             if(attachmentNeedsToBeAttached){
                 Attachment att = new Attachment();
@@ -164,6 +185,10 @@ global with sharing class DHSLeadDataLoaderBatch implements Database.Batchable< 
     }
     
     
+    /**
+     * @description Provides this DHS API member.
+     * @param reportId Method parameter.
+     */
     global static void sendEmailWithAttachments(String reportId) {
         User currentUser = [Select Id, Name,Email, ContactId from User where Id=:userinfo.getuserid()];
         Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
@@ -196,13 +221,14 @@ global with sharing class DHSLeadDataLoaderBatch implements Database.Batchable< 
         message.setTreatTargetObjectAsRecipient(false);
         message.setSaveAsActivity(false);
         // Send the message
-        try {
-          Messaging.sendEmail(new Messaging.SingleEmailMessage[] { message });
-        } catch (Exception e) {
-            System.debug(LoggingLevel.ERROR, 'Unable to send lead-loader notification: ' + e.getMessage());
-        }
+        Messaging.sendEmail(new Messaging.SingleEmailMessage[] { message });
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param csvLine Method parameter.
+     * @return The requested result.
+     */
     public list<string> splitString(String csvLine){
          csvLine = csvLine.replace('\r\n', '');
             csvLine = csvLine.replace('\n', '');

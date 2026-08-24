@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.UnusedLocalVariable')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSKnowledgeBaseFileUploadControllerTest {
     static @IsTest void uploadTest() {
         //Split string 'file' in to two chunks, first chunk must be divisible by 3 for base64 encode with no padding
@@ -39,7 +39,7 @@ public class DHSKnowledgeBaseFileUploadControllerTest {
         DHSKnowledgeBaseFileUploadController.attachmentnames(kb.id);
         
         //Assert one file has been attached to the test account
-        List<Attachment> attachments = [select Id, Body from Attachment where ParentId = :kb.Id];
+        List<Attachment> attachments = [select Id, Body from Attachment where ParentId = :kb.Id]; System.assertNotEquals(null, attachments, 'Expected attachments to be initialized');
         
         
     }

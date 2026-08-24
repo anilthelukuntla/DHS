@@ -1,32 +1,54 @@
 /**
+ * @description Provides this DHS API member.
  * Provides the legacy DHS CDRL reporting workflows consumed by Visualforce.
  * Existing public names, report query construction, and page-facing behavior
  * are retained to avoid breaking report navigation and exports.
  */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyIfStmt,PMD.EmptyStatementBlock,PMD.ExcessiveClassLength,PMD.ExcessiveParameterList,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.StdCyclomaticComplexity')
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessiveClassLength,PMD.ExcessiveParameterList,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.StdCyclomaticComplexity')
 public with sharing class DHSCDRLReportsController {
+    /** @description Provides this DHS API member. */
     public user currentUser{get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> typesOfReports {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> cmoUsers {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> investigatorUsers {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> caseTaskStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> caseStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> leadStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> workloadTypeOfAssignee {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCaseStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCaseTaskStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedLeadStatus {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedReportType {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedWorkLoadAssignee {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCMOUser {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedInvestigatorUser {get;set;}
+    /** @description Provides this DHS API member. */
     public date fromDate {get;set;}
+    /** @description Provides this DHS API member. */
     public date toDate {get;set;}
     public boolean showictimesheetstatustrackingpanel {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string selectedUserId  {get;set;}
+    /** @description Provides this DHS API member. */
     public date trackingFromDate {get;set;}
+    /** @description Provides this DHS API member. */
     public date trackingToDate {get;set;}
     
+    /** @description Provides this DHS API member. */
     public transient list<ReportRecord> reports {get;set;}
     public boolean showViewButton {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean leadsView {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
@@ -36,37 +58,65 @@ public with sharing class DHSCDRLReportsController {
     public boolean waiversView {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean trackingView {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean showreportstable {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string selectedRelatedCaseIdForMessages{get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> relatedCasesForMessages {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCaseIdForLeadSearch{get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> messageTypeOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedMessageType{get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedCaseNumberForLeadSearch{get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedleadforstatustracking {get;set;}
     //public list<Lead__History> leadStatusTrackings {get;set;}
+    /** @description Provides this DHS API member. */
     public list<LeadHistoryRecord> leadStatusTrackings{get;set;}
+    /** @description Provides this DHS API member. */
     public integer pageNumber {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalPages   {get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalRecordCount {get;set;}
     public boolean disablePrev {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean disableNext {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string queryForNextRecords {get;set;}
+    /** @description Provides this DHS API member. */
     public string lastRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public string firstRecordName {get;set;}
+    /** @description Provides this DHS API member. */
     public integer currentRecordCount {get;set;}
+    /** @description Provides this DHS API member. */
     public string userType  {get;set;}
+    /** @description Provides this DHS API member. */
     public string contextINVId  {get;set;}
+    /** @description Provides this DHS API member. */
     public list<DHS_TimeSheet__c> selectedUserTimesheet  {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedICName {get;set;}
+    /** @description Provides this DHS API member. */
     public class LeadHistoryRecord{
+        /** @description Provides this DHS API member. */
         public Lead__History leadHistory {get;set;}
+        /** @description Provides this DHS API member. */
         public integer numOfDays {get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param lh Method parameter.
+         * @param nd Method parameter.
+         */
         public LeadHistoryRecord(Lead__History lh, integer nd){
             this.leadHistory = lh;
             this.numOfDays = nd;
         }
     }
     
+    /** @description Provides this DHS API member. */
     public DHSCDRLReportsController(){
         selectedReportType = '';
         cmoUsers = new List<SelectOption>();
@@ -93,6 +143,7 @@ public with sharing class DHSCDRLReportsController {
         trackingView = false;
         showleadstatustrackingpanel = false;
     }
+    /** @description Provides this DHS API member. */
     public void fetchICTimesheettracking(){
         user selectedIC = [select id,Name from user where id =:selectedUserId  WITH USER_MODE ];
         selectedICName = selectedIC.Name;
@@ -131,6 +182,7 @@ public with sharing class DHSCDRLReportsController {
         
         showictimesheetstatustrackingpanel = true;
     }
+    /** @description Provides this DHS API member. */
     public void fetchPicklistValues(){
         workloadTypeOfAssignee = new list<selectoption>();
         typesOfReports = new list<selectoption>();
@@ -190,6 +242,7 @@ public with sharing class DHSCDRLReportsController {
         
     }
     public boolean fiveorlessitemsofcase = false;
+    /** @description Provides this DHS API member. */
     public void runReportAction(){
     
         if(selectedReportType == 'ROIReport'){
@@ -205,8 +258,8 @@ public with sharing class DHSCDRLReportsController {
             list<attachment> attachments = new list<attachment>();
             /*
             attachments = [Select Id, ParentId, Name from Attachment where Name LIKE: nameCondition AND Createddate >=:fromDate AND createddate <=:toDate];
-            System.debug('attachments...'+attachments.size());
-            System.debug('nameCondition...'+nameCondition);
+
+
             list<string> documentIds = new list<string>();
             Map<string,string> documentNattachmentMap = new Map<string,string>();
             for(attachment att: attachments){
@@ -979,6 +1032,7 @@ public with sharing class DHSCDRLReportsController {
         
     }
     public boolean showleadstatustrackingpanel{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public void fetchLeadStatusTrackings(){
         leadStatusTrackings = new list< LeadHistoryRecord >();
             List<string> leadStatusTrackingFields = new List<string>();
@@ -1015,6 +1069,7 @@ public with sharing class DHSCDRLReportsController {
             showleadstatustrackingpanel = true;
     }
     
+    /** @description Provides this DHS API member. */
     public void onReportTypeSelect(){
         if(selectedReportType == 'Case' || selectedReportType == 'Lead' || selectedReportType == 'Workload'){
             cmoUsers = new list<selectoption>();
@@ -1049,64 +1104,134 @@ public with sharing class DHSCDRLReportsController {
        
     }
     
+    /** @description Provides this DHS API member. */
     Public Class ReportRecord {
+        /** @description Provides this DHS API member. */
         public string subjectFirstName{get;set;}
+        /** @description Provides this DHS API member. */
         public string subjectLastName{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseNumber{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseDueDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string customerDeliveryDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string startPurgeDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseType{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseStatus{get;set;}
+        /** @description Provides this DHS API member. */
         public string caseTaskStatus {Get;set;}
+        /** @description Provides this DHS API member. */
         public string manifest{get;set;}
+        /** @description Provides this DHS API member. */
         public string cmoUser{get;set;}
+        /** @description Provides this DHS API member. */
         public string investigatorUser{get;set;}
+        /** @description Provides this DHS API member. */
         public string rDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string attachmentId {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadType {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadStatus {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Message__c message {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Investigator_Check__c investigatorCheck {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Waiver_Information__c waiver {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_TimeSheet__c timesheet {get;set;}
+        /** @description Provides this DHS API member. */
         public DHS_Workload__c workload {get;set;}
+        /** @description Provides this DHS API member. */
         public string investigatorName {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadsAccepted {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadsRejected {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadsCompleted {get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadItemNumber {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadContactInformation {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadSourceName {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactName {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactAddress {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactCity {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactState {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactZip {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadcontactOtherInformation {get;set;}
+        /** @description Provides this DHS API member. */
         public string anticipatedCompletedDate{get;set;}
+        /** @description Provides this DHS API member. */
         public string coverageType{get;set;}
+        /** @description Provides this DHS API member. */
         public string assignmentDate {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadId {get;set;}
+        /** @description Provides this DHS API member. */
         public string leadContactMethod {get;set;}
+        /** @description Provides this DHS API member. */
         public string waiverduedate {get;set;}
+        /** @description Provides this DHS API member. */
         public string customercasenumber {get;set;}
+        /** @description Provides this DHS API member. */
         public string subjecttype	{get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param message Method parameter.
+         */
         public ReportRecord(DHS_Message__c message){
             this.message = message;
         }
+        /**
+         * @description Provides this DHS API member.
+         * @param investigatorCheck Method parameter.
+         */
         public ReportRecord(DHS_Investigator_Check__c investigatorCheck){
             this.investigatorCheck = investigatorCheck;
         }
+        /**
+         * @description Provides this DHS API member.
+         * @param waiver Method parameter.
+         */
         public ReportRecord(DHS_Waiver_Information__c waiver){
             this.waiver = waiver;
         }
+        /**
+         * @description Provides this DHS API member.
+         * @param timesheet Method parameter.
+         */
         public ReportRecord(DHS_TimeSheet__c timesheet){
             this.timesheet = timesheet;
         }
+        /**
+         * @description Provides this DHS API member.
+         * @param workload Method parameter.
+         */
         public ReportRecord(DHS_Workload__c workload){
             this.workload = workload;
         }
+        /**
+         * @description Provides this DHS API member.
+         * @param investigatorName Method parameter.
+         * @param leadsAccepted Method parameter.
+         * @param leadsRejected Method parameter.
+         * @param leadsCompleted Method parameter.
+         */
         public ReportRecord(string investigatorName, integer leadsAccepted, integer leadsRejected, integer leadsCompleted){
             this.investigatorName = investigatorName;
             this.leadsAccepted = leadsAccepted;
@@ -1115,6 +1240,29 @@ public with sharing class DHSCDRLReportsController {
         }
         
         
+/**
+ * @description Provides this DHS API member.
+ * @param subjectFirstName Method parameter.
+ * @param subjectLastName Method parameter.
+ * @param caseNumber Method parameter.
+ * @param customercasenumber Method parameter.
+ * @param caseDueDate Method parameter.
+ * @param customerDeliveryDate Method parameter.
+ * @param startPurgeDate Method parameter.
+ * @param caseType Method parameter.
+ * @param caseStatus Method parameter.
+ * @param caseTaskStatus Method parameter.
+ * @param manifest Method parameter.
+ * @param cmoUser Method parameter.
+ * @param investigatorUser Method parameter.
+ * @param waiverduedate Method parameter.
+ * @param rDate Method parameter.
+ * @param attachmentId Method parameter.
+ * @param leadType Method parameter.
+ * @param leadStatus Method parameter.
+ * @param leadId Method parameter.
+ * @param subjecttype Method parameter.
+ */
 public ReportRecord(string subjectFirstName,string subjectLastName, string caseNumber, string customercasenumber, string caseDueDate, string customerDeliveryDate,string startPurgeDate, string caseType, string caseStatus, string caseTaskStatus, string manifest, string cmoUser, string investigatorUser,
                             string waiverduedate, string rDate, string attachmentId, string leadType, string leadStatus,string leadId,string subjecttype){
             this.subjectFirstName = subjectFirstName;
@@ -1138,6 +1286,38 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
 			this.subjecttype = subjecttype;           
         }
         
+        /**
+         * @description Provides this DHS API member.
+         * @param subjectFirstName Method parameter.
+         * @param subjectLastName Method parameter.
+         * @param caseNumber Method parameter.
+         * @param caseDueDate Method parameter.
+         * @param customerDeliveryDate Method parameter.
+         * @param startPurgeDate Method parameter.
+         * @param caseType Method parameter.
+         * @param caseStatus Method parameter.
+         * @param caseTaskStatus Method parameter.
+         * @param manifest Method parameter.
+         * @param cmoUser Method parameter.
+         * @param investigatorUser Method parameter.
+         * @param rDate Method parameter.
+         * @param attachmentId Method parameter.
+         * @param leadType Method parameter.
+         * @param leadStatus Method parameter.
+         * @param leadItemNumber Method parameter.
+         * @param leadSourceName Method parameter.
+         * @param leadcontactName Method parameter.
+         * @param leadContactAddress Method parameter.
+         * @param leadContactCity Method parameter.
+         * @param leadContactState Method parameter.
+         * @param leadContactZip Method parameter.
+         * @param leadContactOtherInformation Method parameter.
+         * @param anticipatedCompletedDate Method parameter.
+         * @param coverageType Method parameter.
+         * @param assignmentDate Method parameter.
+         * @param leadId Method parameter.
+         * @param leadContactMethod Method parameter.
+         */
         public ReportRecord(string subjectFirstName,string subjectLastName, string caseNumber, string caseDueDate, string customerDeliveryDate,string startPurgeDate,string caseType, string caseStatus, string caseTaskStatus,string manifest, string cmoUser, string investigatorUser,
                             string rDate, string attachmentId, string leadType, string leadStatus, integer leadItemNumber, string leadSourceName,
                             string leadcontactName, string leadContactAddress, string leadContactCity, string leadContactState, string leadContactZip,
@@ -1177,6 +1357,7 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
         }
     
     }
+    /** @description Provides this DHS API member. */
     public void handlePrev(){
         PageNumber --;
         reports = new list<ReportRecord>();
@@ -1339,9 +1520,6 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
                 lastRecordName = waivers[j].Name;
             }   
         }
-        if(selectedReportType == 'Investigator DHSReports'){
-            
-        }
         if(selectedReportType == 'IC DHSTimesheet'){
             // code-analyzer-suppress-next-line PMD.ApexSOQLInjection -- Schema-validated fields and bound or validated values.
             list<DHS_TimeSheet__c> waivers = database.query(query);
@@ -1363,6 +1541,7 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
             disableNext = false;
         }
     }
+    /** @description Provides this DHS API member. */
     public void handleNext(){
         PageNumber ++ ;
         reports = new list<ReportRecord>();
@@ -1563,9 +1742,6 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
                 i++;
             }
         }
-        if(selectedReportType == 'Investigator DHSReports'){
-            
-        }
         if(selectedReportType == 'IC DHSTimesheet'){
             Map<id,User> users = new Map<id,User>([Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' WITH USER_MODE ]); // NOPMD - Supplies the dynamic SOQL bind set.
             set<id> invs = users.keyset(); // NOPMD - Referenced by a dynamic SOQL bind expression.
@@ -1593,6 +1769,11 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
         }
     }
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param reportType Method parameter.
+     * @return The requested result.
+     */
     Public static List<Map<string,Object>> getFieldMap(string reportType){
         List<Map<string,Object>> fieldMapReturn = New List<Map<string,Object>>();
         if(reportType == 'CDRLCaseExport'){

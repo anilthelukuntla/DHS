@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSROIDesignerPreviewControllerTest {
     @IsTest
     static void handlesMissingAndInvalidParameters() {
@@ -11,7 +11,7 @@ private class DHSROIDesignerPreviewControllerTest {
         DHSROIDesignerPreviewController controller = new DHSROIDesignerPreviewController();
         Test.stopTest();
 
-        System.assertEquals('', controller.customerCaseNumber);
-        System.assert(controller.renderedHtml.contains('No case was selected'));
+        System.assertEquals('', controller.customerCaseNumber, 'Expected the asserted condition to hold');
+        System.assert(controller.renderedHtml.contains('No case was selected'), 'Expected assertion condition to hold');
     }
 }

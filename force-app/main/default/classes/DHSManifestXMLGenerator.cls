@@ -1,9 +1,22 @@
-/** Retains the existing DHSManifestXMLGenerator integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity,PMD.UnusedMethod')
+/**
+ * @description Retains the existing DHSManifestXMLGenerator integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity,PMD.UnusedMethod')
 public class DHSManifestXMLGenerator {
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     * @return The requested result.
+     */
     public static string loadReleasesXML(String caseId){
         return null;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param caseRecordIds Method parameter.
+     * @param versionNumber Method parameter.
+     * @return The requested result.
+     */
     public static string loadReleasesXML(List<String> caseRecordIds, String versionNumber){
         List<DHS_Case__c> cases = new List<DHS_Case__c>();
         List<string> caseFields = new List<string>();

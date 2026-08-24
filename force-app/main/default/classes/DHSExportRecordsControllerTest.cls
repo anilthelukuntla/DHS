@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSExportRecordsControllerTest {
     @IsTest
     static void startsExportBatch() {
@@ -7,7 +7,7 @@ private class DHSExportRecordsControllerTest {
         Object result = DHSExportRecordsController.startBatch();
         Test.stopTest();
 
-        System.assertEquals(null, result);
+        System.assertEquals(null, result, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -16,7 +16,7 @@ private class DHSExportRecordsControllerTest {
 
         Object result = DHSExportRecordsController.startBatch();
 
-        System.assert(result instanceof Exception);
+        System.assert(result instanceof Exception, 'Expected assertion condition to hold');
         DHSExportRecordsController.forceFailure = false;
     }
 }

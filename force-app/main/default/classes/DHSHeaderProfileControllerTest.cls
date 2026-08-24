@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSHeaderProfileControllerTest {
     @IsTest
     static void grantsDesignerAccessToAdministrator() {
@@ -7,6 +7,6 @@ private class DHSHeaderProfileControllerTest {
         DHSHeaderProfileController controller = new DHSHeaderProfileController();
         Test.stopTest();
 
-        System.assertEquals(true, controller.canAccessDhsDesigner);
+        System.assertEquals(true, controller.canAccessDhsDesigner, 'Expected the asserted condition to hold');
     }
 }

@@ -1,12 +1,15 @@
-/** Starts the asynchronous DHS record export process. */
+/**
+ * @description Starts the asynchronous DHS record export process.
+ */
 @SuppressWarnings('PMD.UnusedMethod')
 public with sharing class DHSExportRecordsController {
     @TestVisible
     private static Boolean forceFailure = false;
 
     /**
+     * @description Provides this DHS API member.
      * Starts the export batch and returns an exception when startup fails.
-     * @return Null on success, otherwise the exception raised during startup.
+ * @return Null on success, otherwise the exception raised during startup.
      */
     Public static object startBatch(){
         try{

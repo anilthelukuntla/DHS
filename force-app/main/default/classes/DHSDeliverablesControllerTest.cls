@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSDeliverablesControllerTest {
 
     @TestSetup
@@ -27,30 +27,30 @@ private class DHSDeliverablesControllerTest {
             new DHSDeliverablesController();
         Test.stopTest();
 
-        System.assertNotEquals(null, controller.caseOptions);
-        System.assertNotEquals(null, controller.selectedcaseOptions);
-        System.assertNotEquals(null, controller.versionOptions);
+        System.assertNotEquals(null, controller.caseOptions, 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.selectedcaseOptions, 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.versionOptions, 'Expected the asserted condition to hold');
 
         /*
          * One "--None--" option plus versions 1 through 20.
          */
-        System.assertEquals(21, controller.versionOptions.size());
+        System.assertEquals(21, controller.versionOptions.size(), 'Expected the asserted condition to hold');
         System.assertEquals(
             '',
             controller.versionOptions[0].getValue()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             '--None--',
             controller.versionOptions[0].getLabel()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             '1',
             controller.versionOptions[1].getValue()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             '20',
             controller.versionOptions[20].getValue()
-        );
+        , 'Expected the asserted condition to hold');
 
         Set<String> availableCaseNumbers = new Set<String>();
 
@@ -93,7 +93,7 @@ private class DHSDeliverablesControllerTest {
         System.assertEquals(
             expectedCases.keySet(),
             returnedCaseIds
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -145,15 +145,15 @@ private class DHSDeliverablesControllerTest {
         System.assertEquals(
             UserInfo.getUserId(),
             deliverable.DHS_Requested_By__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertNotEquals(
             null,
             deliverable.Requested_Date_Time__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             '3',
             deliverable.Version_Number__c
-        );
+        , 'Expected the asserted condition to hold');
 
         Attachment generatedAttachment = [
             SELECT Id, ParentId, Name, Body, ContentType
@@ -164,21 +164,21 @@ private class DHSDeliverablesControllerTest {
         System.assertEquals(
             deliverable.Id,
             generatedAttachment.ParentId
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             'application/xml',
             generatedAttachment.ContentType
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             generatedAttachment.Name.startsWith(
                 'isn_manifest_'
             )
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             generatedAttachment.Name.endsWith('.xml')
-        );
+        , 'Expected assertion condition to hold');
         System.assert(
             generatedAttachment.Body.size() > 0
-        );
+        , 'Expected assertion condition to hold');
     }
 }

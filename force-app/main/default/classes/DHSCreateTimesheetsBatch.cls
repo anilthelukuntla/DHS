@@ -1,17 +1,32 @@
-/** Retains the existing DHSCreateTimesheetsBatch integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.EmptyStatementBlock')
+/**
+ * @description Retains the existing DHSCreateTimesheetsBatch integration and application behavior.
+ */
+@SuppressWarnings('PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.EmptyStatementBlock')
 global with sharing class DHSCreateTimesheetsBatch implements Database.Stateful,Database.Batchable<sObject> {
     public date periodStartDateVal;
+    /** @description Provides this DHS API member. */
     public class DateRange {
+        /** @description Provides this DHS API member. */
         public Date startDate { get; set; }
+        /** @description Provides this DHS API member. */
         public Date endDate   { get; set; }
         
+        /**
+         * @description Provides this DHS API member.
+         * @param startDate Method parameter.
+         * @param endDate Method parameter.
+         */
         public DateRange(Date startDate, Date endDate) {
             this.startDate = startDate;
             this.endDate   = endDate;
         }
         
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     * @return The requested result.
+     */
     global Database.QueryLocator start(Database.BatchableContext bC) {
         for (DateRange dr : generateRanges()) {
             if(system.today() <= dr.enddate && system.today() >= dr.startDate){
@@ -34,6 +49,10 @@ global with sharing class DHSCreateTimesheetsBatch implements Database.Stateful,
 		query = query + ' WHERE ProfileId IN:profileIds '; 
         return Database.getQueryLocator(query);       
     }
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public static List<DateRange> generateRanges() {
         List<DateRange> ranges = new List<DateRange>();
         // Start date
@@ -53,6 +72,11 @@ global with sharing class DHSCreateTimesheetsBatch implements Database.Stateful,
         return ranges;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     * @param users Method parameter.
+     */
     global void execute(Database.BatchableContext bC, List<User> users) {
         set<Id> userIds = New set<Id>();
         Map<string,List<date>> userNTimeSheets = New Map<string,List<date>>();
@@ -86,9 +110,13 @@ global with sharing class DHSCreateTimesheetsBatch implements Database.Stateful,
             }
         }
         if(!timeSheetsToCreate.isEmpty()){
-            insert timeSheetsToCreate;    
+            Database.insert(timeSheetsToCreate, AccessLevel.USER_MODE);    
         }
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     */
     global void finish(Database.BatchableContext bC) {
         
     }

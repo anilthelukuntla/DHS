@@ -1,33 +1,59 @@
-/** Controls DHS invoice filtering, worker selection, and pagination. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount')
+/**
+ * @description Controls DHS invoice filtering, worker selection, and pagination.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount')
 public with sharing class DHSInvoiceModuleController {
+    /** @description Provides this DHS API member. */
     public List<DHS_Invoice__c> invoices { get; set; }
+    /** @description Provides this DHS API member. */
     public Date periodStartDate { get; set; }
+    /** @description Provides this DHS API member. */
     public Date periodEndDate { get; set; }
+    /** @description Provides this DHS API member. */
     public Integer currentYear { get; set; }
+    /** @description Provides this DHS API member. */
     public List<Date> cycleDates { get; set; }
+    /** @description Provides this DHS API member. */
     public List<SelectOption> cycleDateOptions { get; set; }
+    /** @description Provides this DHS API member. */
     public String selectedCycleFilterDate { get; set; }
+    /** @description Provides this DHS API member. */
     public Date cycleFilterDate { get; set; }
+    /** @description Provides this DHS API member. */
     public String currentMonth { get; set; }
+    /** @description Provides this DHS API member. */
     public List<SelectOption> userTypeOptions { get; set; }
+    /** @description Provides this DHS API member. */
     public String selectedUserOption { get; set; }
+    /** @description Provides this DHS API member. */
     public List<SelectOption> workerOptions { get; set; }
+    /** @description Provides this DHS API member. */
     public String selectedWorkerId { get; set; }
+    /** @description Provides this DHS API member. */
     public String workerNameInput { get; set; }
+    /** @description Provides this DHS API member. */
     public Boolean isPMOUser { get; private set; }
+    /** @description Provides this DHS API member. */
     public Integer pageNumber { get; set; }
+    /** @description Provides this DHS API member. */
     public Integer totalPages { get; set; }
+    /** @description Provides this DHS API member. */
     public Integer totalRecordCount { get; set; }
     public Boolean disablePrev { get; set; } // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public Boolean disableNext { get; set; } // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public String queryForNextRecords { get; set; }
+    /** @description Provides this DHS API member. */
     public String lastRecordName { get; set; }
+    /** @description Provides this DHS API member. */
     public String firstRecordName { get; set; }
+    /** @description Provides this DHS API member. */
     public Integer currentRecordCount { get; set; }
+	/** @description Provides this DHS API member. */
 	public static object criteria {get;set;}
     private static final Integer PAGE_SIZE = 200;
 
+    /** @description Provides this DHS API member. */
     public DHSInvoiceModuleController() {
         cycleDates = New List<Date>();
         cycleDateOptions = new List<SelectOption>();
@@ -54,11 +80,13 @@ public with sharing class DHSInvoiceModuleController {
         getAllCycleDates();
     }
 
+    /** @description Provides this DHS API member. */
     public void refreshWorkerOptions() {
         selectedWorkerId = 'DHS_All';
         buildWorkerOptions();
     }
 
+    /** @description Provides this DHS API member. */
     public void fetchInvoiceRecords() {
         invoices = new List<DHS_Invoice__c>();
         initializePagination();
@@ -115,6 +143,7 @@ public with sharing class DHSInvoiceModuleController {
         }
     }
 
+    /** @description Provides this DHS API member. */
     public void handlePrev() {
         if (String.isBlank(queryForNextRecords) || String.isBlank(firstRecordName) || pageNumber <= 1) {
             return;
@@ -126,6 +155,7 @@ public with sharing class DHSInvoiceModuleController {
         disableNext = false;
     }
 
+    /** @description Provides this DHS API member. */
     public void handleNext() {
         if (String.isBlank(queryForNextRecords) || String.isBlank(lastRecordName) || disableNext) {
             return;
@@ -199,6 +229,7 @@ public with sharing class DHSInvoiceModuleController {
         }
         return worker.LastName + ', ' + worker.FirstName;
     }
+    /** @description Provides this DHS API member. */
     public void getAllCycleDates() {
         cycleDates.clear();
         cycleDateOptions.clear();

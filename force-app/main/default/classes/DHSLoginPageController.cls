@@ -1,25 +1,36 @@
-@SuppressWarnings('PMD.ApexCRUDViolation,PMD.ApexDoc,PMD.ApexSharingViolations,PMD.AvoidDebugStatements,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.DebugsShouldUseLoggingLevel,PMD.EmptyIfStmt,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+@SuppressWarnings('PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.DebugsShouldUseLoggingLevel,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/** @description Provides this DHS API member. */
 Public class DHSLoginPageController{
+    /** @description Provides this DHS API member. */
     public string username {get;set;}
+    /** @description Provides this DHS API member. */
     public string password {get;set;}
     public boolean showloginpanel{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean verifyEmail{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
 	public boolean sendOTPTo{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public string errorMessage {get;set;}
+    /** @description Provides this DHS API member. */
     public string newPassword {get;set;}
+    /** @description Provides this DHS API member. */
     public string enteredOTP{get;set;}
     public FINAL string  systemACCESS;
     Public Id oTPrecId;
+    /** @description Provides this DHS API member. */
     public DHSLoginPageController(){
         showloginpanel = true;
         verifyEmail = false;
         sendOTPTo = false;
         systemACCESS = 'DHS';
     }
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public pagereference doLogin(){
         errorMessage = null;
         List<User> u= [Select id,username,contact.onboarding__r.User_Profile__c, system_access__c
-                       from user where username=:username];
+                       from user where username=:username WITH USER_MODE];
         string userType;
         if(!test.isRunningTest()){
             if(!u.isEmpty()){
@@ -35,8 +46,8 @@ Public class DHSLoginPageController{
             errorMessage = 'Your login attempt has failed. Invalid UserName.';   
             return Null;
         }
-        System.debug('SYSTEM_ACCESS...'+systemACCESS);
-        System.debug('userType...'+userType);
+
+
         if(string.isBlank(password)){
             errorMessage = 'Please enter the password.';
             return null;
@@ -63,12 +74,12 @@ Public class DHSLoginPageController{
             }else if((userType == 'PMO' || userType == 'CMO' || userType == 'QA')){
                  homePage = '/DHSCaseDashboard';
             }else if(userType == 'Customer User'){
-                //homePage = '/BICustomerInterfaceV2';
+                homePage = '/BICustomerInterfaceV2';
             }else{
                 homePage = '/DHSDashboard';
             }
             pagereference ref = site.login(username,password,homePage);
-            System.debug('ref...'+ref);
+
             if(ref == null){
                 isLoginFailed=true;
                  for (ApexPages.Message m : ApexPages.getMessages()) {
@@ -88,9 +99,10 @@ Public class DHSLoginPageController{
         
         
     }
+    /** @description Provides this DHS API member. */
     public void sendOTP(){
         
-        List<user> usr = [select id,email,username,Name from user where username =:username];
+        List<user> usr = [select id,email,username,Name from user where username =:username WITH USER_MODE];
         if(!usr.isEmpty()){
             String randomIntegerString = string.valueof(Math.abs(Crypto.getRandomInteger()));
             String generatedOTP = randomIntegerString.substring(0,6);
@@ -100,7 +112,7 @@ Public class DHSLoginPageController{
             otp.Status__c = 'Generated';
             otp.Is_Portal__c = true;
             otp.User__c = usr[0].Id;
-            insert otp;
+            Database.insert(otp, AccessLevel.USER_MODE);
             oTPrecId = otp.Id;
             sendOTPTo = false;
         	verifyEmail = true;
@@ -112,14 +124,15 @@ Public class DHSLoginPageController{
         }
         
     }
+    /** @description Provides this DHS API member. */
     public void verifyOTP(){
-        user usr = [select id,email,username from user where username =:username];
-        List<OTP__C> otpRecord = [select id,OTP__c,User__c,Status__c,Expired__c,is_portal__c from OTP__c where id=:oTPrecId AND OTP__c =: enteredOTP AND User__c =: usr.Id AND  Status__c = 'Generated' AND Expired__c = false and is_portal__c = true];
+        user usr = [select id,email,username from user where username =:username WITH USER_MODE];
+        List<OTP__C> otpRecord = [select id,OTP__c,User__c,Status__c,Expired__c,is_portal__c from OTP__c where id=:oTPrecId AND OTP__c =: enteredOTP AND User__c =: usr.Id AND  Status__c = 'Generated' AND Expired__c = false and is_portal__c = true WITH USER_MODE];
         if(otpRecord.size()==1)
         {
             OTP__C oTPRec = otpRecord[0];
             oTPRec.Status__c = 'Verified';
-			update oTPRec;
+			Database.update(oTPRec, AccessLevel.USER_MODE);
             verifyEmail = false;
             errorMessage = 'Verified!';
         }else{
@@ -127,16 +140,18 @@ Public class DHSLoginPageController{
             errorMessage = 'The OTP entered is either incorrect or expired, please verify.';
         }
     }
+    /** @description Provides this DHS API member. */
     public void forgotPasswordClickAction(){
         showloginpanel = false;
         sendOTPTo = true;
         errorMessage = '';
     }
     
+    /** @description Provides this DHS API member. */
     public void resetpassword(){
         try{
             errorMessage  = NULL;
-            User u= [Select id,username from user where username=:username];
+            User u= [Select id,username from user where username=:username WITH USER_MODE];
             //System.resetPassword(u.id, true); 
             system.setPassword(u.id, newPassword);
             

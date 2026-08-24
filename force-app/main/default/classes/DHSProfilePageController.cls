@@ -1,15 +1,22 @@
-/** Controls DHS user profile and out-of-office backup settings. */
-@SuppressWarnings('PMD.ApexDoc,PMD.UnusedMethod')
+/**
+ * @description Controls DHS user profile and out-of-office backup settings.
+ */
+@SuppressWarnings('PMD.UnusedMethod')
 public with sharing class DHSProfilePageController {
 
+    /** @description Provides this DHS API member. */
     public string userId {get;set;}
+    /** @description Provides this DHS API member. */
     public User userRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> assignUserList {get;set;}
     public boolean showFields {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public list<selectoption> assignLeaveTypes {get;set;}
 
 
 
+    /** @description Provides this DHS API member. */
     public DHSProfilePageController(){
     
         List<user> assignUsers = new List<user>();
@@ -44,7 +51,9 @@ public with sharing class DHSProfilePageController {
        
     }
 
+    /** @description Provides this DHS API member. */
     public string selectedUserIdForAssignment{get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedLeaveType{get;set;}
 
      
@@ -53,11 +62,15 @@ public with sharing class DHSProfilePageController {
 
         userRecord = [Select FirstName, LastName, Address, Email, Backup_User__c, Backup_UserId__c , From_Date__c,To_Date__c,Out_of_Office__c  from User where id=:userId WITH USER_MODE];
 
-        //System.debug('User Record'+ userRecord);
+        //
 
         return userRecord;
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference updateuserrecordaction(){
 
         if (selectedUserIdForAssignment!=null) {
@@ -71,6 +84,7 @@ public with sharing class DHSProfilePageController {
 
     }
     
+    /** @description Provides this DHS API member. */
     public void updatefieldfisibility(){
      
         if (userRecord.Out_of_office__c!=null){

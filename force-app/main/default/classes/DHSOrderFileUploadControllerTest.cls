@@ -1,11 +1,11 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSOrderFileUploadControllerTest {
     @IsTest
     static void reportsNoAttachmentsForNullParent() {
         System.assertEquals(0,
-            DHSOrderFileUploadController.attachmentcountmethod(null));
+            DHSOrderFileUploadController.attachmentcountmethod(null), 'Expected the asserted condition to hold');
         System.assertEquals('',
-            DHSOrderFileUploadController.attachmentnames(null));
+            DHSOrderFileUploadController.attachmentnames(null), 'Expected the asserted condition to hold');
     }
 }

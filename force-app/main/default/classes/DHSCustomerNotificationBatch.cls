@@ -1,8 +1,15 @@
-/** Retains the existing DHSCustomerNotificationBatch integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidGlobalModifier')
+/**
+ * @description Retains the existing DHSCustomerNotificationBatch integration and application behavior.
+ */
+@SuppressWarnings('PMD.AvoidGlobalModifier')
 global with sharing class DHSCustomerNotificationBatch implements Database.Stateful,Database.Batchable<sObject> {
     global string csvContent;
     global integer totalCasesCompleted;
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     * @return The requested result.
+     */
     global Database.QueryLocator start(Database.BatchableContext bC) {
       
         map<string,string> apiNameNLabelMap = new map<string,string>();
@@ -26,6 +33,11 @@ global with sharing class DHSCustomerNotificationBatch implements Database.State
 		string query = 'select '+String.join(notificationCaseFields, ',')+' From DHS_Case__c WHERE Case_Completed_Date__c=TODAY WITH SECURITY_ENFORCED';
         return Database.getQueryLocator(query);       
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     * @param cases Method parameter.
+     */
     global void execute(Database.BatchableContext bC, List<DHS_Case__c> cases) {
         list<string> notificationCaseFields = new list<String>();
         notificationCaseFields = getConfiguredFields(Schema.DHS_Case__c.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).fields.getMap());
@@ -57,6 +69,10 @@ global with sharing class DHSCustomerNotificationBatch implements Database.State
         }
         return fields;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     */
     global void finish(Database.BatchableContext bC) {
         Messaging.EmailFileAttachment csvAttc = new Messaging.EmailFileAttachment();
         blob csvBlob = Blob.valueOf(csvContent);

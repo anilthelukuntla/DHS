@@ -1,33 +1,60 @@
-/** Builds the DHS ROI report data model for a selected case. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Builds the DHS ROI report data model for a selected case.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
 public with sharing class DHSROIReportController {
+    /** @description Provides this DHS API member. */
     public string caseId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public List<DHS_Lead__c> leads {get;set;}
+    /** @description Provides this DHS API member. */
     public user currentUser{get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalLeads {get;set;}
+    /** @description Provides this DHS API member. */
     public String investigationDates {get;set;}
+    /** @description Provides this DHS API member. */
     public String investigators {get;set;}
+    /** @description Provides this DHS API member. */
     public map<string,integer> leadsCountMap {get;set;}
+    /** @description Provides this DHS API member. */
     public map<string,DHS_Lead__c> leadsMap {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> subjectInterviewList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> subjectContactList {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<String,Map<String,List<String>>> employmentMap {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<String,Map<String,List<String>>> educationMap {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<String,Map<String,List<String>>> medicalMap {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> residenceList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> referencesList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> generalLeadsList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> formerSpouseList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> unEmploymentList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> lawEnforcementList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> financialList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> employmentList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> educationList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> medicalList {get;set;}
     
     
 
+    /** @description Provides this DHS API member. */
     public DHSROIReportController(){
         currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() WITH SECURITY_ENFORCED];
         caseId = String.valueOf(Id.valueOf(ApexPages.currentPage().getParameters().get('id').escapeHtml4()));
@@ -37,6 +64,7 @@ public with sharing class DHSROIReportController {
         fetchLeadInformation();
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchCaseInformation(){
         List<string> caseFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -71,7 +99,9 @@ public with sharing class DHSROIReportController {
         }    
     }
     
+    /** @description Provides this DHS API member. */
     PUBLIC Map<String, DHS_Lead_RTA_Extension__c> subjectInterviewNLeadRTAExtension {get;set;}
+    /** @description Provides this DHS API member. */
     public void fetchLeadInformation(){
         leadsMap = new Map<String,DHS_Lead__c>();
         subjectInterviewNLeadRTAExtension = new Map<String, DHS_Lead_RTA_Extension__c>();

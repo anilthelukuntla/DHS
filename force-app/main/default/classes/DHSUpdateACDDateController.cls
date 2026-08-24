@@ -1,16 +1,31 @@
-/** Controls DHS customer-order processing, deliverable search, and ACD updates. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessiveParameterList,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity,PMD.UnusedMethod')
+/**
+ * @description Controls DHS customer-order processing, deliverable search, and ACD updates.
+ */
+@SuppressWarnings('PMD.AvoidGlobalModifier,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessiveParameterList,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity,PMD.UnusedMethod')
 global with sharing class DHSUpdateACDDateController {
+    /** @description Provides this DHS API member. */
     public List<OrderRecord> customerOrders {get;set;}
+    /** @description Provides this DHS API member. */
     public List<OrderRecord> uploadedcustomerOrders {get;set;}
+    /** @description Provides this DHS API member. */
     public List<OrderRecord> executedCustomerOrders {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<Id,List<DHS_Case__c>> executedCustomerOrdersandCasesMap {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<Id,DHS_Customer_Order__c> executedCustomerOrdersMap {get;set;}
+    /** @description Provides this DHS API member. */
     global string subjectFirstNameSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     global string subjectLastNameSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     global string subjectSSNSearchEntry {get;set;}
+    /** @description Provides this DHS API member. */
     global List<DeliverableWrapper> deliverables {get;set;}
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param contentversionIds Method parameter.
+     */
     global static void createOrderNDocuments(list<string> contentversionIds){
         list<contentversion> contentVersions = [select id,ContentDocumentId from contentversion WHERE ID IN:contentversionIds WITH USER_MODE];
         list<string> contentDocumentIds = new list<string>();
@@ -46,6 +61,7 @@ global with sharing class DHSUpdateACDDateController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void getCustomerOrders(){
     	 uploadedcustomerOrders = new List<OrderRecord> ();
         executedCustomerOrders = new List<OrderRecord> ();
@@ -71,10 +87,12 @@ global with sharing class DHSUpdateACDDateController {
             }    
         }      
     }
+    /** @description Provides this DHS API member. */
     public DHSUpdateACDDateController(){
        getDeliverables();
        getCustomerOrders();
     }
+      /** @description Provides this DHS API member. */
       global void getDeliverables(){
         deliverables = New List<DeliverableWrapper>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -129,16 +147,30 @@ global with sharing class DHSUpdateACDDateController {
             }
         }
 	}
+        /** @description Provides this DHS API member. */
         global class DeliverableWrapper{
+            /** @description Provides this DHS API member. */
             global string caseId {get;set;}
+            /** @description Provides this DHS API member. */
             global string caseNumber {get;set;}
+            /** @description Provides this DHS API member. */
             global datetime createdDate {get;set;}
+            /** @description Provides this DHS API member. */
             global string createdBy {get;set;}
+            /** @description Provides this DHS API member. */
             global string documentId {get;set;}
+            /** @description Provides this DHS API member. */
             global date completedDate {get;set;}
+            /** @description Provides this DHS API member. */
             global date dueDate {get;set;}
+            /** @description Provides this DHS API member. */
             global string lastName {get;set;}
         }
+    /**
+     * @description Provides this DHS API member.
+     * @param orderids Method parameter.
+     * @return The requested result.
+     */
     public list<DHS_Case__c> fetchCasesofCustomerOrder(list<string> orderids){
         List<string> caseFields = new List<string>();
         caseFields = DHSApexUtil.FetchFields('DHS_Case__c');
@@ -149,11 +181,23 @@ global with sharing class DHSUpdateACDDateController {
         list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
         return cases;
     }
+    /** @description Provides this DHS API member. */
     public class OrderRecord{
+        /** @description Provides this DHS API member. */
         public string attachmentId{get;set;}   
+        /** @description Provides this DHS API member. */
         public DHS_Customer_Order__c order{get;set;}
+        /** @description Provides this DHS API member. */
         public string logMessage{get;set;}
+        /** @description Provides this DHS API member. */
         public string logAttachmentId{get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param attachmentId Method parameter.
+         * @param order Method parameter.
+         * @param logMessage Method parameter.
+         * @param logAttachmentId Method parameter.
+         */
         public OrderRecord(string attachmentId, DHS_Customer_Order__c order, string logMessage,string logAttachmentId){
             this.order = order;    
             this.attachmentId = attachmentId;
@@ -162,6 +206,7 @@ global with sharing class DHSUpdateACDDateController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void saveOrderAction(){
     	list<DHS_Customer_Order__c> ordersToUpdate = new list<DHS_Customer_Order__c>();
         for(OrderRecord oRecord: executedCustomerOrders){
@@ -175,6 +220,11 @@ global with sharing class DHSUpdateACDDateController {
         }
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param status Method parameter.
+     * @return The requested result.
+     */
     public List<OrderRecord> fetchOrderInformation(string status){
         List<OrderRecord> customerOrders = new List<OrderRecord> ();
         List<string> orderFields = new List<string>();

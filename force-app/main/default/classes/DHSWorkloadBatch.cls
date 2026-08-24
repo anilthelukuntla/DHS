@@ -1,13 +1,25 @@
-/** Retains the existing DHSWorkloadBatch integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidGlobalModifier,PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity')
+/**
+ * @description Retains the existing DHSWorkloadBatch integration and application behavior.
+ */
+@SuppressWarnings('PMD.AvoidGlobalModifier,PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity')
 global class DHSWorkloadBatch implements Database.Stateful,Database.Batchable<sObject>{
     public Map<Id,Map<string,integer>> workload;
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     * @return The requested result.
+     */
     global Database.QueryLocator start(Database.BatchableContext bC) {
         workload = New Map<Id,Map<string,integer>>();
         List<string> statusFilter = New List<string>{'Assigned Not Accepted','In-Progress','QA Rejected'};
         string query = 'select id,Status__c,LeadType__c,DHS_Assigned_To__c from DHS_Lead__c where Status__c IN : statusFilter';
         return Database.getQueryLocator(query); 
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     * @param leads Method parameter.
+     */
     global void execute(Database.BatchableContext bC, List<DHS_Lead__c> leads) {
         for(DHS_Lead__c lead : leads){
             if(lead.DHS_Assigned_To__c != null){
@@ -37,6 +49,10 @@ global class DHSWorkloadBatch implements Database.Stateful,Database.Batchable<sO
         load.put(key, load.get(key) + 1);
         workload.put(assigneeId,load);
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param bC Method parameter.
+     */
     global void finish(Database.BatchableContext bC) {
         Map<Id,DHS_Workload__c> existingInvWork = New Map<Id,DHS_Workload__c>();
         List<DHS_Workload__c> wloads = [select id,DHS_User__c from DHS_Workload__c];
@@ -58,7 +74,7 @@ global class DHSWorkloadBatch implements Database.Stateful,Database.Batchable<sO
 			wl.DHS_User__c = inv;
 			wlToUpsert.add(wl);
         }
-        		upsert wlToUpsert;
+        		Database.upsert(wlToUpsert, AccessLevel.USER_MODE);
         
         List<DHS_Workload__c> wloadsCleanUp = [select id,DHS_User__c from DHS_Workload__c];
         for(DHS_Workload__c wl : wloadsCleanUp){
@@ -66,6 +82,6 @@ global class DHSWorkloadBatch implements Database.Stateful,Database.Batchable<sO
                 wlToDelete.add(wl);
             }
         }
-        	delete wlToDelete;
+        	Database.delete(wlToDelete, AccessLevel.USER_MODE);
     }
 }

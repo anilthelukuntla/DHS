@@ -1,11 +1,19 @@
-/** Visualforce controller for generating DHS deliverable manifests. */
-@SuppressWarnings('PMD.ApexDoc,PMD.UnusedMethod')
+/**
+ * @description Visualforce controller for generating DHS deliverable manifests.
+ */
+@SuppressWarnings('PMD.UnusedMethod')
 public with sharing class DHSDeliverablesController {
+    /** @description Provides this DHS API member. */
     public user currentUser{get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> caseOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> selectedcaseOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> versionOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedVersion {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSDeliverablesController(){
         caseOptions = new list<selectoption>();  
         versionOptions = new list<selectoption>(); 
@@ -17,6 +25,7 @@ public with sharing class DHSDeliverablesController {
         }
         fetchCaseList();
     }
+    /** @description Provides this DHS API member. */
     public void fetchCaseList(){
         List<string> caseFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -33,7 +42,9 @@ public with sharing class DHSDeliverablesController {
             caseOptions.add(new selectoption(c.id,c.Case_Number__c));    
         }
     }
+    /** @description Provides this DHS API member. */
     public string manifestActionAttachmentId {get;set;}
+    /** @description Provides this DHS API member. */
     public void downloadmanifestaction(){
         List<string> caseIdsSelected = new List<string>();
         for (SelectOption so : selectedcaseOptions){

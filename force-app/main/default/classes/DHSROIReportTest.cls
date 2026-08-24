@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSROIReportTest {
     @IsTest
     static void buildsOrderedRoiReportForCase() {
@@ -38,7 +38,7 @@ public class DHSROIReportTest {
             new DHSROIReportControllerV2();
         Test.stopTest();
 
-        System.assertEquals(caseRecord.Id, controller.caseRecord.Id);
-        System.assertEquals(1, controller.totalLeads);
+        System.assertEquals(caseRecord.Id, controller.caseRecord.Id, 'Expected the asserted condition to hold');
+        System.assertEquals(1, controller.totalLeads, 'Expected the asserted condition to hold');
     }
 }

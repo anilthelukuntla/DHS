@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSDownloadDeliverablesControllerTest {
     @IsTest
     static void findsCaseDocuments() {
@@ -18,6 +18,6 @@ private class DHSDownloadDeliverablesControllerTest {
             new DHSDownloadDeliverablesController();
         controller.caseNumberToSearch = 'DOWNLOAD-TEST';
         controller.SearchAction();
-        System.assertEquals(true, controller.showTable);
+        System.assertEquals(true, controller.showTable, 'Expected the asserted condition to hold');
     }
 }

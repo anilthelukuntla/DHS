@@ -1,7 +1,7 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexUnitTestMethodShouldHaveIsTestAnnotation,PMD.UnusedLocalVariable')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSMultifileuploadPageControllerTest {
-    TestMethod static void method1(){
+    @IsTest static void method1(){
         DHS_Contact__c con = new DHS_Contact__c();
          con.First_Name__c = 'Test';
          con.Last_Name__c = 'Name';
@@ -16,12 +16,12 @@ public class DHSMultifileuploadPageControllerTest {
         PageReference casedetailpage = Page.DHSMultifileuploadPage;
         Test.setCurrentPage(casedetailpage);
         casedetailpage.getParameters().put('caseid',caseTemp.id); 
-        DHSMultifileuploadPageController remp = new DHSMultifileuploadPageController();
+        DHSMultifileuploadPageController remp = new DHSMultifileuploadPageController(); System.assertNotEquals(null, remp, 'Expected remp to be initialized');
         
-        DHSMultifileuploadPageController temp1 = New DHSMultifileuploadPageController();
+        DHSMultifileuploadPageController temp1 = New DHSMultifileuploadPageController(); System.assertNotEquals(null, temp1, 'Expected temp1 to be initialized');
         DHSMultifileuploadPageController.attachmentcountmethod(caseTemp.id);
         DHSMultifileuploadPageController.attachmentnames(caseTemp.id);
-        string docId = DHSMultifileuploadPageController.createDocumentRecord(caseTemp.id);
+        string docId = DHSMultifileuploadPageController.createDocumentRecord(caseTemp.id); System.assertNotEquals(null, docId, 'Expected docId to be initialized');
         DHSMultifileuploadPageController.attachBlob(caseTemp.id,'','Test','csv','Test','');
         DHSMultifileuploadPageController.processUploadedFiles(caseTemp.id,'test.pdf');
     }

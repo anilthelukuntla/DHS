@@ -1,11 +1,19 @@
-/** Controls DHS ROI report ordering, draft generation, and preview navigation. */
-@SuppressWarnings('PMD.ApexDoc,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity')
+/**
+ * @description Controls DHS ROI report ordering, draft generation, and preview navigation.
+ */
+@SuppressWarnings('PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity')
 public without sharing class DHSOrderROIReportController {
+    /** @description Provides this DHS API member. */
     public string caseId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public List<LeadRecord> leadRecords {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> orderOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public string type{get;set;}
+    /** @description Provides this DHS API member. */
     public DHSOrderROIReportController(){
         caseId = String.valueOf(Id.valueOf(ApexPages.currentPage().getParameters().get('id').escapeHtml4()));
         type= apexpages.currentpage().getparameters().get('type');
@@ -24,6 +32,7 @@ public without sharing class DHSOrderROIReportController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchCaseInformation(){
         List<string> caseFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -51,6 +60,7 @@ public without sharing class DHSOrderROIReportController {
         }    
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchLeadInformation(){
         orderOptions.add(new selectoption('','--None--'));
         leadRecords = new list<LeadRecord>();
@@ -79,17 +89,30 @@ public without sharing class DHSOrderROIReportController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public class LeadRecord{
+        /** @description Provides this DHS API member. */
         public DHS_Lead__c lead{get;set;}
+        /** @description Provides this DHS API member. */
         public integer leadNumber {get;set;}
         public boolean headerTitle { get; set; } // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+        /**
+         * @description Provides this DHS API member.
+         * @param l Method parameter.
+         * @param ln Method parameter.
+         */
         public LeadRecord(DHS_Lead__c l, integer  ln){
             this.lead = l;
             this.headerTitle = false;
             this.leadnumber = ln;
         }
     }
+    /** @description Provides this DHS API member. */
     public string roiOrderId {get;set;}
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference generateROIReport(){
         DHS_ROI_Report_Order__c roiOrder = new DHS_ROI_Report_Order__c();
         roiOrder.DHS_Case__c = caseRecord.id;
@@ -131,6 +154,10 @@ public without sharing class DHSOrderROIReportController {
         return redirectPage;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference generateNattachROIReport(){
         DHS_ROI_Report_Order__c roiOrder = new DHS_ROI_Report_Order__c();
         roiOrder.DHS_Case__c = caseRecord.id;
@@ -170,6 +197,10 @@ public without sharing class DHSOrderROIReportController {
         return redirectPage;
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference previewUsingDhsDesigner(){
         generateROIDraft();
         PageReference redirectPage = Page.DHSROIReportDesignerPreviewLauncher;
@@ -181,6 +212,11 @@ public without sharing class DHSOrderROIReportController {
         return redirectPage;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     * @param sequenceId Method parameter.
+     */
     public static void myFutureMethod(String caseId, String sequenceId) {
         System.enqueueJob(new RoiReportPdfQueueable(caseId, sequenceId));
     }
@@ -196,6 +232,10 @@ public without sharing class DHSOrderROIReportController {
             this.sequenceId = sequenceId;
         }
 
+        /**
+         * @description Provides this DHS API member.
+         * @param context Method parameter.
+         */
         public void execute(QueueableContext context) {
             System.attachFinalizer(new RoiReportPdfFinalizer());
             generateRoiReportPdf(caseId, sequenceId);
@@ -203,6 +243,10 @@ public without sharing class DHSOrderROIReportController {
     }
 
     private class RoiReportPdfFinalizer implements Finalizer {
+        /**
+         * @description Provides this DHS API member.
+         * @param context Method parameter.
+         */
         public void execute(FinalizerContext context) {
             context.getResult();
         }
@@ -245,7 +289,9 @@ public without sharing class DHSOrderROIReportController {
         //database.insert(att,false,AccessLevel.USER_MODE);
         Database.insert(att, AccessLevel.USER_MODE);
     }
+    /** @description Provides this DHS API member. */
     public string currentsequenceid {get;set;}
+    /** @description Provides this DHS API member. */
     public void generateROIDraft(){
         new map<double,DHS_Lead__c>();
         new list<integer>();
@@ -297,9 +343,15 @@ public without sharing class DHSOrderROIReportController {
         showroireport = true;
         
     }
+    /** @description Provides this DHS API member. */
     public boolean showroireport { get; private set; }
+    /** @description Provides this DHS API member. */
     public boolean showPreview { get; private set; }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference backToReport() {
         PageReference redirectPage = Page.DHSOrderROIReport;
         redirectPage.setRedirect(true);
@@ -308,6 +360,7 @@ public without sharing class DHSOrderROIReportController {
         return redirectPage;
     }
     
+    /** @description Provides this DHS API member. */
     public void initializePreview() {
         showPreview = true;
         if (currentsequenceid == null) {

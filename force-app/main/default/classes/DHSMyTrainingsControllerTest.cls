@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSMyTrainingsControllerTest {
     @IsTest
     static void loadsAndDeletesCurrentUsersTraining() {
@@ -15,7 +15,7 @@ private class DHSMyTrainingsControllerTest {
 
         System.assertEquals(0, [
             SELECT COUNT() FROM DHS_Training__c WHERE Id = :training.Id
-        ]);
+        ], 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -29,6 +29,6 @@ private class DHSMyTrainingsControllerTest {
             SELECT COUNT()
             FROM DHS_Training__c
             WHERE Training_Name__c = 'Submitted DHS training'
-        ]);
+        ], 'Expected the asserted condition to hold');
     }
 }

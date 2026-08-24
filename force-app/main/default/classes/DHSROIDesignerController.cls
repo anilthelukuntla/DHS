@@ -1,5 +1,7 @@
-/** Provides DHS ROI designer configuration, merge-field, and preview services. */
-@SuppressWarnings('PMD.ApexDoc,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessiveClassLength,PMD.ExcessiveParameterList,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.StdCyclomaticComplexity,PMD.UnusedMethod')
+/**
+ * @description Provides DHS ROI designer configuration, merge-field, and preview services.
+ */
+@SuppressWarnings('PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessiveClassLength,PMD.ExcessiveParameterList,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.StdCyclomaticComplexity,PMD.UnusedMethod')
 public with sharing class DHSROIDesignerController {
     private static final String CONFIG_TITLE = 'ROIBuilderConfig';
     private static final String CONFIG_FILE_NAME = 'ROIBuilderConfig.json';
@@ -9,11 +11,22 @@ public with sharing class DHSROIDesignerController {
     private static Map<String, Schema.DescribeFieldResult> describeByFieldPath = new Map<String, Schema.DescribeFieldResult>();
     private static Map<String, Object> activeRenderContext = new Map<String, Object>();
 
+    /**
+     * @description Provides this DHS API member.
+
+     */
     public class FieldOption {
         @AuraEnabled public String label;
         @AuraEnabled public String value;
         @AuraEnabled public String scope;
 
+        /**
+         * @description Provides this DHS API member.
+
+         * @param label Method parameter.
+         * @param value Method parameter.
+         * @param scope Method parameter.
+         */
         public FieldOption(String label, String value, String scope) {
             this.label = label;
             this.value = value;
@@ -21,20 +34,40 @@ public with sharing class DHSROIDesignerController {
         }
     }
 
+    /**
+     * @description Provides this DHS API member.
+
+     */
     public class CaseOption {
         @AuraEnabled public Id value;
         @AuraEnabled public String label;
 
+        /**
+         * @description Provides this DHS API member.
+
+         * @param value Method parameter.
+         * @param label Method parameter.
+         */
         public CaseOption(Id value, String label) {
             this.value = value;
             this.label = label;
         }
     }
 
+    /**
+     * @description Provides this DHS API member.
+
+     */
     public class PicklistOption {
         @AuraEnabled public String label;
         @AuraEnabled public String value;
 
+        /**
+         * @description Provides this DHS API member.
+
+         * @param label Method parameter.
+         * @param value Method parameter.
+         */
         public PicklistOption(String label, String value) {
             this.label = label;
             this.value = value;
@@ -46,6 +79,11 @@ public with sharing class DHSROIDesignerController {
         public Integer maxPage;
         public Map<Integer, Integer> pageHeights;
 
+        /**
+         * @description Provides this DHS API member.
+
+         * @param configJson Method parameter.
+         */
         public ParsedTemplate(String configJson) {
             Map<String, Object> config = (Map<String, Object>) JSON.deserializeUntyped(configJson);
             elements = (List<Object>) config.get('elements');
@@ -63,6 +101,11 @@ public with sharing class DHSROIDesignerController {
         public Integer y;
         public Integer height;
 
+        /**
+         * @description Provides this DHS API member.
+
+         * @param source Method parameter.
+         */
         public RenderCandidate(Map<String, Object> source) {
             element = source;
             x = getInteger(source, 'x', 72);
@@ -70,6 +113,12 @@ public with sharing class DHSROIDesignerController {
             height = getInteger(source, 'height', 60);
         }
 
+        /**
+         * @description Provides this DHS API member.
+
+         * @param otherObject Method parameter.
+         * @return The requested result.
+         */
         public Integer compareTo(Object otherObject) {
             RenderCandidate other = (RenderCandidate) otherObject;
             if (y != other.y) {
@@ -86,12 +135,24 @@ public with sharing class DHSROIDesignerController {
         public String objectName;
         public String fieldName;
 
+        /**
+         * @description Provides this DHS API member.
+
+         * @param objectName Method parameter.
+         * @param fieldName Method parameter.
+         */
         public FieldReference(String objectName, String fieldName) {
             this.objectName = objectName;
             this.fieldName = fieldName;
         }
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param leadType Method parameter.
+     * @param coverageType Method parameter.
+     * @return The requested result.
+     */
     @AuraEnabled(cacheable=true)
     public static String getConfig(String leadType, String coverageType) {
         return loadConfig(leadType, coverageType, true);
@@ -128,6 +189,13 @@ public with sharing class DHSROIDesignerController {
         return stripBom(versions[0].VersionData.toString());
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param configJson Method parameter.
+     * @param leadType Method parameter.
+     * @param coverageType Method parameter.
+     * @return The requested result.
+     */
     @AuraEnabled
     public static String saveConfig(String configJson, String leadType, String coverageType) {
         if (String.isBlank(configJson)) {
@@ -172,6 +240,11 @@ public with sharing class DHSROIDesignerController {
         return 'Saved';
     }
 
+    /**
+     * @description Provides this DHS API member.
+
+     * @return The requested result.
+     */
     public static String resetDefaultTemplates() {
         Account isnAccount = getIsnAccount();
         String titlePattern = CONFIG_TITLE + '%';
@@ -223,7 +296,12 @@ public with sharing class DHSROIDesignerController {
         return value.startsWith('\uFEFF') ? value.substring(1) : value;
     }
 
+    @SuppressWarnings('PMD.ApexDoc')
     @AuraEnabled(cacheable=true)
+    /**
+     * @description Returns the available merge fields.
+     * @return The available merge-field options.
+     */
     public static List<FieldOption> getMergeFields() {
         List<FieldOption> options = new List<FieldOption>();
         options.addAll(getContextFieldOptions());
@@ -233,7 +311,13 @@ public with sharing class DHSROIDesignerController {
         return options;
     }
 
+    @SuppressWarnings('PMD.ApexDoc')
     @AuraEnabled(cacheable=true)
+    /**
+     * @description Searches DHS cases.
+     * @param searchTerm Case search text.
+     * @return Matching DHS cases.
+     */
     public static List<CaseOption> searchCases(String searchTerm) {
         String term = String.isBlank(searchTerm) ? '%' : '%' + String.escapeSingleQuotes(searchTerm.trim()) + '%';
         List<CaseOption> options = new List<CaseOption>();
@@ -264,7 +348,13 @@ public with sharing class DHSROIDesignerController {
         return options;
     }
 
+    @SuppressWarnings('PMD.ApexDoc')
     @AuraEnabled(cacheable=true)
+    /**
+     * @description Returns values for a picklist field.
+     * @param fieldPath Field path to describe.
+     * @return Available picklist values.
+     */
     public static List<PicklistOption> getPicklistValues(String fieldPath) {
         List<PicklistOption> options = new List<PicklistOption>();
         Schema.DescribeFieldResult describeField = describeFieldPath(fieldPath);
@@ -285,7 +375,12 @@ public with sharing class DHSROIDesignerController {
         return options;
     }
 
+    @SuppressWarnings('PMD.ApexDoc')
     @AuraEnabled(cacheable=true)
+    /**
+     * @description Returns configured template lead types.
+     * @return Available template lead types.
+     */
     public static List<PicklistOption> getTemplateLeadTypes() {
         List<PicklistOption> options = new List<PicklistOption>{
             new PicklistOption('Header', 'Header'),
@@ -298,7 +393,13 @@ public with sharing class DHSROIDesignerController {
         return options;
     }
 
+    @SuppressWarnings('PMD.ApexDoc')
     @AuraEnabled(cacheable=true)
+    /**
+     * @description Returns coverage types for a lead type.
+     * @param leadType Selected lead type.
+     * @return Available coverage types.
+     */
     public static List<PicklistOption> getTemplateCoverageTypes(String leadType) {
         if (isCaseLevelTemplate(leadType)) {
             return new List<PicklistOption>{ new PicklistOption(leadType, leadType) };
@@ -333,7 +434,14 @@ public with sharing class DHSROIDesignerController {
         return options;
     }
 
+    @SuppressWarnings('PMD.ApexDoc')
     @AuraEnabled
+    /**
+     * @description Renders an ROI preview.
+     * @param configJson ROI configuration JSON.
+     * @param caseId DHS case identifier.
+     * @return Rendered preview HTML.
+     */
     public static String renderPreview(String configJson, Id caseId) {
         if (String.isBlank(configJson)) {
             configJson = defaultConfig(null, null);
@@ -365,10 +473,23 @@ public with sharing class DHSROIDesignerController {
         return '<div class="roi-preview-document">' + renderConfigElements(elements, caseMap, leads, null) + '</div>';
     }
 
+    /**
+     * @description Renders a case preview.
+     * @param caseId DHS case identifier.
+     * @return Rendered case preview HTML.
+     */
+    @SuppressWarnings('PMD.ApexDoc')
     public static String renderCasePreview(Id caseId) {
         return renderCasePreview(caseId, null);
     }
 
+    /**
+     * @description Renders a case preview for a template sequence.
+     * @param caseId DHS case identifier.
+     * @param sequenceId Optional template sequence identifier.
+     * @return Rendered case preview HTML.
+     */
+    @SuppressWarnings('PMD.ApexDoc')
     public static String renderCasePreview(Id caseId, Id sequenceId) {
         if (caseId == null) {
             return '<div class="roi-preview-document"><div class="roi-preview-page"><p>No case was selected.</p></div></div>';

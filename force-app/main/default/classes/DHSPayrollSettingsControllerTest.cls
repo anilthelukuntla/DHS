@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSPayrollSettingsControllerTest {
     @IsTest
     static void loadsAndUpdatesSettings() {
@@ -8,6 +8,6 @@ private class DHSPayrollSettingsControllerTest {
 
         controller.UpdatePayrollSettings();
 
-        System.assertNotEquals(null, controller.payrollSettings);
+        System.assertNotEquals(null, controller.payrollSettings, 'Expected the asserted condition to hold');
     }
 }

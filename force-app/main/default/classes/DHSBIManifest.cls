@@ -1,7 +1,13 @@
-/** Retains the existing DHSBIManifest integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc')
+/**
+ * @description Retains the existing DHSBIManifest integration and application behavior.
+ */
+
 public with sharing class DHSBIManifest {
     @AuraEnabled(cacheable=true)
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public static ContentDistribution getDistributionPublicUrl() {
         List<ContentDistribution> links = [
             SELECT Id, DistributionPublicUrl

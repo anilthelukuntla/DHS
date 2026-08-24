@@ -1,6 +1,9 @@
-/** Provides PDF document data used by the DHS case document merger. */
-@SuppressWarnings('PMD.ApexDoc,PMD.EmptyStatementBlock,PMD.ExcessiveParameterList')
+/**
+ * @description Provides PDF document data used by the DHS case document merger.
+ */
+@SuppressWarnings('PMD.EmptyStatementBlock,PMD.ExcessiveParameterList')
 public with sharing class DHSCaseDocumentMergerController {
+    /** @description Provides this DHS API member. */
     public class DocumentWrapper {
         @AuraEnabled public Id contentVersionId;
         @AuraEnabled public String title;
@@ -8,6 +11,14 @@ public with sharing class DHSCaseDocumentMergerController {
         @AuraEnabled public String addedBy;
         @AuraEnabled public String notes;
 
+        /**
+         * @description Provides this DHS API member.
+         * @param versionId Method parameter.
+         * @param title Method parameter.
+         * @param sequence Method parameter.
+         * @param addedBy Method parameter.
+         * @param notes Method parameter.
+         */
         public DocumentWrapper(Id versionId, String title, Integer sequence, String addedBy, String notes) {
             this.contentVersionId = versionId;
             this.title = title;
@@ -18,6 +29,11 @@ public with sharing class DHSCaseDocumentMergerController {
     }
 
     @AuraEnabled(cacheable=true)
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     * @return The requested result.
+     */
     public static List<DocumentWrapper> getDocumentsForCase(Id caseId) {
         List<DocumentWrapper> result = new List<DocumentWrapper>();
 
@@ -52,6 +68,11 @@ public with sharing class DHSCaseDocumentMergerController {
     }
 
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param contentVersionIds Method parameter.
+     * @return The requested result.
+     */
     public static Map<Id, String> getBase64PDFs(List<Id> contentVersionIds) {
         Map<Id, String> base64Map = new Map<Id, String>();
         for (ContentVersion cv : [
@@ -65,12 +86,22 @@ public with sharing class DHSCaseDocumentMergerController {
     }
 
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     * @param documents Method parameter.
+     */
     public static void updateDocumentSequence(Id caseId, List<DocumentWrapper> documents) {
         // This method can be used to save the sequence if needed
         // For now, we'll just return the documents in the order they were sent
     }
 
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param attachmentIds Method parameter.
+     * @return The requested result.
+     */
     public static Map<Id, String> getBase64PDFsFromAttachments(List<Id> attachmentIds) {
         Map<Id, String> attachmentToBase64 = new Map<Id, String>();
 
@@ -95,6 +126,11 @@ public with sharing class DHSCaseDocumentMergerController {
     }
 
     @AuraEnabled(cacheable=true)
+    /**
+     * @description Provides this DHS API member.
+     * @param attachmentIds Method parameter.
+     * @return The requested result.
+     */
     public static List<Id> getContentVersionIdsFromAttachments(List<Id> attachmentIds) {
         List<Id> ids = new List<Id>();
         if (attachmentIds != null) {

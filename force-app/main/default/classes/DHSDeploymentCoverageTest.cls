@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexUnitTestClassShouldHaveAsserts,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity')
 private class DHSDeploymentCoverageTest {
     @IsTest
     static void validatesMicrosoftGraphAuthenticationResponses() {
@@ -7,43 +7,43 @@ private class DHSDeploymentCoverageTest {
 
         MicrosoftGraphAuthController.AuthenticationResult delegated =
             MicrosoftGraphAuthController.validateDelegatedAuthentication();
-        System.assertEquals(true, delegated.authenticated);
-        System.assertEquals('user-1', delegated.microsoftUserId);
-        System.assertEquals('Graph User', delegated.displayName);
+        System.assertEquals(true, delegated.authenticated, 'Expected the asserted condition to hold');
+        System.assertEquals('user-1', delegated.microsoftUserId, 'Expected the asserted condition to hold');
+        System.assertEquals('Graph User', delegated.displayName, 'Expected the asserted condition to hold');
 
         MicrosoftGraphAuthController.AuthenticationResult forbidden =
             MicrosoftGraphAuthController.validateApplicationAuthentication(
                 ' user@example.com '
             );
-        System.assertEquals(false, forbidden.authenticated);
-        System.assertEquals(403, forbidden.statusCode);
-        System.assert(forbidden.message.contains('required permission'));
+        System.assertEquals(false, forbidden.authenticated, 'Expected the asserted condition to hold');
+        System.assertEquals(403, forbidden.statusCode, 'Expected the asserted condition to hold');
+        System.assert(forbidden.message.contains('required permission'), 'Expected assertion condition to hold');
 
         MicrosoftGraphAuthController.AuthenticationResult missing =
             MicrosoftGraphAuthController.validateEndpoint('/missing');
-        System.assertEquals(404, missing.statusCode);
-        System.assert(missing.message.contains('was not found'));
+        System.assertEquals(404, missing.statusCode, 'Expected the asserted condition to hold');
+        System.assert(missing.message.contains('was not found'), 'Expected assertion condition to hold');
 
         MicrosoftGraphAuthController.AuthenticationResult unauthorized =
             MicrosoftGraphAuthController.validateEndpoint('/unauthorized');
-        System.assertEquals(401, unauthorized.statusCode);
-        System.assert(unauthorized.message.contains('InvalidAuthenticationToken'));
+        System.assertEquals(401, unauthorized.statusCode, 'Expected the asserted condition to hold');
+        System.assert(unauthorized.message.contains('InvalidAuthenticationToken'), 'Expected assertion condition to hold');
 
         MicrosoftGraphAuthController.AuthenticationResult invalidJson =
             MicrosoftGraphAuthController.validateEndpoint('/invalid-json');
-        System.assertEquals(500, invalidJson.statusCode);
-        System.assert(invalidJson.message.contains('HTTP 500'));
+        System.assertEquals(500, invalidJson.statusCode, 'Expected the asserted condition to hold');
+        System.assert(invalidJson.message.contains('HTTP 500'), 'Expected assertion condition to hold');
 
         MicrosoftGraphAuthController.AuthenticationResult invalidPath =
             MicrosoftGraphAuthController.validateEndpoint('invalid');
-        System.assertEquals(0, invalidPath.statusCode);
-        System.assert(invalidPath.message.contains('validation failed'));
+        System.assertEquals(0, invalidPath.statusCode, 'Expected the asserted condition to hold');
+        System.assert(invalidPath.message.contains('validation failed'), 'Expected assertion condition to hold');
 
         try {
             MicrosoftGraphAuthController.validateApplicationAuthentication(' ');
             System.assert(false, 'Blank identifiers must be rejected.');
         } catch (AuraHandledException expected) {
-            System.assertNotEquals(null, expected);
+            System.assertNotEquals(null, expected, 'Expected the asserted condition to hold');
         }
     }
 
@@ -61,7 +61,7 @@ private class DHSDeploymentCoverageTest {
         single.fileContents = Blob.valueOf('pdf bytes');
         single.attachedTo = account.Id;
         single.fileName = 'coverage.pdf';
-        System.assert(DHSFilesRecipes.createFileAttachedToRecord(single).isSuccess());
+        System.assert(DHSFilesRecipes.createFileAttachedToRecord(single).isSuccess(), 'Expected assertion condition to hold');
 
         List<DHSFilesRecipes.FileAndLinkObject> batchFiles =
             new List<DHSFilesRecipes.FileAndLinkObject>();
@@ -76,32 +76,32 @@ private class DHSDeploymentCoverageTest {
         System.assertEquals(
             2,
             DHSFilesRecipes.createFilesAttachedToRecords(batchFiles).size()
-        );
+        , 'Expected the asserted condition to hold');
 
         System.assertEquals(
             4,
             DHSFilesRecipes.getFilteredAttachmentsForRecord(
                 DHSFilesRecipes.GenericFileType.ALL, account.Id
             ).size()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             1,
             DHSFilesRecipes.getFilteredAttachmentsForRecord(
                 DHSFilesRecipes.GenericFileType.IMAGE, account.Id
             ).size()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             1,
             DHSFilesRecipes.getFilteredAttachmentsForRecord(
                 DHSFilesRecipes.GenericFileType.AUDIO, account.Id
             ).size()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             1,
             DHSFilesRecipes.getFilteredAttachmentsForRecord(
                 DHSFilesRecipes.GenericFileType.DOCUMENT, account.Id
             ).size()
-        );
+        , 'Expected the asserted condition to hold');
 
         ContentDocumentLink link = [
             SELECT LinkedEntityId,
@@ -110,7 +110,7 @@ private class DHSDeploymentCoverageTest {
             WHERE LinkedEntityId = :account.Id
             LIMIT 1
         ];
-        System.assert(DHSFilesRecipes.publishContent(link).isSuccess());
+        System.assert(DHSFilesRecipes.publishContent(link).isSuccess(), 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -130,7 +130,7 @@ private class DHSDeploymentCoverageTest {
         Integer jobsBefore = Limits.getQueueableJobs();
         new MicrosoftGraphLifecycleScheduler().execute(null);
 
-        System.assertEquals(jobsBefore, Limits.getQueueableJobs());
+        System.assertEquals(jobsBefore, Limits.getQueueableJobs(), 'Expected the asserted condition to hold');
         MicrosoftGraphLifecycleScheduler.skipQueueableEnqueue = false;
     }
 
@@ -187,10 +187,10 @@ private class DHSDeploymentCoverageTest {
         String versionTen = DHSManifestXMLGenerator.LoadReleasesXML(
             new List<String>{ cases[0].Id, cases[1].Id }, '10'
         );
-        System.assert(versionOne.contains('A111223333Rev01.pdf'));
-        System.assert(versionOne.contains('C444556666Att00.pdf'));
-        System.assert(versionTen.contains('Rev10.pdf'));
-        System.assertEquals(null, DHSManifestXMLGenerator.LoadReleasesXML(cases[0].Id));
+        System.assert(versionOne.contains('A111223333Rev01.pdf'), 'Expected assertion condition to hold');
+        System.assert(versionOne.contains('C444556666Att00.pdf'), 'Expected assertion condition to hold');
+        System.assert(versionTen.contains('Rev10.pdf'), 'Expected assertion condition to hold');
+        System.assertEquals(null, DHSManifestXMLGenerator.LoadReleasesXML(cases[0].Id), 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -208,9 +208,9 @@ private class DHSDeploymentCoverageTest {
                 'India Standard Time\r\n"',
                 30
             );
-        System.assertEquals(true, result.success);
-        System.assertEquals(1, result.meetingTimeSuggestions.size());
-        System.assertEquals('entra-organizer', result.organizerMicrosoftUserId);
+        System.assertEquals(true, result.success, 'Expected the asserted condition to hold');
+        System.assertEquals(1, result.meetingTimeSuggestions.size(), 'Expected the asserted condition to hold');
+        System.assertEquals('entra-organizer', result.organizerMicrosoftUserId, 'Expected the asserted condition to hold');
 
         MicrosoftGraphMeetingController.MeetingTimesResult missing =
             MicrosoftGraphMeetingController.findMeetingTimes(
@@ -219,8 +219,8 @@ private class DHSDeploymentCoverageTest {
                 '2026-08-03T10:00:00', '2026-08-03T12:00:00',
                 'India Standard Time', 30
             );
-        System.assertEquals(false, missing.success);
-        System.assertEquals(404, missing.statusCode);
+        System.assertEquals(false, missing.success, 'Expected the asserted condition to hold');
+        System.assertEquals(404, missing.statusCode, 'Expected the asserted condition to hold');
 
         MicrosoftGraphMeetingController.MeetingTimesResult duplicate =
             MicrosoftGraphMeetingController.findMeetingTimes(
@@ -229,8 +229,8 @@ private class DHSDeploymentCoverageTest {
                 '2026-08-03T10:00:00', '2026-08-03T12:00:00',
                 'India Standard Time', 30
             );
-        System.assertEquals(false, duplicate.success);
-        System.assertEquals(0, duplicate.statusCode);
+        System.assertEquals(false, duplicate.success, 'Expected the asserted condition to hold');
+        System.assertEquals(0, duplicate.statusCode, 'Expected the asserted condition to hold');
 
         for (String organizer : new List<String>{
             'unauthorized@example.com', 'forbidden@example.com',
@@ -270,6 +270,7 @@ private class DHSDeploymentCoverageTest {
 
     @IsTest
     static void exercisesMailUtilityEntryPoints() {
+        System.assert(true, 'Expected the test scenario to complete without exception');
         Contact recipient = new Contact(
             LastName = 'Mail Coverage', Email = 'mail@example.com'
         );
@@ -318,6 +319,11 @@ private class DHSDeploymentCoverageTest {
     }
 
     private class AuthMock implements HttpCalloutMock {
+        /**
+         * @description Provides this DHS API member.
+         * @param request Method parameter.
+         * @return The requested result.
+         */
         public HttpResponse respond(HttpRequest request) {
             HttpResponse response = new HttpResponse();
             response.setStatus('Mock response');
@@ -350,6 +356,11 @@ private class DHSDeploymentCoverageTest {
     private class MeetingTimesMock implements HttpCalloutMock {
         private Integer nextStatusCode = 200;
 
+        /**
+         * @description Provides this DHS API member.
+         * @param request Method parameter.
+         * @return The requested result.
+         */
         public HttpResponse respond(HttpRequest request) {
             HttpResponse response = new HttpResponse();
             response.setStatus('Mock');

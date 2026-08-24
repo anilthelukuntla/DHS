@@ -1,22 +1,41 @@
-/** Controls DHS pay-period timesheets and investigator check-in/out records. */
-@SuppressWarnings('PMD.ApexDoc,PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssConstructorCount')
+/**
+ * @description Controls DHS pay-period timesheets and investigator check-in/out records.
+ */
+@SuppressWarnings('PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.FieldDeclarationsShouldBeAtStart,PMD.NcssConstructorCount')
 public with sharing class DHSTimesheetsController {
+    /** @description Provides this DHS API member. */
     public list<DHS_TimeSheet__c> timesheets{get;set;}
+    /** @description Provides this DHS API member. */
     public string periodStartDate{get;set;}
+    /** @description Provides this DHS API member. */
     public string periodEndDate{get;set;}
+    /** @description Provides this DHS API member. */
     public Integer currentYear{get;set;}
+    /** @description Provides this DHS API member. */
     public string currentMonth{get;set;}
+    /** @description Provides this DHS API member. */
     public string todaysDateTime{get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_TimeSheet__c currentDayTimeSheet{get;set;}
+    /** @description Provides this DHS API member. */
     public list<DHS_Investigator_Check__c> newInvestigatorCheckedOutRecords{get;set;}
+    /** @description Provides this DHS API member. */
     public list<DHS_Investigator_Check__c> newInvestigatorCheckedInRecords{get;set;}
     public boolean isCheckedOut{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     
     
+    /** @description Provides this DHS API member. */
     public class DateRange {
+        /** @description Provides this DHS API member. */
         public Date startDate { get; set; }
+        /** @description Provides this DHS API member. */
         public Date endDate   { get; set; }
         
+        /**
+         * @description Provides this DHS API member.
+         * @param startDate Method parameter.
+         * @param endDate Method parameter.
+         */
         public DateRange(Date startDate, Date endDate) {
             this.startDate = startDate;
             this.endDate   = endDate;
@@ -24,6 +43,10 @@ public with sharing class DHSTimesheetsController {
         
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public static List<DateRange> generateRanges() {
         List<DateRange> ranges = new List<DateRange>();
         
@@ -49,17 +72,27 @@ public with sharing class DHSTimesheetsController {
     public date periodStartDateVal;
     public date periodEndDateVal;
     public date enddate;
+    /** @description Provides this DHS API member. */
     public class DateWrapper {
+        /** @description Provides this DHS API member. */
         public string dateVal {get; set;}
+        /** @description Provides this DHS API member. */
         public String dayName {get; set;}
         
+        /**
+         * @description Provides this DHS API member.
+         * @param d Method parameter.
+         * @param name Method parameter.
+         */
         public DateWrapper(string d, String name) {
             dateVal = d;
             dayName = name;
         }
     }
+    /** @description Provides this DHS API member. */
     public List<DateWrapper> dateWrappers {get; set;}
 
+    /** @description Provides this DHS API member. */
     public void debugRanges() {
         dateWrappers = New List<DateWrapper>();
         for (DateRange dr : generateRanges()) {
@@ -82,6 +115,7 @@ public with sharing class DHSTimesheetsController {
         
  
     
+    /** @description Provides this DHS API member. */
     public DHSTimesheetsController(){
 		debugRanges();
         if(dateWrappers.size() > 0){
@@ -113,6 +147,10 @@ public with sharing class DHSTimesheetsController {
         
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param todaysTimeSheet Method parameter.
+     */
     public void fetchInvestigatorCheckRecords(DHS_TimeSheet__c todaysTimeSheet){
         if(todaysTimeSheet != null){
             isCheckedOut = false;
@@ -147,6 +185,7 @@ public with sharing class DHSTimesheetsController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void addNewInvestigatorCheck(){
         DHS_Investigator_Check__c invc = new DHS_Investigator_Check__c();
         invc.Type__c= 'CheckOut';
@@ -154,11 +193,13 @@ public with sharing class DHSTimesheetsController {
         newInvestigatorCheckedOutRecords.add(invc);
     }
     
+    /** @description Provides this DHS API member. */
     public void removeNewInvestigatorCheck(){
         Integer indexVal = Integer.valueof(system.currentpagereference().getparameters().get('index'));  
         newInvestigatorCheckedOutRecords.remove(indexVal);        
     }
     
+    /** @description Provides this DHS API member. */
     public void checkoutapexaction(){
         for(DHS_Investigator_Check__c checkout: newInvestigatorCheckedOutRecords){
              checkout.CheckOut_Comments__c = currentDayTimeSheet.CheckOut_Comments__c;
@@ -182,6 +223,7 @@ public with sharing class DHSTimesheetsController {
     }
     
     
+    /** @description Provides this DHS API member. */
     public void checkinapexaction(){
         for(DHS_Investigator_Check__c invc: newInvestigatorCheckedInRecords){
            invc.CheckIn_Comments__c = currentDayTimeSheet.CheckIn_Comments__c; 
@@ -195,19 +237,21 @@ public with sharing class DHSTimesheetsController {
     
     }
     
+    /** @description Provides this DHS API member. */
     public void updatetimesheetsaction(){
         Database.update(timesheets, AccessLevel.USER_MODE);
         //database.saveresult[] sr = database.update(timesheets,false,AccessLevel.USER_MODE);  
-        //system.debug(sr);
+        //
     }
 
     
+    /** @description Provides this DHS API member. */
     public void submittimesheetsaction(){
         for(DHS_TimeSheet__c ts: timesheets){
             ts.Submitted__c = true;    
         }  
         Database.update(timesheets, AccessLevel.USER_MODE);
         //database.saveresult[] sr = database.update(timesheets,false,AccessLevel.USER_MODE);
-        //system.debug(sr);
+        //
     }
 }

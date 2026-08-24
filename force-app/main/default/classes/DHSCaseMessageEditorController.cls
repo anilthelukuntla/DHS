@@ -1,15 +1,23 @@
-/** Controller for editing and deleting DHS case messages. */
-@SuppressWarnings('PMD.ApexDoc,PMD.UnusedMethod')
+/**
+ * @description Controller for editing and deleting DHS case messages.
+ */
+@SuppressWarnings('PMD.UnusedMethod')
 public with sharing class DHSCaseMessageEditorController {
     
+    /** @description Provides this DHS API member. */
     public String caseId { get; set; }
+    /** @description Provides this DHS API member. */
     public String messageId { get; set; }
+    /** @description Provides this DHS API member. */
     public String editedSubject { get; set; }
+    /** @description Provides this DHS API member. */
     public String editedBody { get; set; }
+    /** @description Provides this DHS API member. */
     public String errorMessage { get; set; }
     public Boolean hasError { get; set; } // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     
     // User profile checks
+    /** @description Provides this DHS API member. */
     public Boolean isCMOOrPMO { 
         get {
             String userType = [SELECT User_Type__c FROM User WHERE Id = :UserInfo.getUserId() WITH USER_MODE LIMIT 1].User_Type__c;
@@ -17,6 +25,7 @@ public with sharing class DHSCaseMessageEditorController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public Boolean isInvestigator { 
         get {
             String userType = [SELECT User_Type__c FROM User WHERE Id = :UserInfo.getUserId() WITH USER_MODE LIMIT 1].User_Type__c;
@@ -24,11 +33,16 @@ public with sharing class DHSCaseMessageEditorController {
         }
     }
     
+    /** @description Provides this DHS API member. */
     public DHSCaseMessageEditorController() {
         hasError = false;
         errorMessage = '';
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference saveMessage() {
         try {
             // Get current user info
@@ -80,6 +94,11 @@ public with sharing class DHSCaseMessageEditorController {
         return false;
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param messageId Method parameter.
+     * @return The requested result.
+     */
     public static Boolean canDeleteMessage(String messageId) {
         try {
             User currentUser = [SELECT Id, User_Type__c FROM User WHERE Id = :UserInfo.getUserId() WITH USER_MODE LIMIT 1];
@@ -93,6 +112,10 @@ public with sharing class DHSCaseMessageEditorController {
     }
     
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param messageId Method parameter.
+     */
     public static void deleteMessage(String messageId) {
         try {
             // Check if user can delete

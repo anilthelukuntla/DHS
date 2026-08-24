@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSMultipleDocumentUploadControllerTest {
     @IsTest
     static void createsDocumentAndReportsAttachments() {
@@ -17,26 +17,26 @@ private class DHSMultipleDocumentUploadControllerTest {
         String documentId =
             DHSMultipleDocumentUploadController.createDocumentRecord(parentCase.Id);
         System.assertEquals(0,
-            DHSMultipleDocumentUploadController.attachmentcountmethod(documentId));
+            DHSMultipleDocumentUploadController.attachmentcountmethod(documentId), 'Expected the asserted condition to hold');
         System.assertEquals('',
-            DHSMultipleDocumentUploadController.attachmentnames(documentId));
+            DHSMultipleDocumentUploadController.attachmentnames(documentId), 'Expected the asserted condition to hold');
         DHSMultipleDocumentUploadController controller =
             new DHSMultipleDocumentUploadController();
         controller.caseId = parentCase.Id;
-        System.assert(controller.uploadAndRedirect().getUrl().contains(parentCase.Id));
+        System.assert(controller.uploadAndRedirect().getUrl().contains(parentCase.Id), 'Expected assertion condition to hold');
 
         String attachmentId = DHSMultipleDocumentUploadController.attachBlob(
             parentCase.Id, null, 'identity.pdf', 'application/pdf',
             EncodingUtil.base64Encode(Blob.valueOf('first')), 'f2'
         );
-        System.assertNotEquals(null, attachmentId);
+        System.assertNotEquals(null, attachmentId, 'Expected the asserted condition to hold');
         System.assertEquals(0,
             DHSMultipleDocumentUploadController.attachmentcountmethod(
-                [SELECT ParentId FROM Attachment WHERE Id = :attachmentId].ParentId));
+                [SELECT ParentId FROM Attachment WHERE Id = :attachmentId].ParentId), 'Expected the asserted condition to hold');
         System.assert(
             DHSMultipleDocumentUploadController.attachmentnames(
                 [SELECT ParentId FROM Attachment WHERE Id = :attachmentId].ParentId
-            ).contains('identity.pdf'));
+            ).contains('identity.pdf'), 'Expected assertion condition to hold');
 
         DHSMultipleDocumentUploadController.attachBlob(
             parentCase.Id, attachmentId, 'identity.pdf', 'application/pdf',

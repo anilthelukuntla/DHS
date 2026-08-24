@@ -1,19 +1,29 @@
 /**
+ * @description Provides this DHS API member.
  * An apex page controller that exposes the change password functionality
  */
 @SuppressWarnings('PMD.CognitiveComplexity')
 public without sharing class DHSISNBIChangePasswordController {
-    /** Current password supplied by the user. */
+    /**
+     * @description Current password supplied by the user.
+     */
     public String oldPassword {get; set;}
-    /** Requested replacement password. */
+    /**
+     * @description Requested replacement password.
+     */
     public String newPassword {get; set;}
-    /** Confirmation of the requested replacement password. */
+    /**
+     * @description Confirmation of the requested replacement password.
+     */
     public String verifyNewPassword {get; set;} 
-    /** Error text returned by the Salesforce Sites password API. */
+    /**
+     * @description Error text returned by the Salesforce Sites password API.
+     */
     public string errorMessage {get;set;}       
     /**
+     * @description Provides this DHS API member.
      * Changes the current user's password and redirects on success.
-     * @return The DHS login page on success, otherwise null.
+ * @return The DHS login page on success, otherwise null.
      */
     public PageReference changePassword() {
         errorMessage = null;

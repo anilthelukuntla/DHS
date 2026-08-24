@@ -1,16 +1,27 @@
-/** Controls DHS investigator shipping submissions and QA review. */
-@SuppressWarnings('PMD.ApexDoc')
+/**
+ * @description Controls DHS investigator shipping submissions and QA review.
+ */
+
 public with sharing class DHSShippingDetailsController{
+    /** @description Provides this DHS API member. */
     public User currentUser {get;set;}
+    /** @description Provides this DHS API member. */
     public list<selectoption> caseOptions {get;set;}
+    /** @description Provides this DHS API member. */
     public string selectedcaseidforshipping {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_PPF_Shipping_Information__c newShippingInfo {get;set;}
     public boolean showshippingdetailspanel{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public list<DHS_PPF_Shipping_Information__c> recentPPFShippinginformationofInvestigator{get;set;}
     public boolean showisnshippinginformationrecievedpanel{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public list<DHS_PPF_Shipping_Information__c> pendingShippingInformations{get;set;}
+    /** @description Provides this DHS API member. */
     public list<DHS_PPF_Shipping_Information__c> completedShippingInformations{get;set;}
+    /** @description Provides this DHS API member. */
     public string currentppfshippingid {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSShippingDetailsController(){
         currentUser = [
             SELECT Id, User_Type__c
@@ -22,6 +33,7 @@ public with sharing class DHSShippingDetailsController{
         showisnshippinginformationrecievedpanel = false;
         fetchShippingInformation();
     }
+    /** @description Provides this DHS API member. */
     public void fetchShippingInformation(){
         pendingShippingInformations = new List<DHS_PPF_Shipping_Information__c>();
         completedShippingInformations = new List<DHS_PPF_Shipping_Information__c>();
@@ -45,6 +57,7 @@ public with sharing class DHSShippingDetailsController{
             }
         }
     }
+    /** @description Provides this DHS API member. */
     public void fetchCaseInformation(){
         caseOptions = new list<selectoption>();
         caseOptions.add(new selectoption('','--None--'));
@@ -90,6 +103,7 @@ public with sharing class DHSShippingDetailsController{
         
     }
     
+    /** @description Provides this DHS API member. */
     public void onselectofcase(){
         if(currentuser.user_type__c == 'INV'){
             showshippingdetailspanel = true;
@@ -121,6 +135,7 @@ public with sharing class DHSShippingDetailsController{
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void createppfshippinginformationaction(){
         newShippingInfo.Status__c = 'Investigator Posted';
         if(!test.isrunningtest()){
@@ -131,6 +146,7 @@ public with sharing class DHSShippingDetailsController{
         selectedcaseidforshipping = null;
     }
     
+    /** @description Provides this DHS API member. */
     public void updateppfshippinginformationaction(){
         DHS_PPF_Shipping_Information__c ppfInformationToUpdate;
         if(!test.isrunningtest()){

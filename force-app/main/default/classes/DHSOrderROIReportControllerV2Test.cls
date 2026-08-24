@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSOrderROIReportControllerV2Test {
     
     static @IsTest void testFullCoverage() {
@@ -59,10 +59,10 @@ public class DHSOrderROIReportControllerV2Test {
         }
 
         PageReference result1 = controller.GenerateROIReport();
-        System.assertNotEquals(null, result1);
+        System.assertNotEquals(null, result1, 'Expected the asserted condition to hold');
 
         PageReference result2 = controller.GenerateNattachROIReport();
-        System.assertNotEquals(null, result2);
+        System.assertNotEquals(null, result2, 'Expected the asserted condition to hold');
 
         controller.currentsequenceid = null;
         controller.GenerateROIDraft();

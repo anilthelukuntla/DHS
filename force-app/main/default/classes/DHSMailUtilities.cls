@@ -1,5 +1,7 @@
-/** Retains the existing DHSMailUtilities integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSharingViolations,PMD.ExcessiveParameterList,PMD.UnusedMethod')
+/**
+ * @description Retains the existing DHSMailUtilities integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSharingViolations,PMD.ExcessiveParameterList,PMD.UnusedMethod')
 public class DHSMailUtilities {
 
     private static Id getNoReplyOrgWideEmailId() {
@@ -17,6 +19,13 @@ public class DHSMailUtilities {
         return oweaList[0].Id;
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param targetObjectId Method parameter.
+     * @param emailSubject Method parameter.
+     * @param htmlBody Method parameter.
+     * @param ccRecipients Method parameter.
+     */
     public static void sendHTMLEmailWithTargetObjectId(String targetObjectId, String emailSubject, String htmlBody, List<String> ccRecipients) { 
         sendMailWithTargetObjectId(targetObjectId, emailSubject, htmlBody, true, null, ccRecipients);
     }
@@ -53,6 +62,13 @@ public class DHSMailUtilities {
         //Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });   
     } 
 
+    /**
+     * @description Provides this DHS API member.
+     * @param recipients Method parameter.
+     * @param emailSubject Method parameter.
+     * @param htmlBody Method parameter.
+     * @param ccRecipients Method parameter.
+     */
     public static void sendHTMLEmail(List<String> recipients, String emailSubject, String htmlBody, List<String> ccRecipients) { 
         sendMail(recipients, emailSubject, htmlBody, true, null, ccRecipients);
     }
@@ -89,6 +105,15 @@ public class DHSMailUtilities {
         //Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });   
     } 
 
+    /**
+     * @description Provides this DHS API member.
+     * @param recipients Method parameter.
+     * @param emailSubject Method parameter.
+     * @param htmlBody Method parameter.
+     * @param ccRecipients Method parameter.
+     * @param emailTemplateName Method parameter.
+     * @param whatId Method parameter.
+     */
     public static void sendHTMLEmail(List<String> recipients, String emailSubject, String htmlBody, List<String> ccRecipients, String emailTemplateName, String whatId) { 
         sendMail(recipients, emailSubject, htmlBody, true, null, ccRecipients, emailTemplateName, whatId);
     }
@@ -146,6 +171,14 @@ public class DHSMailUtilities {
         //Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });   
     } 
 
+    /**
+     * @description Provides this DHS API member.
+     * @param subject Method parameter.
+     * @param body Method parameter.
+     * @param sendingTo Method parameter.
+     * @param sendingToBccAdd Method parameter.
+     * @param sendingToccAdd Method parameter.
+     */
     public static void sendBIEmail(String subject, String body, List<String> sendingTo, List<String> sendingToBccAdd, List<String> sendingToccAdd) {
         Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
 
@@ -168,6 +201,14 @@ public class DHSMailUtilities {
         //Messaging.sendEmail(new Messaging.SingleEmailMessage[] { semail });
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param subject Method parameter.
+     * @param body Method parameter.
+     * @param targetObjectId Method parameter.
+     * @param sendingToBccAdd Method parameter.
+     * @param sendingToccAdd Method parameter.
+     */
     public static void sendBIEmailWithSetTargetObjectId(String subject, String body, String targetObjectId, List<String> sendingToBccAdd, List<String> sendingToccAdd) {
         Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
 

@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSAutoCompleteControllerTest {
     @IsTest
     static void returnsMatchingUserAsJson() {
@@ -17,7 +17,7 @@ private class DHSAutoCompleteControllerTest {
 
         String result = new DHSAutoCompleteController().getJSON();
 
-        System.assertNotEquals(null, result);
-        System.assert(result.contains(String.valueOf(currentUser.Id)));
+        System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
+        System.assert(result.contains(String.valueOf(currentUser.Id)), 'Expected assertion condition to hold');
     }
 }

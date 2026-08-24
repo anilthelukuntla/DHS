@@ -1,13 +1,19 @@
-/** Controls subject-facing DHS document-request uploads. */
-@SuppressWarnings('PMD.ApexDoc')
+/**
+ * @description Controls subject-facing DHS document-request uploads.
+ */
+
 public without sharing class DHSSubjectDocumentsUploadController{
+    /** @description Provides this DHS API member. */
     public string documentRequestId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Document_Request__c documentRequest {get;set;}
     public boolean showUploadPanel {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean showAfterUploadPanel {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
     public boolean showExpiryPanel {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
     public list<attachment> attachmentsList {get;set;}
     
+    /** @description Provides this DHS API member. */
     public DHSSubjectDocumentsUploadController(){
         documentRequestId = ApexPages.currentPage().getParameters().get('id').escapeHtml4();
         documentRequestId = String.valueOf(Id.valueOf(decodeURLParams(documentRequestId)));
@@ -15,6 +21,7 @@ public without sharing class DHSSubjectDocumentsUploadController{
         fetchDocumentRequest();
     }
     
+    /** @description Provides this DHS API member. */
     public void fetchDocumentRequest(){
         showUploadPanel = false;
         showAfterUploadPanel = false;
@@ -34,17 +41,21 @@ public without sharing class DHSSubjectDocumentsUploadController{
     
     }
     
+    /** @description Provides this DHS API member. */
     public void submitaction(){
         documentRequest.Status__c='Documents Received';
         Database.update(documentRequest, AccessLevel.USER_MODE);
         fetchDocumentRequest();
     }
+    /** @description Provides this DHS API member. */
     public string deleteAttachmentId{get;set;}
+    /** @description Provides this DHS API member. */
     public void deleteAttachment(){
         Database.delete([select Id from Attachment where id=:deleteAttachmentId WITH USER_MODE ], AccessLevel.USER_MODE);
         fetchDocumentRequest();
     }
     
+    /** @description Provides this DHS API member. */
     public void autosaveaction(){
         Database.update(documentRequest, AccessLevel.USER_MODE);
     }

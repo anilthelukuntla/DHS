@@ -1,7 +1,13 @@
-/** Supplies schema-validated autocomplete results as JSON. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.ExcessiveParameterList,PMD.UnusedMethod')
+/**
+ * @description Supplies schema-validated autocomplete results as JSON.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.ExcessiveParameterList,PMD.UnusedMethod')
 public with sharing class DHSAutoCompleteController {
 
+   /**
+    * @description Provides this DHS API member.
+    * @return The requested result.
+    */
    public String getJSON(){
      return JSON.serialize(fetchSuggestions());
    }
@@ -101,11 +107,18 @@ public with sharing class DHSAutoCompleteController {
      return String.join(detailValues,', ');
    }
 
+   /** @description Provides this DHS API member. */
    public class DataWrapper{
      String label;
      String detail;
      String value;
 
+     /**
+      * @description Provides this DHS API member.
+      * @param l Method parameter.
+      * @param d Method parameter.
+      * @param v Method parameter.
+      */
      public DataWrapper(String l, String d, String v){
        label = l; //label of suggestion
        detail = d; //detail of suggestion

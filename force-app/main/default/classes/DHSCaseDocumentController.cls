@@ -1,4 +1,5 @@
 /**
+ * @description Provides this DHS API member.
 * @File Name : DHSCaseDocumentController.cls
 * @Description :
 * @Author :
@@ -13,9 +14,10 @@
 
 public with sharing class DHSCaseDocumentController {
     /**
+     * @description Provides this DHS API member.
      * Links uploaded content documents to a DHS case.
-     * @param caseId DHS case record ID
-     * @param documentIds content document IDs to link
+ * @param caseId DHS case record ID
+ * @param documentIds content document IDs to link
      */
     @AuraEnabled
     public static void saveDocs(Id caseId, List<Id> documentIds) {

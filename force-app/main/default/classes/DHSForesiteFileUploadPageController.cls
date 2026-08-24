@@ -1,9 +1,16 @@
-/** Handles the standard attachment upload flow for a DHS case. */
-@SuppressWarnings('PMD.ApexDoc,PMD.UnusedMethod')
+/**
+ * @description Handles the standard attachment upload flow for a DHS case.
+ */
+@SuppressWarnings('PMD.UnusedMethod')
 public without sharing class DHSForesiteFileUploadPageController {
     public string caseid;
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord {get;set;}
     public ApexPages.StandardController controller;
+    /**
+     * @description Provides this DHS API member.
+     * @param controller Method parameter.
+     */
     public DHSForesiteFileUploadPageController (ApexPages.StandardController controller) {
         this.controller = controller;
         String requestedCaseId = apexpages.currentpage().getparameters().get('caseid');
@@ -15,6 +22,10 @@ public without sharing class DHSForesiteFileUploadPageController {
            caseRecord = cases[0];
         }
     } 
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public PageReference saveAndRedirect() {
          Attachment d = (Attachment) controller.getRecord();
          DHS_Document__c document = new DHS_Document__c();

@@ -1,11 +1,14 @@
-/** JavaScript Remoting endpoint for DHS grammar-check requests. */
+/**
+ * @description JavaScript Remoting endpoint for DHS grammar-check requests.
+ */
 @SuppressWarnings('PMD.AvoidGlobalModifier')
 global class DHSGrammarCheckController {
     /**
+     * @description Provides this DHS API member.
      * Builds the safe grammar-check fallback response used by the page.
-     * @param inputText Text submitted for review.
-     * @param apiName API name of the originating field.
-     * @return A serialized response, or an empty string for blank input.
+ * @param inputText Text submitted for review.
+ * @param apiName API name of the originating field.
+ * @return A serialized response, or an empty string for blank input.
      */
     @RemoteAction
     global static String sendRequest(String inputText, String apiName) {

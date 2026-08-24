@@ -35,7 +35,7 @@ trigger DHSDocumentRequestTrigger on DHS_Document_Request__c (before insert, aft
         String paramvalue = EncodingUtil.base64Encode(beforeblob);
    
         // print out the encoded value to the debug log so we can see it before/after base64 encode
-        System.debug(inputString + ' is now encoded as: ' + paramvalue); // NOPMD - Legacy trigger behavior retained for compatibility.
+
        
         return paramValue;   
     }
@@ -46,7 +46,7 @@ trigger DHSDocumentRequestTrigger on DHS_Document_Request__c (before insert, aft
          Blob afterblob = EncodingUtil.base64Decode(encodedString);
    
          // Convert the blob back to a string and print it in the debug log
-         System.debug(encodedString + 'is now decoded as: ' + afterblob.toString()); // NOPMD - Legacy trigger behavior retained for compatibility.
+
          
          return afterblob.toString();
         

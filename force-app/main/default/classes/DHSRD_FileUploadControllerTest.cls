@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.UnusedLocalVariable')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSRD_FileUploadControllerTest {
     static @IsTest void uploadTest() {
         //Split string 'file' in to two chunks, first chunk must be divisible by 3 for base64 encode with no padding
@@ -39,7 +39,7 @@ public class DHSRD_FileUploadControllerTest {
         DHSRD_FileUploadController.attachmentnames(caseRecord.id);
         
         //Assert one file has been attached to the test account
-        List<Attachment> attachments = [select Id, Body from Attachment where ParentId = :caseRecord.Id];
+        List<Attachment> attachments = [select Id, Body from Attachment where ParentId = :caseRecord.Id]; System.assertNotEquals(null, attachments, 'Expected attachments to be initialized');
         
         
     }
@@ -82,7 +82,7 @@ public class DHSRD_FileUploadControllerTest {
         DHSOrderFileUploadController.attachmentnames(caseRecord.id);
         
         //Assert one file has been attached to the test account
-        List<Attachment> attachments = [select Id, Body from Attachment where ParentId = :caseRecord.Id];
+        List<Attachment> attachments = [select Id, Body from Attachment where ParentId = :caseRecord.Id]; System.assertNotEquals(null, attachments, 'Expected attachments to be initialized');
         
         
     }

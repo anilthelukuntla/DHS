@@ -1,11 +1,19 @@
-/** Retains the existing DHSCustomDataTableHandler integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSharingViolations,PMD.AvoidNonRestrictiveQueries,PMD.UnusedMethod')
+/**
+ * @description Retains the existing DHSCustomDataTableHandler integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSharingViolations,PMD.AvoidNonRestrictiveQueries,PMD.UnusedMethod')
 public class DHSCustomDataTableHandler {
+    /** @description Provides this DHS API member. */
     public List<map<string,object>> rows	{get;set;}
+    /** @description Provides this DHS API member. */
     public static Map<string,map<string,object>> originalRows	{get;set;}
+    /** @description Provides this DHS API member. */
     public static List<string> originalHeaders {get;set;}
+    /** @description Provides this DHS API member. */
     public List<string> headers {get;set;}
+    /** @description Provides this DHS API member. */
     public List<string> apinames {get;set;}
+    /** @description Provides this DHS API member. */
     public DHSCustomDataTableHandler(){
         originalRows = New Map<string,map<string,object>>();
         originalHeaders = New List<string>();
@@ -25,6 +33,10 @@ public class DHSCustomDataTableHandler {
         rows = originalRows.values();
     }
     @RemoteAction
+    /**
+     * @description Provides this DHS API member.
+     * @param rowId Method parameter.
+     */
     public static void editField(string rowId) {
         map<string,object> row = originalRows.get(rowId);
         row.put('id','worked');

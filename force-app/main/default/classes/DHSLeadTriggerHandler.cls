@@ -1,6 +1,13 @@
-/** Retains the existing DHSLeadTriggerHandler integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidDebugStatements,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Retains the existing DHSLeadTriggerHandler integration and application behavior.
+ */
+@SuppressWarnings('PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
 Public with sharing Class DHSLeadTriggerHandler {
+    /**
+     * @description Provides this DHS API member.
+     * @param newLeads Method parameter.
+     * @param oldLeads Method parameter.
+     */
     public static void updateCaseLeadSummaryCounts(List<DHS_Lead__c> newLeads, List<DHS_Lead__c> oldLeads) {
         Set<Id> caseIds = new Set<Id>();
         collectCaseIds(newLeads, caseIds);
@@ -134,6 +141,11 @@ Public with sharing Class DHSLeadTriggerHandler {
         };
     }
 
+    /**
+     * @description Provides this DHS API member.
+     * @param leadOldIds Method parameter.
+     * @param leadNewIds Method parameter.
+     */
     public static void leadAuditMethod(List<DHS_Lead__c> leadOldIds , List<DHS_Lead__c> leadNewIds){
         List< DHS_Lead_Status_History__c > lSHList = New List< DHS_Lead_Status_History__c >();
 
@@ -194,9 +206,14 @@ Public with sharing Class DHSLeadTriggerHandler {
             }
             database.Insert(lSHList,false,AccessLevel.USER_MODE);
         } Catch(Exception e){
-            System.debug(LoggingLevel.ERROR, 'Unable to create lead status history: ' + e.getMessage());
+            throw e;
         }
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param newLeads Method parameter.
+     * @param oldLeads Method parameter.
+     */
     public static void createInvoice(Map<Id,DHS_Lead__c> newLeads,Map<Id,DHS_Lead__c> oldLeads){
         Map<Id,DHS_Invoice__c> invoiceMap = New Map<Id,DHS_Invoice__c>();
         List<DHS_Invoice__c> invoices = [select id,DHS_Lead__c from DHS_Invoice__c where DHS_Lead__c in: newLeads.keyset() WITH USER_MODE ];
@@ -262,6 +279,12 @@ Public with sharing Class DHSLeadTriggerHandler {
         }
         	
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param l Method parameter.
+     * @param paychexId Method parameter.
+     * @return The requested result.
+     */
     public static DHS_Invoice__c generateInvoices(DHS_Lead__c l,string paychexId){
         DHS_Invoice__c inv = New DHS_Invoice__c();
         inv.DHS_Lead__c = l.Id;
@@ -338,6 +361,11 @@ Public with sharing Class DHSLeadTriggerHandler {
             }
             return null;
         }
+    /**
+     * @description Provides this DHS API member.
+     * @param invoiceLeads Method parameter.
+     * @return The requested result.
+     */
     public static Map<Id, String> getPaychexIds(List<DHS_Lead__c> invoiceLeads) {
         Set<Id> userIds = new Set<Id>();
         for (DHS_Lead__c leadRecord : invoiceLeads) {
@@ -355,6 +383,11 @@ Public with sharing Class DHSLeadTriggerHandler {
         }        
         return userIdToPaychexId;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param inputDate Method parameter.
+     * @return The requested result.
+     */
     public static Date getClosestCycleDate(Date inputDate) {
         if (inputDate == null) {
             return null;

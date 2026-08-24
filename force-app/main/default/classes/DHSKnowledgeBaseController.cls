@@ -1,17 +1,26 @@
-/** Manages categorized DHS knowledge-base articles and their attachments. */
-@SuppressWarnings('PMD.ApexDoc,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.NcssCount')
+/**
+ * @description Manages categorized DHS knowledge-base articles and their attachments.
+ */
+@SuppressWarnings('PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.NcssCount')
 public with sharing class DHSKnowledgeBaseController{
+    /** @description Provides this DHS API member. */
     public User currentUser {get;set;}
+    /** @description Provides this DHS API member. */
     public List< ArticleRecord > documents{get;set;}
+    /** @description Provides this DHS API member. */
     public Map<String, List<ArticleRecord>> documentsByCategory{get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> categoryOrder{get;set;}
+    /** @description Provides this DHS API member. */
     public Map<String, Integer> categoryCounts{get;set;}
     
+    /** @description Provides this DHS API member. */
     public DHSKnowledgeBaseController(){
         currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE];
         fetchArticles();
     }
   
+    /** @description Provides this DHS API member. */
     public void fetchArticles(){
         documents = new list<ArticleRecord>();
         documentsByCategory = new Map<String, List<ArticleRecord>>();
@@ -72,27 +81,42 @@ public with sharing class DHSKnowledgeBaseController{
         } 
     }
     
+    /** @description Provides this DHS API member. */
     public class ArticleRecord{
+        /** @description Provides this DHS API member. */
         public DHS_Knowledge_Base__c kb{get;set;}
+        /** @description Provides this DHS API member. */
         public string attachmentId {get;set;}
+        /**
+         * @description Provides this DHS API member.
+         * @param attachmentId Method parameter.
+         * @param kb Method parameter.
+         */
         public ArticleRecord(string attachmentId, DHS_Knowledge_Base__c kb){
            this.attachmentId = attachmentId;
            this.kb = kb;
         }
     }
     
+   /** @description Provides this DHS API member. */
    public string deleteKBID{get;set;}
+   /** @description Provides this DHS API member. */
    public string editKBID{get;set;}
+   /** @description Provides this DHS API member. */
    public string newCategory{get;set;}
+   /** @description Provides this DHS API member. */
    public string sequenceKBID{get;set;}
+   /** @description Provides this DHS API member. */
    public string newSequence{get;set;}
     
+    /** @description Provides this DHS API member. */
     public void deleteKBAction(){
         list<DHS_Knowledge_Base__c> delkb = [select id from DHS_Knowledge_Base__c where id=:deleteKBID WITH USER_MODE];
         database.delete(delkb,false,AccessLevel.USER_MODE);
         fetchArticles();
     }
     
+    /** @description Provides this DHS API member. */
     public void updateCategoryAction(){
         try {
             if(String.isNotBlank(editKBID) && String.isNotBlank(newCategory)) {
@@ -110,6 +134,7 @@ public with sharing class DHSKnowledgeBaseController{
         }
     }
     
+    /** @description Provides this DHS API member. */
     public void updateSequenceAction(){
         try {
             if(String.isNotBlank(sequenceKBID) && String.isNotBlank(newSequence)) {
@@ -152,6 +177,10 @@ public with sharing class DHSKnowledgeBaseController{
     }
     
     // Method to get used sequences for a specific category
+    /**
+     * @description Provides this DHS API member.
+     * @return The requested result.
+     */
     public Map<String, Set<Integer>> getUsedSequencesByCategory(){
         Map<String, Set<Integer>> usedSequences = new Map<String, Set<Integer>>();
         

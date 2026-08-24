@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class DHSLeadTriggerHandlerTest {
 
     @TestSetup
@@ -69,9 +69,9 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('Generated', inv.Status__c);
-        System.assertEquals('P', inv.Interview_Method__c);
-        System.assertEquals(450.00, inv.Item_Price__c);
+        System.assertEquals('Generated', inv.Status__c, 'Expected the asserted condition to hold');
+        System.assertEquals('P', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(450.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -95,8 +95,8 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('P-UC', inv.Interview_Method__c);
-        System.assertEquals(15.00, inv.Item_Price__c);
+        System.assertEquals('P-UC', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(15.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -121,8 +121,8 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('PO', inv.Interview_Method__c);
-        System.assertEquals(75.00, inv.Item_Price__c);
+        System.assertEquals('PO', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(75.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -147,8 +147,8 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('P', inv.Interview_Method__c);
-        System.assertEquals(115.00, inv.Item_Price__c);
+        System.assertEquals('P', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(115.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -172,8 +172,8 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('P-UC', inv.Interview_Method__c);
-        System.assertEquals(15.00, inv.Item_Price__c);
+        System.assertEquals('P-UC', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(15.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -198,8 +198,8 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('RO', inv.Interview_Method__c);
-        System.assertEquals(50.00, inv.Item_Price__c);
+        System.assertEquals('RO', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(50.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -224,8 +224,8 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('R', inv.Interview_Method__c);
-        System.assertEquals(60.00, inv.Item_Price__c);
+        System.assertEquals('R', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(60.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -249,8 +249,8 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('R-UC', inv.Interview_Method__c);
-        System.assertEquals(15.00, inv.Item_Price__c);
+        System.assertEquals('R-UC', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(15.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -275,8 +275,8 @@ public class DHSLeadTriggerHandlerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('RO', inv.Interview_Method__c);
-        System.assertEquals(50.00, inv.Item_Price__c);
+        System.assertEquals('RO', inv.Interview_Method__c, 'Expected the asserted condition to hold');
+        System.assertEquals(50.00, inv.Item_Price__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -305,7 +305,7 @@ public class DHSLeadTriggerHandlerTest {
             WHERE Id = :inv.Id
         ];
 
-        System.assertEquals('Generated', updatedInv.Status__c);
+        System.assertEquals('Generated', updatedInv.Status__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -338,7 +338,7 @@ public class DHSLeadTriggerHandlerTest {
             WHERE Id = :inv.Id
         ];
 
-        System.assertEquals('In-Review', updatedInv.Status__c);
+        System.assertEquals('In-Review', updatedInv.Status__c, 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -360,6 +360,6 @@ public class DHSLeadTriggerHandlerTest {
             WHERE DHS_Lead__c = :l.Id
         ];
 
-        System.assertEquals(0, invoiceCount);
+        System.assertEquals(0, invoiceCount, 'Expected the asserted condition to hold');
     }
 }

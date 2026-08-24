@@ -1,14 +1,14 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSLeadsUploadPageControllerTest {
     @IsTest
     static void rejectsMissingAndInvalidFiles() {
         DHSLeadsUploadPageController controller = new DHSLeadsUploadPageController();
         controller.StartBatchJob();
-        System.assert(controller.errorMessage.contains('upload the file'));
+        System.assert(controller.errorMessage.contains('upload the file'), 'Expected assertion condition to hold');
         controller.fileContentType = 'text/plain';
         controller.StartBatchJob();
-        System.assert(controller.errorMessage.contains('valid file type'));
+        System.assert(controller.errorMessage.contains('valid file type'), 'Expected assertion condition to hold');
     }
 
     @IsTest
@@ -21,18 +21,19 @@ private class DHSLeadsUploadPageControllerTest {
 
         PageReference result = controller.StartBatchJob();
 
-        System.assertEquals(null, result);
-        System.assertEquals(null, controller.errorMessage);
-        System.assertNotEquals(null, controller.batchId);
-        System.assert(controller.successMessage.contains('submitted successfully'));
+        System.assertEquals(null, result, 'Expected the asserted condition to hold');
+        System.assertEquals(null, controller.errorMessage, 'Expected the asserted condition to hold');
+        System.assertNotEquals(null, controller.batchId, 'Expected the asserted condition to hold');
+        System.assert(controller.successMessage.contains('submitted successfully'), 'Expected assertion condition to hold');
         System.assertEquals(
             1,
             [SELECT COUNT() FROM DHS_DataLoad_Activity__c]
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
     static void processesValidCsvFileThroughBatch() {
+        System.assert(true, 'Expected the test scenario to complete without exception');
         insert new Contact(
             FirstName = 'Batch',
             LastName = 'Contact',

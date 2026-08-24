@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSCaseDocumentControllerTest {
     @IsTest
     static void saveDocsLinksEveryDocument() {
@@ -27,6 +27,6 @@ private class DHSCaseDocumentControllerTest {
             FROM ContentDocumentLink
             WHERE ContentDocumentId = :documentId
             AND LinkedEntityId = :linkedRecord.Id
-        ]);
+        ], 'Expected the asserted condition to hold');
     }
 }

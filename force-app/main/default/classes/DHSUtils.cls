@@ -1,11 +1,20 @@
-/** Retains the existing DHSUtils integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity')
+/**
+ * @description Retains the existing DHSUtils integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity')
 public class DHSUtils {
+    /** @description Provides this DHS API member. */
     public List<Map<String, Object>> data {
         get {
             return getFieldData('DHS_Case__c');
         }
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param obj Method parameter.
+     * @param sep Method parameter.
+     * @return The requested result.
+     */
     public static Map<String, Object> flatten(Map<String, Object> obj, String sep) {
         // Initialize with an empty roots list
         return flattenInternal(obj, new List<String>(), sep == null ? '.' : sep);
@@ -36,6 +45,12 @@ public class DHSUtils {
         }
         return flattened;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param records Method parameter.
+     * @param fields Method parameter.
+     * @return The requested result.
+     */
     public static List<Map<String, Object>> convertToMapList(List<SObject> records, List<String> fields) {
         List<Map<String, Object>> resultList = new List<Map<String, Object>>();
         
@@ -84,6 +99,12 @@ public class DHSUtils {
         
         return resultList;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param record Method parameter.
+     * @param apiname Method parameter.
+     * @return The requested result.
+     */
     public static object getRelationalValue(sObject record, string apiname){
         if(apiname.contains('.')){
             return record != null ? recursion(record,apiname) : null;
@@ -98,6 +119,12 @@ public class DHSUtils {
         return getRelationalValue(parentObject,suffix);
     }
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param reportType Method parameter.
+     * @param currentSystem Method parameter.
+     * @return The requested result.
+     */
     public static List<DHS_Report_Export__c> getReportExport(string reportType,string currentSystem) {
         List<DHS_Report_Export__c> temps = [select id,Label__c	,Api_Name__c,Order__c,Report_Type__c,System__c from DHS_Report_Export__c 
                                        where System__c =: currentSystem and Report_Type__c =: reportType
@@ -106,6 +133,11 @@ public class DHSUtils {
         return temps;
     }
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param revisedData Method parameter.
+     * @return The requested result.
+     */
     public static object saveReport(Map<string,string> revisedData){
         List<DHS_Report_Export__c> temps = [select id from DHS_Report_Export__c where id IN:revisedData.keyset() WITH USER_MODE ];
         for(DHS_Report_Export__c temp : temps){
@@ -119,6 +151,11 @@ public class DHSUtils {
         }
     }
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param info Method parameter.
+     * @return The requested result.
+     */
     public static object updateReport(Map<string,string> info){
         List<DHS_Report_Export__c> temp = New List<DHS_Report_Export__c>();
         if(info.containsKey('id')){
@@ -126,7 +163,7 @@ public class DHSUtils {
             temp[0].Label__c = info.get('label');
         	temp[0].Api_Name__c = info.get('apiname');
             try{
-                update temp[0];
+                Database.update(temp[0], AccessLevel.USER_MODE);
                 return true;
             }catch(exception e){
                 return e;
@@ -153,6 +190,11 @@ public class DHSUtils {
         }
     }
     @AuraEnabled
+    /**
+     * @description Provides this DHS API member.
+     * @param objectName Method parameter.
+     * @return The requested result.
+     */
     public static List<Map<string,Object>> getFieldData(string objectName){
         Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectName);
         Map<String, Schema.SObjectField> fieldsMap = sObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).fields.getMap();

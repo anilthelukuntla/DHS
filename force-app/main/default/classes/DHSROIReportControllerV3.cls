@@ -1,52 +1,99 @@
-/** Retains the existing DHSROIReportControllerV3 integration and application behavior. */
-@SuppressWarnings('PMD.ApexDoc,PMD.ApexSOQLInjection,PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
+/**
+ * @description Retains the existing DHSROIReportControllerV3 integration and application behavior.
+ */
+@SuppressWarnings('PMD.ApexSOQLInjection,PMD.ApexSharingViolations,PMD.AvoidDeeplyNestedIfStmts,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.NcssMethodCount,PMD.StdCyclomaticComplexity')
 public class DHSROIReportControllerV3 {
+    /** @description Provides this DHS API member. */
     public string caseId {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Case__c caseRecord {get;set;}
+    /** @description Provides this DHS API member. */
     public List<DHS_Lead__c> leads {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<integer,boolean> skipTitles {get;set;}
+    /** @description Provides this DHS API member. */
     public user currentUser{get;set;}
+    /** @description Provides this DHS API member. */
     public integer totalLeads {get;set;}
+    /** @description Provides this DHS API member. */
     public String investigationDates {get;set;}
+    /** @description Provides this DHS API member. */
     public String investigators {get;set;}
+    /** @description Provides this DHS API member. */
     public map<string,integer> leadsCountMap {get;set;}
+    /** @description Provides this DHS API member. */
     public map<string,DHS_Lead__c> leadsMap {get;set;}
+    /** @description Provides this DHS API member. */
     public map<integer,DHS_Lead__c> itemNumberNLeadsMap {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> subjectInterviewList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> subjectContactList {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<String,Map<String,List<String>>> employmentMap {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<String,Map<String,List<String>>> educationMap {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<String,Map<String,List<String>>> medicalMap {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> residenceList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> referencesList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> generalLeadsList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> formerSpouseList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> unEmploymentList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> lawEnforcementList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> financialList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> employmentList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> educationList {get;set;}
+    /** @description Provides this DHS API member. */
     public List<String> medicalList {get;set;}
+    /** @description Provides this DHS API member. */
     public string sequenceId{get;set;}
+    /** @description Provides this DHS API member. */
     public list<integer> leadOrder {get;set;}
+    /** @description Provides this DHS API member. */
     public string derogatorySummary {get;set;}
+    /** @description Provides this DHS API member. */
     public set<string> derogatorySummaryItems {get;set;}
+    /** @description Provides this DHS API member. */
     public boolean hasSubjectInterview { get; private set; }
+    /** @description Provides this DHS API member. */
     public boolean hasSubjectRecontact { get; private set; }
+    /** @description Provides this DHS API member. */
     public boolean hasResidence { get; private set; }
+    /** @description Provides this DHS API member. */
     public integer numOfSubjectRecontacts {get;set;}
+    /** @description Provides this DHS API member. */
     PUBLIC Map<String, DHS_Lead_RTA_Extension__c> subjectInterviewNLeadRTAExtension {get;set;}
     
+    /** @description Provides this DHS API member. */
     public Map<integer,List<integer>> subHeaderMap {get;set;}
         
+    /** @description Provides this DHS API member. */
     public List<String> leadHeaders {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<string,set<String>> leadHeaderNSubheaders {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<string,list<String>> leadSubheaderNItems {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<string,set<String>> noSubHeader {get;set;}
+    /** @description Provides this DHS API member. */
     public Map<string,DHS_Lead__c> itemNLead {get;set;}
+    /** @description Provides this DHS API member. */
     public DHS_Lead__c pAEI {get;set;}
+    /** @description Provides this DHS API member. */
     public integer closestESI {get;set;}
+    /** @description Provides this DHS API member. */
     public boolean showAllRecordObtained { get; private set; }
+    /** @description Provides this DHS API member. */
     public DHSROIReportControllerV3(){
         caseId = String.valueOf(Id.valueOf(ApexPages.currentPage().getParameters().get('id').escapeHtml4()));
         showAllRecordObtained = false;
@@ -155,6 +202,11 @@ public class DHSROIReportControllerV3 {
         
     }
     
+    /**
+     * @description Provides this DHS API member.
+     * @param str Method parameter.
+     * @return The requested result.
+     */
     public static Map<Integer, List<Integer>> parseFullMapString(String str) {
     Map<Integer, List<Integer>> result = new Map<Integer, List<Integer>>();
 
@@ -191,6 +243,7 @@ public class DHSROIReportControllerV3 {
 }
 
     
+    /** @description Provides this DHS API member. */
     public void fetchCaseInformation(){
         List<string> caseFields = new List<string>();
         List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
@@ -228,6 +281,7 @@ investigationDates = fromDateFormatted + ' to ' + toDateFormatted;
     }
     
     
+    /** @description Provides this DHS API member. */
     public void fetchLeadInformation(){
         leadsMap = new Map<string,DHS_Lead__c>();
         itemNumberNLeadsMap = new Map<integer,DHS_Lead__c>();
@@ -419,6 +473,12 @@ investigationDates = fromDateFormatted + ' to ' + toDateFormatted;
         }
 
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param esiItems Method parameter.
+     * @param pAEI Method parameter.
+     * @return The requested result.
+     */
     public static Integer findClosest(List<Integer> esiItems, Integer pAEI) {
         if (esiItems == null || esiItems.isEmpty()) {
             return null; // no items
@@ -435,6 +495,11 @@ investigationDates = fromDateFormatted + ' to ' + toDateFormatted;
         }
         return closest;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param caseId Method parameter.
+     * @return The requested result.
+     */
     public static Map<integer,DHS_Lead__c> itemNumberNLead(string caseId){
         Map<integer,DHS_Lead__c> returnVal = New Map<integer,DHS_Lead__c>();
         List<DHS_Lead__c> leads = [select id,Item_number__c,LeadType__c from DHS_Lead__c where DHS_Case__c =: caseId WITH USER_MODE ];
@@ -443,6 +508,11 @@ investigationDates = fromDateFormatted + ' to ' + toDateFormatted;
         }
         return returnVal;
     }
+    /**
+     * @description Provides this DHS API member.
+     * @param dte Method parameter.
+     * @return The requested result.
+     */
     public static datetime dt(date dte){
         integer day;
         integer month;

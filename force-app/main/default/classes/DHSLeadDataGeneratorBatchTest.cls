@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSLeadDataGeneratorBatchTest {
     @IsTest
     static void generatesLeadDataForProvidedCase() {
@@ -21,13 +21,13 @@ private class DHSLeadDataGeneratorBatchTest {
         System.assertEquals(
             1,
             [SELECT COUNT() FROM DHS_Lead__c WHERE DHS_Case__c = :caseRecord.Id]
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
     static void retainsDefaultConstructorBehavior() {
         DHSLeadDataGeneratorBatch batch = new DHSLeadDataGeneratorBatch(null);
         batch.execute(null, new List<DHS_Lead__c>());
-        System.assertEquals(0, [SELECT COUNT() FROM DHS_Lead__c]);
+        System.assertEquals(0, [SELECT COUNT() FROM DHS_Lead__c], 'Expected the asserted condition to hold');
     }
 }

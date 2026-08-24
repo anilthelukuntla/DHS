@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
+
 private class DHSHeaderControllerTest {
 
     private static final String TEST_ALIAS = 'dhsadmin';
@@ -61,19 +61,19 @@ private class DHSHeaderControllerTest {
             System.assertEquals(
                 adminUser.Id,
                 controller.currentUser.Id
-            );
+            , 'Expected the asserted condition to hold');
 
             System.assertEquals(
                 'PMO',
                 controller.currentUser.User_Type__c
-            );
+            , 'Expected the asserted condition to hold');
 
-            System.assertEquals(true, controller.isPMOUser);
-            System.assertNotEquals(true, controller.isCMOUser);
-            System.assertNotEquals(true, controller.isINVUser);
-            System.assertNotEquals(true, controller.isQAUser);
-            System.assertNotEquals(true, controller.isSecurityUser);
-            System.assertNotEquals(true, controller.isCustomerUser);
+            System.assertEquals(true, controller.isPMOUser, 'Expected the asserted condition to hold');
+            System.assertNotEquals(true, controller.isCMOUser, 'Expected the asserted condition to hold');
+            System.assertNotEquals(true, controller.isINVUser, 'Expected the asserted condition to hold');
+            System.assertNotEquals(true, controller.isQAUser, 'Expected the asserted condition to hold');
+            System.assertNotEquals(true, controller.isSecurityUser, 'Expected the asserted condition to hold');
+            System.assertNotEquals(true, controller.isCustomerUser, 'Expected the asserted condition to hold');
 
             List<String> allowedUserTypes =
                 System.Label.DHS_Access_To_Lead_Upload.split(',');
@@ -81,12 +81,12 @@ private class DHSHeaderControllerTest {
             System.assertEquals(
                 allowedUserTypes.contains('PMO'),
                 controller.hasAccessToLeadUpload
-            );
+            , 'Expected the asserted condition to hold');
 
             System.assertEquals(
                 0,
                 controller.unreadmessagecountforotherpages
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 
@@ -131,7 +131,7 @@ private class DHSHeaderControllerTest {
             System.assertNotEquals(
                 null,
                 updatedTimesheet.Logout_Time__c
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 
@@ -186,7 +186,7 @@ private class DHSHeaderControllerTest {
             System.assertNotEquals(
                 null,
                 updatedTimesheet.Last_Active_Time__c
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 
@@ -211,12 +211,12 @@ private class DHSHeaderControllerTest {
             System.assertEquals(
                 7,
                 updatedTimesheet.Idle_Minutes__c
-            );
+            , 'Expected the asserted condition to hold');
 
             System.assertNotEquals(
                 null,
                 updatedTimesheet.Last_Active_Time__c
-            );
+            , 'Expected the asserted condition to hold');
         }
     }
 

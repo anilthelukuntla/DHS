@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class DHSCaseWizardControllerTest {
 
     private static final String TEST_EMAIL =
@@ -86,15 +86,15 @@ private class DHSCaseWizardControllerTest {
         System.assertEquals(
             createdSubject.Id,
             createdCase.DHS_Contact__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertNotEquals(
             null,
             createdCase.Case_Number__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             createdCase.Id,
             result.getParameters().get('id')
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -122,23 +122,24 @@ private class DHSCaseWizardControllerTest {
         System.assertEquals(
             true,
             controller.showsubjectspanel
-        );
+        , 'Expected the asserted condition to hold');
         System.assertNotEquals(
             null,
             controller.subjectsSearched
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             1,
             controller.subjectsSearched.size()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             subject.Id,
-            controller.subjectsSearched[0].subject.Id
+            controller.subjectsSearched[0].subject.Id,
+            'Expected the matching subject to be returned'
         );
         System.assertEquals(
             false,
             controller.subjectsSearched[0].isSelected
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -162,14 +163,15 @@ private class DHSCaseWizardControllerTest {
         System.assertEquals(
             true,
             controller.showsubjectspanel
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             1,
             controller.subjectsSearched.size()
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             subject.Id,
-            controller.subjectsSearched[0].subject.Id
+            controller.subjectsSearched[0].subject.Id,
+            'Expected the matching subject to be returned'
         );
     }
 
@@ -204,8 +206,8 @@ private class DHSCaseWizardControllerTest {
         PageReference result = controller.CreateCaseAction();
         Test.stopTest();
 
-        System.assertNotEquals(null, result);
-        System.assertEquals(true, result.getRedirect());
+        System.assertNotEquals(null, result, 'Expected the asserted condition to hold');
+        System.assertEquals(true, result.getRedirect(), 'Expected the asserted condition to hold');
 
         DHS_Case__c createdCase = [
             SELECT Id, DHS_Contact__c
@@ -217,11 +219,11 @@ private class DHSCaseWizardControllerTest {
         System.assertEquals(
             subject.Id,
             createdCase.DHS_Contact__c
-        );
+        , 'Expected the asserted condition to hold');
         System.assertEquals(
             createdCase.Id,
             result.getParameters().get('id')
-        );
+        , 'Expected the asserted condition to hold');
     }
 
     @IsTest
@@ -291,13 +293,13 @@ private class DHSCaseWizardControllerTest {
             );
         Test.stopTest();
 
-        System.assertEquals(subject, wrapper.subject);
+        System.assertEquals(subject, wrapper.subject, 'Expected the asserted condition to hold');
 
         /*
          * Change this assertion to true after fixing the constructor:
          *
-         * System.assertEquals(true, wrapper.isSelected);
+         * System.assertEquals(true, wrapper.isSelected, 'Expected the asserted condition to hold');
          */
-        System.assertEquals(false, wrapper.isSelected);
+        System.assertEquals(false, wrapper.isSelected, 'Expected the asserted condition to hold');
     }
 }

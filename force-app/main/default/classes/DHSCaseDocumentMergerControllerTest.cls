@@ -1,5 +1,5 @@
 @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.AvoidHardcodingId,PMD.UnusedLocalVariable')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.AvoidHardcodingId')
 private class DHSCaseDocumentMergerControllerTest {
     
     @TestSetup
@@ -180,7 +180,7 @@ private class DHSCaseDocumentMergerControllerTest {
         }
         
         Test.startTest();
-        Map<Id, String> result = DHSCaseDocumentMergerController.getBase64PDFsFromAttachments(attachmentIds);
+        Map<Id, String> result = DHSCaseDocumentMergerController.getBase64PDFsFromAttachments(attachmentIds); System.assertNotEquals(null, result, 'Expected result to be initialized');
         Test.stopTest();
         
         // Verify results
@@ -421,6 +421,7 @@ private class DHSCaseDocumentMergerControllerTest {
         Test.stopTest();
         
         // Verify results - should not include attachments with null body
+        System.assertEquals(false, result.containsKey(nullBodyAttachment.Id), 'Expected an attachment without a body to be excluded');
     }
     
     @IsTest

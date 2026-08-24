@@ -1,16 +1,23 @@
-/** Controls the DHS login-flow one-time-password challenge. */
-@SuppressWarnings('PMD.ApexDoc,PMD.UnusedMethod')
+/**
+ * @description Controls the DHS login-flow one-time-password challenge.
+ */
+@SuppressWarnings('PMD.UnusedMethod')
 public without sharing class DHSLoginFlow_Controller {
+    /** @description Provides this DHS API member. */
     Public user userData                {get;set;}
+    /** @description Provides this DHS API member. */
     Public Id oTPrecId                  {get;set;}
+    /** @description Provides this DHS API member. */
     Public String enteredOTPfromUser    {get;set;}
+    /** @description Provides this DHS API member. */
     Public integer errorCount           {get;set;}
+    /** @description Provides this DHS API member. */
     Public String message               {get;set;}
+    /** @description Provides this DHS API member. */
     Public String errorMessage          {get;set;}
     
     /**
      * @description This constructor is helps to get the context user's details
-     * @return  `Object`
      */
     Public DHSLoginFlow_Controller()
     {
@@ -18,7 +25,7 @@ public without sharing class DHSLoginFlow_Controller {
     }
     /**
      * @description This method creates the New OTP record which contails the OTP when ever the user try to login.
-     * @return  `Public pagereference`
+ * @return  `Public pagereference`
      */
     Public pagereference createOTPrecord()
     {
@@ -38,7 +45,7 @@ public without sharing class DHSLoginFlow_Controller {
     /**
      * @description This method verifies the OTP whenever the user enters the latest, Not expired (Expires after 5minutes of Generating OTP), and correct OTP  then the OTP record status updates to Verified and navigates to the Home page, 
      * otherwise if the user enters the incorrect OTP more than 3 times then automatically user forced to logout.
-     * @return  `Public pagereference`
+ * @return  `Public pagereference`
      */
     Public pagereference verifyOTP()
     {
