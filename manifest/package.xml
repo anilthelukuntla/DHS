@@ -1,36 +1,525 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <types>
-        <members>*</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexComponent</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexPage</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexTestSuite</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexTrigger</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>AuraDefinitionBundle</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>LightningComponentBundle</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>StaticResource</name>
-    </types>
-    <version>67.0</version>
+  <types>
+    <members>DHS</members>
+    <members>DHS_Classic</members>
+    <name>CustomApplication</name>
+  </types>
+  <types>
+    <members>User.LMS_User_Status__c</members>
+    <members>User.LMS_User_Type__c</members>
+    <name>CustomField</name>
+  </types>
+  <types>
+    <members>DHS_Access_To_Lead_Upload</members>
+    <members>DHS_AccountName</members>
+    <members>DHS_AdminEmail</members>
+    <members>DHS_CDRL_Case_Export</members>
+    <members>DHS_Cancel_Lead_Button</members>
+    <members>DHS_CaseCancellationRequestNotificationEmail</members>
+    <members>DHS_CaseCancellationRequestNotificationUseCCAddress</members>
+    <members>DHS_CaseCancellationRequestSubject</members>
+    <members>DHS_CaseIntakeNotificationEmail</members>
+    <members>DHS_CaseIntakeNotificationUseCCAddress</members>
+    <members>DHS_ContactToCaseFields</members>
+    <members>DHS_CustomerOrderUploadNotificationEmail</members>
+    <members>DHS_CustomerOrderUploadNotificationSubject</members>
+    <members>DHS_CustomerOrderUploadNotificationUseCCAddress</members>
+    <members>DHS_Customer_Notification_Case_Fields</members>
+    <members>DHS_Customer_Notification_Emails</members>
+    <members>DHS_Data_Load_Batch_Size</members>
+    <members>DHS_Do_Not_Cancel_Lead_Status</members>
+    <members>DHS_Duplicate_Item_Number_Message</members>
+    <members>DHS_Error_Message</members>
+    <members>DHS_Export_Cases_Completed</members>
+    <members>DHS_Export_Pending_Cases_Fields</members>
+    <members>DHS_Export_Pending_Leads</members>
+    <members>DHS_Export_Pending_Leads_By_Type</members>
+    <members>DHS_ExtendedEmailsForMessages</members>
+    <members>DHS_Grammer_Prompt_Template_Id</members>
+    <members>DHS_JeriPPFAddress</members>
+    <members>DHS_JeriPPFEmail</members>
+    <members>DHS_JeriPPFName</members>
+    <members>DHS_KaylaPPFAddress</members>
+    <members>DHS_KaylaPPFEmail</members>
+    <members>DHS_KaylaPPFName</members>
+    <members>DHS_LeadUploadTemplateName</members>
+    <members>DHS_Lead_Report_Export</members>
+    <members>DHS_Message_Report_Export</members>
+    <members>DHS_OrderUploadTemplateName</members>
+    <members>DHS_PayrollSettingH_W</members>
+    <members>DHS_SecondSundayStartDate</members>
+    <members>DHS_Show_Subheaders</members>
+    <members>DHS_Subject_Site</members>
+    <members>DHS_Test_CMOs</members>
+    <members>DHS_Test_INVs</members>
+    <members>DHS_Time_Sheet_Report_Export</members>
+    <members>DHS_Types_Of_Reports</members>
+    <members>DHS_UserProfiles</members>
+    <members>DHS_UserProfilesToCreateTimesheets</members>
+    <members>DHS_User_Profiles</members>
+    <members>DHS_Waiver_Report_Export</members>
+    <members>DHS_from_profile</members>
+    <members>DHS_to_profile</members>
+    <name>CustomLabel</name>
+  </types>
+  <types>
+    <members>DHS_CDRL_Case_Export.CMO</members>
+    <members>DHS_CDRL_Case_Export.Case_Due_Date</members>
+    <members>DHS_CDRL_Case_Export.Case_Number</members>
+    <members>DHS_CDRL_Case_Export.Case_Status</members>
+    <members>DHS_CDRL_Case_Export.Case_Type</members>
+    <members>DHS_CDRL_Case_Export.Customer_Delivery_Date</members>
+    <members>DHS_CDRL_Case_Export.DHS_Case_Id</members>
+    <members>DHS_CDRL_Case_Export.DHS_Case_Name</members>
+    <members>DHS_CDRL_Case_Export.Ingestion_Date</members>
+    <members>DHS_CDRL_Case_Export.Start_Purge_Date</members>
+    <members>DHS_CDRL_Case_Export.Subject_First_Name</members>
+    <members>DHS_CDRL_Case_Export.Subject_Last_Name</members>
+    <members>DHS_CDRL_Case_Export.Waiver_Due_Date</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_Case_Material_with_PII</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_Case_Materials_No_PII</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_Case_Name</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_Case_Number</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_CheckIn_Comments</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_CheckOut_Comments</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_Credentials</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_Date</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export.DHS_Investigator</members>
+    <members>DHS_CDRL_Lead_Export.DHS_ACD</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Assignment_Date</members>
+    <members>DHS_CDRL_Lead_Export.DHS_CMO</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Case_Due_Date</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Case_Number</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Case_Status</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Case_Type</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Contact_Address</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Contact_City</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Contact_Method</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Contact_Name</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Contact_Other_Information</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Contact_State</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Contact_Zip</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Coverage_Type</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Created_Date</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Customer_Case_Number</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Customer_Delivery_Date</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Id</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Ingestion_Date</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Investigator</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Item_number</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Lead_Status</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Lead_Type</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Start_Purge_Date</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Subject_First_Name</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Subject_Last_Name</members>
+    <members>DHS_CDRL_Lead_Export.DHS_Waiver_Due_Date</members>
+    <members>DHS_CDRL_Message_Export.Body</members>
+    <members>DHS_CDRL_Message_Export.Case_Name</members>
+    <members>DHS_CDRL_Message_Export.DHS_Case_Number</members>
+    <members>DHS_CDRL_Message_Export.DHS_From_User</members>
+    <members>DHS_CDRL_Message_Export.DHS_Name</members>
+    <members>DHS_CDRL_Message_Export.DHS_Subject_First_Name</members>
+    <members>DHS_CDRL_Message_Export.DHS_Subject_Last_Name</members>
+    <members>DHS_CDRL_Message_Export.Message_Date</members>
+    <members>DHS_CDRL_Message_Export.Subject</members>
+    <members>DHS_CDRL_Waiver_Export.DHS_Customer_Case_Number</members>
+    <members>DHS_CDRL_Waiver_Export.DHS_Waiver_Approved_Date</members>
+    <members>DHS_CDRL_Waiver_Export.DHS_Waiver_Denied_Date</members>
+    <members>DHS_CDRL_Waiver_Export.DHS_Waiver_Flagged_Date</members>
+    <members>DHS_CDRL_Waiver_Export.DHS_Waiver_Initiated_Date</members>
+    <members>DHS_CDRL_Waiver_Export.DHS_Waiver_Reason</members>
+    <members>DHS_CDRL_Workload_Export.DHS_ESI_Items_In_Progress</members>
+    <members>DHS_CDRL_Workload_Export.DHS_Investigator</members>
+    <members>DHS_CDRL_Workload_Export.DHS_Items_Assigned_Not_Accepted</members>
+    <members>DHS_CDRL_Workload_Export.DHS_Items_In_Progress</members>
+    <members>DHS_CDRL_Workload_Export.DHS_Items_QA_Rejected</members>
+    <members>DHS_Case_Dashboard_Export.DHS_Case_Number</members>
+    <members>DHS_Case_Dashboard_Export.DHS_Case_Type</members>
+    <members>DHS_Case_Dashboard_Export.DHS_Date_Submitted</members>
+    <members>DHS_Case_Dashboard_Export.DHS_Due_Date</members>
+    <members>DHS_Case_Dashboard_Export.DHS_Service_Days</members>
+    <members>DHS_Case_Dashboard_Export.DHS_Status</members>
+    <members>DHS_Case_Dashboard_Export.DHS_Subject_First_Name</members>
+    <members>DHS_Case_Dashboard_Export.DHS_Subject_Last_Name</members>
+    <members>DHS_Cases_Completed_This_Week.DHS_Case_Due_Date</members>
+    <members>DHS_Cases_Completed_This_Week.DHS_Case_Number</members>
+    <members>DHS_Cases_Completed_This_Week.DHS_Id</members>
+    <members>DHS_Cases_Completed_This_Week.DHS_Ingestion_Date</members>
+    <members>DHS_Cases_Completed_This_Week.DHS_Name</members>
+    <members>DHS_Cases_Completed_This_Week.DHS_Status</members>
+    <members>DHS_Cases_Completed_This_Week.DHS_Subject_Name</members>
+    <members>DHS_Cases_Completed_This_Week.DHS_Waiver_Due_Date</members>
+    <members>DHS_Extension_Request_Export.Case_Due_Date</members>
+    <members>DHS_Extension_Request_Export.Case_Status</members>
+    <members>DHS_Extension_Request_Export.Customer_Case_Number</members>
+    <members>DHS_Extension_Request_Export.DHS_Case_Due_Date</members>
+    <members>DHS_Extension_Request_Export.DHS_Case_Status</members>
+    <members>DHS_Extension_Request_Export.DHS_CreatedDate</members>
+    <members>DHS_Extension_Request_Export.DHS_Customer_Case_Number</members>
+    <members>DHS_Extension_Request_Export.DHS_Date_Received</members>
+    <members>DHS_Extension_Request_Export.DHS_Extension_Request_Date</members>
+    <members>DHS_Extension_Request_Export.DHS_Subject_First_Name</members>
+    <members>DHS_Extension_Request_Export.DHS_Subject_Last_Name</members>
+    <members>DHS_Extension_Request_Export.DHS_Waiver_Due_Date</members>
+    <members>DHS_Extension_Request_Export.Date_Received</members>
+    <members>DHS_Extension_Request_Export.Extension_Request_Date</members>
+    <members>DHS_Extension_Request_Export.Subject_First_Name</members>
+    <members>DHS_Extension_Request_Export.Subject_Last_Name</members>
+    <members>DHS_Extension_Request_Export.Waiver_Due_Date</members>
+    <members>DHS_IC_TimeSheet.DHS_Associated_Leads</members>
+    <members>DHS_IC_TimeSheet.DHS_Date</members>
+    <members>DHS_IC_TimeSheet.DHS_Miles_Driven</members>
+    <members>DHS_IC_TimeSheet.DHS_Number_of_Hours_c</members>
+    <members>DHS_IC_TimeSheet.DHS_User</members>
+    <members>DHS_Invoice_Export.DHS_ADP_File_Number</members>
+    <members>DHS_Invoice_Export.DHS_Case_Delivery_Type</members>
+    <members>DHS_Invoice_Export.DHS_Case_Name</members>
+    <members>DHS_Invoice_Export.DHS_Case_Number</members>
+    <members>DHS_Invoice_Export.DHS_Case_Type</members>
+    <members>DHS_Invoice_Export.DHS_Completed_Date</members>
+    <members>DHS_Invoice_Export.DHS_Costpoint_Code</members>
+    <members>DHS_Invoice_Export.DHS_Interview_Method</members>
+    <members>DHS_Invoice_Export.DHS_Investigator_Name</members>
+    <members>DHS_Invoice_Export.DHS_Item_Number</members>
+    <members>DHS_Invoice_Export.DHS_Item_Price</members>
+    <members>DHS_Invoice_Export.DHS_Item_Type</members>
+    <members>DHS_Invoice_Export.DHS_PPE</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_ACD</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Assigned_To</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Case_Number</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Comments</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Coverage_Type</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Item_Number</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Lead_Contact</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Lead_Type</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Status</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Subject_First_Name</members>
+    <members>DHS_Lead_Dashboard_Export.DHS_Subject_Last_Name</members>
+    <members>DHS_Manifest_Export.BI_Open_Date</members>
+    <members>DHS_Manifest_Export.Background_Investigation_BI_Case_Number</members>
+    <members>DHS_Manifest_Export.DHS_Case_Due_Date</members>
+    <members>DHS_Manifest_Export.DHS_Case_Status</members>
+    <members>DHS_Manifest_Export.DHS_Case_Type</members>
+    <members>DHS_Manifest_Export.DHS_Customer_Cancel_Date</members>
+    <members>DHS_Manifest_Export.DHS_Customer_Case_Number</members>
+    <members>DHS_Manifest_Export.DHS_Customer_Delivery_Date</members>
+    <members>DHS_Manifest_Export.DHS_Date_Received</members>
+    <members>DHS_Manifest_Export.DHS_Id</members>
+    <members>DHS_Manifest_Export.DHS_Name</members>
+    <members>DHS_Manifest_Export.Subject_s_Last_4_of_SSN</members>
+    <members>DHS_Manifest_Report_Export.Case_Due_Date</members>
+    <members>DHS_Manifest_Report_Export.Case_Status</members>
+    <members>DHS_Manifest_Report_Export.Case_Type</members>
+    <members>DHS_Manifest_Report_Export.Customer_Cancel_Date</members>
+    <members>DHS_Manifest_Report_Export.Customer_Case_Number</members>
+    <members>DHS_Manifest_Report_Export.Customer_Delivery_Date</members>
+    <members>DHS_Manifest_Report_Export.DHS_Case_Due_Date</members>
+    <members>DHS_Manifest_Report_Export.DHS_Case_Status</members>
+    <members>DHS_Manifest_Report_Export.DHS_Case_Type</members>
+    <members>DHS_Manifest_Report_Export.DHS_Created_Date</members>
+    <members>DHS_Manifest_Report_Export.DHS_Customer_Cancel_Date</members>
+    <members>DHS_Manifest_Report_Export.DHS_Customer_Case_Number</members>
+    <members>DHS_Manifest_Report_Export.DHS_Customer_Delivery_Date</members>
+    <members>DHS_Manifest_Report_Export.DHS_Date_Received</members>
+    <members>DHS_Manifest_Report_Export.DHS_Subject_First_Name</members>
+    <members>DHS_Manifest_Report_Export.DHS_Subject_Last_Name</members>
+    <members>DHS_Manifest_Report_Export.Date_Received</members>
+    <members>DHS_Manifest_Report_Export.Subject_First_Name</members>
+    <members>DHS_Manifest_Report_Export.Subject_Last_Name</members>
+    <members>DHS_Pending.DHS_Case_Due_Date</members>
+    <members>DHS_Pending.DHS_Case_Number</members>
+    <members>DHS_Pending.DHS_Id</members>
+    <members>DHS_Pending.DHS_Ingestion_Date</members>
+    <members>DHS_Pending.DHS_Name</members>
+    <members>DHS_Pending.DHS_Status</members>
+    <members>DHS_Pending.DHS_Subject_Name</members>
+    <members>DHS_Pending.DHS_Waiver_Due_Date</members>
+    <members>DHS_Pending_Leads_By_Status.DHS_Case_Number</members>
+    <members>DHS_Pending_Leads_By_Status.DHS_Id</members>
+    <members>DHS_Pending_Leads_By_Status.DHS_Item_Number</members>
+    <members>DHS_Pending_Leads_By_Status.DHS_Name</members>
+    <members>DHS_Pending_Leads_By_Status.DHS_Reason_for_Waiver</members>
+    <members>DHS_Pending_Leads_By_Status.DHS_Status</members>
+    <members>DHS_Pending_Leads_By_Status.DHS_Subject_Name</members>
+    <members>DHS_Pending_Leads_By_Type.DHS_Case_Number</members>
+    <members>DHS_Pending_Leads_By_Type.DHS_Id</members>
+    <members>DHS_Pending_Leads_By_Type.DHS_Item_Number</members>
+    <members>DHS_Pending_Leads_By_Type.DHS_Name</members>
+    <members>DHS_Pending_Leads_By_Type.DHS_Reason_for_Waiver</members>
+    <members>DHS_Pending_Leads_By_Type.DHS_Status</members>
+    <members>DHS_Pending_Leads_By_Type.DHS_Subject_First_Name</members>
+    <members>DHS_Pending_Leads_By_Type.DHS_Subject_Name</members>
+    <members>DHS_Waiver_Request_Export.Case_Due_Date</members>
+    <members>DHS_Waiver_Request_Export.Case_Status</members>
+    <members>DHS_Waiver_Request_Export.Case_Type</members>
+    <members>DHS_Waiver_Request_Export.Customer_Case_Number</members>
+    <members>DHS_Waiver_Request_Export.DHS_Case_Due_Date</members>
+    <members>DHS_Waiver_Request_Export.DHS_Case_Status</members>
+    <members>DHS_Waiver_Request_Export.DHS_Case_Type</members>
+    <members>DHS_Waiver_Request_Export.DHS_Customer_Case_Number</members>
+    <members>DHS_Waiver_Request_Export.DHS_Date_Received</members>
+    <members>DHS_Waiver_Request_Export.DHS_Subject_First_Name</members>
+    <members>DHS_Waiver_Request_Export.DHS_Subject_Last_Name</members>
+    <members>DHS_Waiver_Request_Export.DHS_Waiver_Request_Date</members>
+    <members>DHS_Waiver_Request_Export.Date_Received</members>
+    <members>DHS_Waiver_Request_Export.Subject_First_Name</members>
+    <members>DHS_Waiver_Request_Export.Subject_Last_Name</members>
+    <members>DHS_Waiver_Request_Export.Waiver_Request_Date</members>
+    <name>CustomMetadata</name>
+  </types>
+  <types>
+    <members>DHS_Auto_Lead_Generation_Setting__c</members>
+    <members>DHS_Auto_Lead_Generation_Template__c</members>
+    <members>DHS_CDRL_Case_Export__mdt</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export__mdt</members>
+    <members>DHS_CDRL_Lead_Export__mdt</members>
+    <members>DHS_CDRL_Message_Export__mdt</members>
+    <members>DHS_CDRL_Waiver_Export__mdt</members>
+    <members>DHS_CDRL_Workload_Export__mdt</members>
+    <members>DHS_CaseCancellationRequest__c</members>
+    <members>DHS_Case_And_Lead_Template__c</members>
+    <members>DHS_Case_Dashboard_Export__mdt</members>
+    <members>DHS_Case_History__c</members>
+    <members>DHS_Case__c</members>
+    <members>DHS_Cases_Completed_This_Week__mdt</members>
+    <members>DHS_Contact__c</members>
+    <members>DHS_Contract_Setting__c</members>
+    <members>DHS_Customer_Order_Upload_Log__c</members>
+    <members>DHS_Customer_Order__c</members>
+    <members>DHS_Daily_Production_Summary__c</members>
+    <members>DHS_DataLoad_Activity__c</members>
+    <members>DHS_Deliverable__c</members>
+    <members>DHS_Document_Request__c</members>
+    <members>DHS_Document__c</members>
+    <members>DHS_Docusign_Templates__c</members>
+    <members>DHS_Extension_Request_Export__mdt</members>
+    <members>DHS_GeneralSettings__c</members>
+    <members>DHS_IC_TimeSheet__mdt</members>
+    <members>DHS_In_App_Checklist_Settings__c</members>
+    <members>DHS_Investigator_Check__c</members>
+    <members>DHS_Invoice_Export__mdt</members>
+    <members>DHS_Invoice__c</members>
+    <members>DHS_Knowledge_Base__c</members>
+    <members>DHS_Lead_Dashboard_Export__mdt</members>
+    <members>DHS_Lead_Grammar_Check__c</members>
+    <members>DHS_Lead_RTA_Extension__c</members>
+    <members>DHS_Lead_Status_History__c</members>
+    <members>DHS_Lead__c</members>
+    <members>DHS_Manifest_Export__mdt</members>
+    <members>DHS_Manifest_Report_Export__mdt</members>
+    <members>DHS_Message_Log__c</members>
+    <members>DHS_Message__c</members>
+    <members>DHS_OTP__c</members>
+    <members>DHS_PPF_Shipping_Information__c</members>
+    <members>DHS_PayrollSetting__c</members>
+    <members>DHS_Pending_Leads_By_Status__mdt</members>
+    <members>DHS_Pending_Leads_By_Type__mdt</members>
+    <members>DHS_Pending__mdt</members>
+    <members>DHS_ROI_Report_Order__c</members>
+    <members>DHS_Report_Export__c</members>
+    <members>DHS_Subject_Message__c</members>
+    <members>DHS_TimeSheet__c</members>
+    <members>DHS_Time_Sheet_Calander__c</members>
+    <members>DHS_Training__c</members>
+    <members>DHS_Waiver_Information__c</members>
+    <members>DHS_Waiver_Request_Export__mdt</members>
+    <members>DHS_Workload__c</members>
+    <members>LMS_Acknowledgment__c</members>
+    <members>LMS_Assignment_Rule__c</members>
+    <members>LMS_Assignment__c</members>
+    <members>LMS_Audit_Log__c</members>
+    <members>LMS_Notification_Event__e</members>
+    <members>LMS_Notification__c</members>
+    <members>LMS_Quiz_Question__c</members>
+    <members>LMS_Setting__mdt</members>
+    <members>LMS_Training_Unit__c</members>
+    <members>LMS_Training__c</members>
+    <members>LMS_Unit_Progress__c</members>
+    <members>MS_Graph_Subscription__c</members>
+    <members>MS_Team_Attendance_Interval__c</members>
+    <members>MS_Team_Call_Schedule__c</members>
+    <members>MS_Team_Meeting_Artifact__c</members>
+    <members>MS_Team_Meeting_Participant__c</members>
+    <members>OnBoarding__c</members>
+    <members>RMS_Audit_Log__c</members>
+    <members>RMS_Manifest_Item__c</members>
+    <members>RMS_Manifest__c</members>
+    <members>RMS_Notification__c</members>
+    <members>RMS_Setting__c</members>
+    <name>CustomObject</name>
+  </types>
+  <types>
+    <members>DHS_Auto_Lead_Generation_Setting__c</members>
+    <members>DHS_Auto_Lead_Generation_Template__c</members>
+    <members>DHS_CaseCancellationRequest__c</members>
+    <members>DHS_Case_And_Lead_Template__c</members>
+    <members>DHS_Case_History__c</members>
+    <members>DHS_Case__c</members>
+    <members>DHS_Contact__c</members>
+    <members>DHS_Contract_Setting__c</members>
+    <members>DHS_Customer_Order_Upload_Log__c</members>
+    <members>DHS_Customer_Order__c</members>
+    <members>DHS_Daily_Production_Summary__c</members>
+    <members>DHS_DataLoad_Activity__c</members>
+    <members>DHS_Deliverable__c</members>
+    <members>DHS_Document_Request__c</members>
+    <members>DHS_Document__c</members>
+    <members>DHS_Investigator_Check__c</members>
+    <members>DHS_Invoice__c</members>
+    <members>DHS_Knowledge_Base__c</members>
+    <members>DHS_Lead_Grammar_Check__c</members>
+    <members>DHS_Lead_RTA_Extension__c</members>
+    <members>DHS_Lead_Status_History__c</members>
+    <members>DHS_Lead__c</members>
+    <members>DHS_Message_Log__c</members>
+    <members>DHS_Message__c</members>
+    <members>DHS_OTP__c</members>
+    <members>DHS_PPF_Shipping_Information__c</members>
+    <members>DHS_PayrollSetting__c</members>
+    <members>DHS_ROI_Report_Order__c</members>
+    <members>DHS_Report_Export__c</members>
+    <members>DHS_Subject_Message__c</members>
+    <members>DHS_TimeSheet__c</members>
+    <members>DHS_Time_Sheet_Calander__c</members>
+    <members>DHS_Training__c</members>
+    <members>DHS_Waiver_Information__c</members>
+    <members>DHS_Workload__c</members>
+    <members>MS_Team_Call_Schedule__c</members>
+    <name>CustomTab</name>
+  </types>
+  <types>
+    <members>DHS_Public_Email_Template/DHS_OTP_to_verify_identity</members>
+    <name>EmailTemplate</name>
+  </types>
+  <types>
+    <members>DHS_Send_Email_Message</members>
+    <name>Flow</name>
+  </types>
+  <types>
+    <members>DHS_Send_Email_Message</members>
+    <name>FlowDefinition</name>
+  </types>
+  <types>
+    <members>DHS_CMO_Access</members>
+    <members>DHS_INV_Access</members>
+    <members>DHS_PMO_Access</members>
+    <members>DHS_QA_Access</members>
+    <name>Group</name>
+  </types>
+  <types>
+    <members>DHS_Auto_Lead_Generation_Setting__c-DHS Auto Lead Generation Setting Layout</members>
+    <members>DHS_Auto_Lead_Generation_Template__c-DHS Auto Lead Generation Template Layout</members>
+    <members>DHS_CDRL_Case_Export__mdt-DHS CDRL Case Export Layout</members>
+    <members>DHS_CDRL_Check_in_Check_out_Export__mdt-DHS CDRL Check-in%2FCheck-out Export Layout</members>
+    <members>DHS_CDRL_Lead_Export__mdt-DHS CDRL Lead Export Layout</members>
+    <members>DHS_CDRL_Message_Export__mdt-DHS CDRL Message Export Layout</members>
+    <members>DHS_CDRL_Waiver_Export__mdt-DHS CDRL Waiver Export Layout</members>
+    <members>DHS_CDRL_Workload_Export__mdt-DHS CDRL Workload Export Layout</members>
+    <members>DHS_CaseCancellationRequest__c-DHS CaseCancellationRequest Layout</members>
+    <members>DHS_Case_And_Lead_Template__c-DHS Case And Lead Template Layout</members>
+    <members>DHS_Case_Dashboard_Export__mdt-DHS Case Dashboard Export Layout</members>
+    <members>DHS_Case_History__c-DHS Case History Layout</members>
+    <members>DHS_Case__c-DHS Case Layout</members>
+    <members>DHS_Cases_Completed_This_Week__mdt-DHS Cases Completed This Week Layout</members>
+    <members>DHS_Contact__c-DHS Contact Layout</members>
+    <members>DHS_Contract_Setting__c-DHS Contract Setting Layout</members>
+    <members>DHS_Customer_Order_Upload_Log__c-DHS Customer Order Upload Log Layout</members>
+    <members>DHS_Customer_Order__c-DHS Customer Order Layout</members>
+    <members>DHS_Daily_Production_Summary__c-DHS Daily Production Summary Layout</members>
+    <members>DHS_DataLoad_Activity__c-DHS DataLoad Activity Layout</members>
+    <members>DHS_Deliverable__c-DHS Deliverable Layout</members>
+    <members>DHS_Document_Request__c-DHS Document Request Layout</members>
+    <members>DHS_Document__c-DHS Document Layout</members>
+    <members>DHS_Extension_Request_Export__mdt-DHS Extension Request Export Layout</members>
+    <members>DHS_IC_TimeSheet__mdt-DHS IC TimeSheet Layout</members>
+    <members>DHS_Investigator_Check__c-DHS Investigator Check Layout</members>
+    <members>DHS_Invoice_Export__mdt-DHS Invoice Export Layout</members>
+    <members>DHS_Invoice__c-DHS Invoice Layout</members>
+    <members>DHS_Knowledge_Base__c-DHS Knowledge Base Layout</members>
+    <members>DHS_Lead_Dashboard_Export__mdt-DHS Lead Dashboard Export Layout</members>
+    <members>DHS_Lead_Grammar_Check__c-DHS Lead Grammar Check Layout</members>
+    <members>DHS_Lead_RTA_Extension__c-DHS Lead RTA Extension Layout</members>
+    <members>DHS_Lead_Status_History__c-DHS Lead Status History Layout</members>
+    <members>DHS_Lead__c-DHS Lead Layout</members>
+    <members>DHS_Manifest_Export__mdt-DHS Manifest Export Layout</members>
+    <members>DHS_Manifest_Report_Export__mdt-DHS Manifest Report Export Layout</members>
+    <members>DHS_Message_Log__c-DHS Message Log Layout</members>
+    <members>DHS_Message__c-DHS Message Layout</members>
+    <members>DHS_OTP__c-DHS OTP Layout</members>
+    <members>DHS_PPF_Shipping_Information__c-DHS PPF Shipping Information Layout</members>
+    <members>DHS_PayrollSetting__c-DHS Payroll Setting Layout</members>
+    <members>DHS_Pending_Leads_By_Status__mdt-DHS Pending Leads By Status Layout</members>
+    <members>DHS_Pending_Leads_By_Type__mdt-DHS Pending Leads By Type Layout</members>
+    <members>DHS_Pending__mdt-DHS Pending Cases By Status Layout</members>
+    <members>DHS_ROI_Report_Order__c-DHS ROI Report Order Layout</members>
+    <members>DHS_Report_Export__c-DHS Report Export Layout</members>
+    <members>DHS_Subject_Message__c-DHS Subject Message Layout</members>
+    <members>DHS_TimeSheet__c-DHS TimeSheet Layout</members>
+    <members>DHS_Time_Sheet_Calander__c-DHS Time Sheet Calander Layout</members>
+    <members>DHS_Training__c-DHS Training Layout</members>
+    <members>DHS_Waiver_Information__c-DHS Waiver Information Layout</members>
+    <members>DHS_Waiver_Request_Export__mdt-DHS Waiver Request Export Layout</members>
+    <members>DHS_Workload__c-DHS Work Load Layout</members>
+    <members>OnBoarding__c-OnBoarding Layout</members>
+    <name>Layout</name>
+  </types>
+  <types>
+    <members>DHS Community CMO Profile</members>
+    <members>DHS Community INV Profile</members>
+    <members>DHS Community PMO Profile</members>
+    <members>DHS Community QA Profile</members>
+    <name>Profile</name>
+  </types>
+  <types>
+    <members>DHS_Auto_Lead_Generation_Template__c</members>
+    <members>DHS_CaseCancellationRequest__c</members>
+    <members>DHS_Case__c</members>
+    <members>DHS_Contact__c</members>
+    <members>DHS_Contract_Setting__c</members>
+    <members>DHS_Customer_Order_Upload_Log__c</members>
+    <members>DHS_Customer_Order__c</members>
+    <members>DHS_Daily_Production_Summary__c</members>
+    <members>DHS_DataLoad_Activity__c</members>
+    <members>DHS_Deliverable__c</members>
+    <members>DHS_Invoice__c</members>
+    <members>DHS_Knowledge_Base__c</members>
+    <members>DHS_Lead_Grammar_Check__c</members>
+    <members>DHS_Lead__c</members>
+    <members>DHS_Message__c</members>
+    <members>DHS_OTP__c</members>
+    <members>DHS_PayrollSetting__c</members>
+    <members>DHS_Report_Export__c</members>
+    <members>DHS_Subject_Message__c</members>
+    <members>DHS_TimeSheet__c</members>
+    <members>DHS_Time_Sheet_Calander__c</members>
+    <members>DHS_Training__c</members>
+    <members>DHS_Waiver_Information__c</members>
+    <members>DHS_Workload__c</members>
+    <members>OnBoarding__c</members>
+    <members>User</members>
+    <name>SharingRules</name>
+  </types>
+  <types>
+    <members>DHS_Admin_Permissionset</members>
+    <members>DHS_Community_CMO_PS</members>
+    <members>DHS_Community_INV_PS</members>
+    <members>DHS_Community_PMO_PS</members>
+    <members>DHS_Community_QA_PS</members>
+    <members>DHS_LMS_Customer_Community_Access</members>
+    <members>DHS_Package_System_Admin_Access</members>
+    <name>PermissionSet</name>
+  </types>
+  <types>
+    <members>OnBoardingController</members>
+    <members>OnBoardingControllerTest</members>
+    <members>OnboardingTriggerHandler</members>
+    <members>OnboardingTriggerHandlerTest</members>
+    <name>ApexClass</name>
+  </types>
+  <types>
+    <members>OnboardingTrigger</members>
+    <name>ApexTrigger</name>
+  </types>
+  <version>64.0</version>
 </Package>
