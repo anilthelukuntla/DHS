@@ -1,0 +1,592 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+   controller="DHSCDRLReportsControllerV2" readOnly="true">
+   <apex:includeLightning />
+   <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+      <meta name="description" content="" />
+      <meta name="author" content="" />
+      <title>CDRL Reporting</title>
+      <style>
+         .reportsStatusModal .modal-body{ max-height: 70vh;overflow: auto;}
+         .reportsStatusModal {max-width:max-content !important}
+         .form-check-input {
+         margin-left: 10px !important;
+         }
+         .buttons-collection {
+         display: none
+         }
+         .dt-button {
+         color: #fff;
+         background-color: #00799B;
+         border-color: #00799B;
+         padding: 2px 25px;
+         border-radius: 5px;
+         }
+         .dt-buttons {
+         text-align: left;
+         margin: 0 0 10px;
+         }
+         #reportstable_wrapper{overflow:auto}
+      </style>
+   </head>
+   <body id="page-top">
+      <apex:form >
+         <apex:includeLightning />
+         <div id="LwcId"></div>
+         <!-- Page Wrapper -->
+         <div id="wrapper">
+            <c:DHSHeader ></c:DHSHeader>
+            <script src="https://cdn.datatables.net/buttons/1.5.3/js/buttons.colVis.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+            <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+            <!-- Content Wrapper -->
+            <div id="content-wrapper" class="d-flex flex-column">
+               <!-- Main Content -->
+               <div id="content">
+                  <!-- Topbar -->
+                  <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                     <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                        <h4 class=" mb-0 text-gray-800"><b>Reports</b></h4>
+                     </div>
+                     <!-- Sidebar Toggle (Topbar) -->
+                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                     <i class="fa fa-bars"></i>
+                     </button>
+                     <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+                  </nav>
+                  <!-- End of Topbar -->
+                  <!-- Begin Page Content -->
+                  <div class="container-fluid">
+                     <div class="row">
+                        <div class="col-md-12">
+                           <div class="card">
+                              <div class="card-body">
+                                 <div class="mt-2 mb-2 row">
+                                    <div class="form-group mb-2 col-3">
+                                       <label>Report Type</label>
+                                       <apex:selectlist styleclass="form-select form-control selectedreporttype"
+                                          size="1" value="{!selectedReportType}"
+                                          onchange="onchangeofreporttype();return false;">
+                                          <apex:selectOptions value="{!typesOfReports}" />
+                                       </apex:selectlist>
+                                    </div>
+                                    <div class="form-group mb-2 col-3">
+                                       <apex:outputPanel id="caseforleadpanel">
+                                          <apex:outputpanel rendered="{!If(selectedReportType == 'Lead',true,false)}">
+                                             <!--<c:DHSAutoComplete returnValue="{!selectedCaseIdForLeadSearch}"
+                                                for="ownerLookup" componentLabel="Case#"
+                                                labelStyleClass="col-md-2" sObject="DHS_Case__c"
+                                                label="Case_Number__c" value="Id" />
+                                                <apex:input id="ownerLookup" styleClass="form-control" />-->
+                                             <label>Case#</label>
+                                             <apex:inputText value="{!selectedCaseNumberForLeadSearch}" styleClass="form-control"/>
+                                          </apex:outputPanel>
+                                       </apex:outputPanel>
+                                    </div>
+                                 </div>
+                                 <apex:actionFunction name="onchangeofmessagetype" rerender="caseformessagepanel" status="loader"/>
+                                 <apex:outputpanel id="messagespanel">
+                                    <apex:outputpanel rendered="{!If(selectedReportType == 'Messages',true,false)}">
+                                       <div class=" mt-2 mb-2 row">
+                                          <div class="form-group mb-2 col-3">
+                                             <label>Message Type</label>
+                                             <apex:selectlist styleclass="form-select form-control selectedmessagetype"
+                                                size="1" value="{!selectedMessageType}" onchange="onchangeofmessagetype();return false;">
+                                                <apex:selectOptions value="{!messageTypeOptions}" />
+                                             </apex:selectlist>
+                                          </div>
+                                          <div class="form-group mb-2 col-3">
+                                             <apex:outputPanel id="caseformessagepanel">
+                                                <apex:outputPanel rendered="{!IF(selectedMessageType=='Case Broadcast Message',true,false)}">
+                                                   <label>Case</label>
+                                                   <apex:selectlist styleclass="form-select form-control selectedcaseformessages"
+                                                      size="1" value="{!selectedRelatedCaseIdForMessages}">
+                                                      <apex:selectOptions value="{!relatedCasesForMessages}" />
+                                                   </apex:selectlist>
+                                                </apex:outputPanel>
+                                             </apex:outputPanel>
+                                          </div>
+                                       </div>
+                                    </apex:outputpanel>
+                                 </apex:outputpanel>
+                                 <apex:outputpanel id="caseorleadpanel">
+                                    <apex:outputpanel rendered="{!If(selectedReportType == 'Case' || selectedReportType == 'Lead',true,false)}">
+                                       <div class=" mt-2 mb-2 row">
+                                          <div class="form-group mb-2 col-3">
+                                             <apex:outputPanel id="selectuserspanel">
+                                                <apex:outputPanel rendered="{!If(selectedReportType == 'Case',true,false)}">
+                                                   <label>CMO User</label>
+                                                   <apex:selectlist styleclass="form-select form-control selectedcmouser"
+                                                      size="1" value="{!selectedCMOUser}">
+                                                      <apex:selectOptions value="{!cmoUsers}" />
+                                                   </apex:selectlist>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!If(selectedReportType == 'Lead',true,false)}">
+                                                   <label>Investigator</label>
+                                                   <apex:selectlist styleclass="form-select form-control selectedInvestigatorUser selectedreporttype"
+                                                      size="1" value="{!selectedInvestigatorUser}">
+                                                      <apex:selectOptions value="{!investigatorUsers}" />
+                                                   </apex:selectlist>
+                                                </apex:outputPanel>
+                                             </apex:outputPanel>
+                                          </div>
+                                          <div class="form-group mb-2 col-3">
+                                             <apex:outputPanel id="selectstatuspanel">
+                                                <apex:outputPanel rendered="{!If(selectedReportType == 'Case',true,false)}">
+                                                   <label>Status</label>
+                                                   <apex:selectlist styleclass="form-select form-control selectedcasestatus"
+                                                      size="1" value="{!selectedCaseStatus}">
+                                                      <apex:selectOptions value="{!caseStatus}" />
+                                                   </apex:selectlist>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!If(selectedReportType == 'Lead',true,false)}">
+                                                   <label>Status</label>
+                                                   <apex:selectlist styleclass="form-select form-control selectedleadstatus"
+                                                      size="1" value="{!selectedLeadStatus}">
+                                                      <apex:selectOptions value="{!leadStatus}" />
+                                                   </apex:selectlist>
+                                                </apex:outputPanel>
+                                             </apex:outputPanel>
+                                          </div>
+                                          <div class="form-check mb-2 col-3">
+                                             <apex:outputPanel rendered="{!If(selectedReportType == 'Case',true,false)}">
+                                                <label>Case Task</label>
+                                                <apex:selectlist styleclass="form-select form-control selectedcasetaskstatus"
+                                                   size="1" value="{!selectedCaseTaskStatus}">
+                                                   <apex:selectOptions value="{!caseTaskStatus}" />
+                                                </apex:selectlist>
+                                             </apex:outputPanel>
+                                          </div>
+                                          <div class="form-check mt-5 mb-2 col-3">
+                                             <apex:outputPanel rendered="{!If(selectedReportType == 'Case',true,false)}">
+                                                <!--<label class="form-check-label">Five or less items</label>
+                                                <apex:inputCheckbox styleclass=" form-check-input" value="{!fiveorlessitemsofcase}"/>-->
+                                             </apex:outputPanel>
+                                          </div>
+                                       </div>
+                                    </apex:outputpanel>
+                                 </apex:outputpanel>
+                                 <div class=" mt-2 mb-2 row">
+                                    <div class="form-group mb-2 col-3 dategroup d-none">
+                                       <label>Start Date</label>
+                                       <apex:input value="{!fromDate}" type="date"
+                                          styleclass="form-control fromdate" />
+                                    </div>
+                                    <div class="form-group mb-2 col-3 dategroup d-none">
+                                       <label>End Date</label>
+                                       <apex:input value="{!toDate}" type="date"
+                                          styleclass="form-control todate " />
+                                    </div>
+                                    <div class="form-group mt-2 mb-2 col-12">
+                                       <button id="runreportbutton" class="btn btn-primary px-4"
+                                          onclick="runreport();return false;">Submit</button>
+                                    </div>
+                                 </div>
+                                 <section>
+                                    <div class="mb-4 d-flex justify-content-end">
+                                    </div>
+                                    <apex:outputPanel id="reportstable">
+                                        <apex:outputPanel rendered="{!showReportsTable}">
+                                       <apex:outputPanel rendered="{!IF(showreportstable,true,false)}">
+                                          <div>
+                                             Total number of records: <b>{!totalRecordCount}</b>
+                                          </div>
+                                          <div align="right" style="margin-bottom:10px;">
+                                             <apex:outputPanel id="leadspaginationpanel">
+                                                <apex:outputPanel style="margin-right:15px;">
+                                                   <b>Page {!pageNumber} of {!totalPages}</b>
+                                                </apex:outputPanel>
+                                                <apex:commandButton style="margin-right:10px;" value="Previous" styleClass="btn btn-primary px-4" rendered="{!disablePrev == true}" disabled="true"/>
+                                                <apex:outputPanel rendered="{!disablePrev == false}">
+                                                   <button style="margin-right:10px;" onclick="handlePrev();return false" class="btn btn-primary px-4">Previous</button>
+                                                </apex:outputPanel>
+                                                <apex:actionFunction name="handlePrev" action="{!handlePrev}" rerender="leadstable,leadspaginationpanel,leadsdatapanel,reportstable" status="loader" />
+                                                <apex:commandButton value="Next" styleClass="btn btn-primary px-4" rendered="{!disableNext == true}" disabled="true"/>
+                                                <apex:outputPanel rendered="{!disableNext == false}">
+                                                   <button  onclick="handleNext();return false" class="btn btn-primary px-4">Next</button>
+                                                </apex:outputPanel>
+                                                <apex:actionFunction name="handleNext" action="{!handleNext}"  rerender="leadstable,leadspaginationpanel,leadsdatapanel,reportstable" status="loader"/>
+                                             </apex:outputPanel>
+                                             <button style="margin-right:10px;" onclick="exportData();return false" class="btn btn-primary px-4 ml-2">Export</button>
+                                          </div>
+                                          <apex:outputPanel id="leadsdatapanel">
+                                             <table id="reportstable" class="table reportstable ">
+                                                <thead>
+                                                    <tr>
+                                                        <apex:repeat value="{!labels}" var="label">
+                                                            <th scope="col">
+                                                                {!label}
+                                                            </th>
+                                                        </apex:repeat>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!--<apex:outputPanel rendered="{!IF(records != null,false,false)}">-->
+                                                        <apex:repeat value="{!records}" var="record" rendered="{!NOT(ISNULL(records))}">
+                                                            <tr>
+                                                               <apex:repeat value="{!apinames}" var="apiname">
+                                                                    <td>
+                                                                        <apex:outputText escape="false" value="{!record[apiname]}" />
+                                                                    </td>
+                                                               </apex:repeat>
+                                                            </tr>
+                                                        </apex:repeat>
+                                                    <!--</apex:outputPanel>-->
+                                                </tbody>
+                                             </table>
+                                          </apex:outputPanel>
+                                       </apex:outputPanel>
+                                            </apex:outputPanel>
+                                    </apex:outputPanel>
+                                 </section>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <apex:outputpanel id="leadstatustrackingpanel">
+                  <apex:outputpanel rendered="{!showleadstatustrackingpanel}">
+                     <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true"
+                        id="mi-modal">
+                        <div class="modal-dialog modal-l reportsStatusModal">
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <label class="h4 text-primary">Lead History Tracking</label>
+                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    onclick="hideModal();"><span aria-hidden="true">&times;</span></button>
+                              </div>
+                              <div class="modal-body">
+                                 <div class="row">
+                                    <table id="reportstableStatus" class="table reportstable">
+                                       <thead>
+                                          <tr>
+                                             <th scope="col">From Status</th>
+                                             <th scope="col">To Status</th>
+                                             <th scope="col">Initiated By</th>
+                                             <th scope="col">Date Initiated</th>
+                                             <th scope="col">Number of Days</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          <apex:repeat value="{!leadStatusTrackings}" var="lst">
+                                             <tr>
+                                                <td>{!lst.leadHistory.oldvalue}</td>
+                                                <td>{!lst.leadHistory.newvalue}</td>
+                                                <td>{!lst.leadHistory.createdby.lastname} {!lst.leadHistory.createdby.firstname} </td>
+                                                <td>
+                                                   <apex:outputfield value="{!lst.leadHistory.createddate}"/>
+                                                </td>
+                                                <td>
+                                                   {!lst.numOfDays}
+                                                </td>
+                                             </tr>
+                                          </apex:repeat>
+                                       </tbody>
+                                    </table>
+                                 </div>
+                              </div>
+                              <div class="modal-footer">
+                                 <div class="btn btn-primary px-5 mr-3 download-button">Download</div>
+                                 <button type="button" class="btn btn-secondary px-5" data-dismiss="modal"
+                                    onclick="$('#myModal').modal('hide');$('body').removeClass('modal-open');$('.modal-backdrop').remove();$('#mi-modal').removeClass('show');$('body').attr('style','');hideModal();">Close</button>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </apex:outputpanel>
+               </apex:outputpanel>
+               <!-- /.container-fluid -->
+               <!-- End of Main Content -->
+               <!-- Footer -->
+               <footer class="sticky-footer bg-white">
+                  <div class="container my-auto">
+                     <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Your Website 2021</span>
+                     </div>
+                  </div>
+               </footer>
+               <!-- End of Footer -->
+            </div>
+         </div>
+         <!-- End of Content Wrapper -->
+         <!-- End of Page Wrapper -->
+         <!-- Scroll to Top Button-->
+         <a class="scroll-to-top rounded" href="#page-top">
+         <i class="fas fa-angle-up"></i>
+         </a>
+         <apex:actionFunction name="runreportaction" rerender="reportstable" action="{!runReportAction}"
+            status="loader" oncomplete="loaddatatables(); return false;" />
+         <apex:actionFunction name="onchangeofreporttype"
+            rerender="caseforleadpanel,caseorleadpanel,selectstatuspanel,selectuserspanel,messagespanel,messagestablepanel"
+            action="{!onReportTypeSelect}" status="loader" />
+         <apex:actionFunction immediate="true" name="showleadtracking" action="{!fetchLeadStatusTrackings}" status="loader" rerender="leadstatustrackingpanel" onComplete="showModal();return false;">
+            <apex:param name="selectedleadforstatustracking" value="" assignTo="{!selectedleadforstatustracking}"/>
+         </apex:actionFunction>
+      </apex:form>
+      <script>
+         function showModal(){
+             $("#mi-modal").modal('show');
+         }
+         function hideModal(){
+            $("#mi-modal").modal('hide');
+            $("#mi-modal").hide();
+         }
+            $(document).ready(function () {
+                  
+               $('body').on('change', '.selectedcasestatus,.selectedleadstatus,.selectedreporttype',
+                   function () {
+                       $('.invalid-feedback').removeClass('d-block')
+                       if ($('.selectedreporttype').val() == "ROIReport" || $('.selectedreporttype').val() == "Check-in/Check-out") {
+                           $('.dategroup').removeClass('d-none');
+                       } else if ($('.selectedreporttype').val() == "Messages"  ||$('.selectedreporttype').val() == "Investigator DHSReports") {
+                           $('.dategroup').removeClass('d-none');
+                       } else if (($('.selectedreporttype').val() == "Lead" || $('.selectedreporttype')
+                               .val() == "Case") && $('.selectedleadstatus').val() ==
+                           "QA Review Completed" ) {
+                           $('.dategroup').removeClass('d-none');
+                       } else if (($('.selectedreporttype').val() == "Lead" || $('.selectedreporttype')
+                               .val() == "Case") && $('.selectedcasestatus').val() ==
+                           "QA Review Completed") {
+                           $('.dategroup').removeClass('d-none');
+                       } else {
+                           $('.dategroup').addClass('d-none');
+                       }
+                   });
+         
+         
+               $('.datepickerInput').datepicker({
+                   weekStart: 1,
+                   daysOfWeekHighlighted: "6,0",
+                   autoclose: true,
+                   todayHighlight: true,
+               });
+           });
+         
+           function runreport() {
+           debugger;
+               var selectedreporttype = $('.selectedreporttype').val();
+         
+               var selectedfromdate = $('.fromdate').val();
+               var selectedtodate = $('.todate').val();
+               var selectedcaseformessages = $('.selectedcaseformessages').val();
+               var selectedmessagetype = $('.selectedmessagetype').val();
+               var visibledates = $('.dategroup ').hasClass("d-none");
+               //if (selectedreporttype == '' || !visibledates && (selectedfromdate == '' || selectedtodate == '') ||
+               //    selectedcaseformessages == '' || selectedmessagetype == '') {
+               if (selectedreporttype == 'Messages' && selectedmessagetype == '') {
+                   console.log('inside invalid');
+                   $('.invalid-feedback').html('');
+                   $("#runreportbutton").after(
+                       '<div class="invalid-feedback d-block">Please fill mandatory fields.</div>'
+                   );
+               } else if (selectedreporttype == '') {
+                   console.log('inside invalid');
+                   $('.invalid-feedback').html('');
+                   $("#runreportbutton").after(
+                       '<div class="invalid-feedback d-block">Please fill mandatory fields.</div>'
+                   );
+               }else {
+                   $('.invalid-feedback').html('');
+                   $.confirm({
+                       title: 'Please Confirm!',
+                       content: 'On click of confirm, Report will be run.',
+                       buttons: {
+                           confirm: function () {
+                               runreportaction();
+         
+                           },
+                           cancel: function () {}
+                       }
+                   });
+               }
+         
+           }
+         
+         function exportCSV2(sObjectName, fieldNames, conditions, orderBy = null, reportType) {
+         
+         
+         
+         }
+         
+         
+         
+         function exportData(){
+           console.log('invoked');
+           debugger
+           var selectedReportType = $('.selectedreporttype').val();
+           console.log(selectedReportType);
+           if(selectedReportType == 'Case'){
+               console.log('invoked');
+               var selectedCaseTaskStatus = $('.selectedcasetaskstatus').val();
+               var selectedCaseStatus = $('.selectedcasestatus').val();
+               var fromDate = $('.fromdate').val();
+               var toDate = $('.todate').val();
+               var selectedCMoUser = $('.selectedcmouser').val();
+               var fields = "{!$Label.DHS_Export_Pending_Cases_Fields}";
+               const pendingCaseCondition = [];
+               if(selectedCaseTaskStatus != 'DHS_All'){
+                   pendingCaseCondition.push({'key': 'Current_Task__c', 'value': selectedCaseTaskStatus,'operator' : '='});
+               }
+               if(selectedCaseStatus != 'DHS_All'){
+                   pendingCaseCondition.push({'key': 'Status__c', 'value': selectedCaseStatus,'operator' : '='});
+               }
+               if(fromDate){
+                   pendingCaseCondition.push({'key': 'Submission_Date__c', 'value': String.valueof(fromDate),'operator' : '>='});
+               }
+               if(toDate){
+                   pendingCaseCondition.push({'key': 'Submission_Date__c', 'value': String.valueof(toDate),'operator' : '<='});
+               }
+               if(selectedCMoUser != 'DHS_All'){
+                   pendingCaseCondition.push({'key': 'DHS_Assigned_To__c', 'value': selectedCMoUser,'operator' : '='});
+               }
+               console.log('pendingCaseCondition...',pendingCaseCondition);
+               exportCSV('DHS_Case__c', fields.split(','), pendingCaseCondition, "Name","CDRLCaseExport");
+           }
+         else if (selectedReportType === 'Messages') {
+         const messageType = $('.selectedmessagetype').val();
+         const startDate = $('.fromdate').val();
+         const endDate = $('.todate').val();
+         const conditions = [];
+         
+         if (!messageType) {
+         console.error('No message type selected.');
+         return;
+         }
+         
+         if (messageType === 'General Broadcast Message') {
+         conditions.push({ key: 'DHS_Case__c', value: '', operator: '=' });
+         
+         } else if (messageType === 'Case Broadcast Message') {
+         const selectedCaseId = $('.selectedcaseformessages').val();
+         if (selectedCaseId) {
+           conditions.push({ key: 'DHS_Case__c', value: selectedCaseId, operator: '=' });
+         }
+         }
+             
+         if (startDate) {
+           var nums = startDate.split("/");
+			var newDateString = `${nums[2]}-${nums[0]}-${nums[1]}T00:00:00.000Z`;
+             
+           conditions.push({ key: 'CreatedDate', value: newDateString, operator: '>=' , type:'object'});
+         }
+         if (endDate) {
+            var nums = endDate.split("/");
+			var newDateString = `${nums[2]}-${nums[0]}-${nums[1]}T00:00:00.000Z`;
+           conditions.push({ key: 'CreatedDate', value: newDateString, operator: '<=', type:'object' });
+         }
+         console.log('conditions',conditions);
+         exportCSV('DHS_Message__c', fields, conditions, "Name", "CDRLMessageExport");
+         }
+         
+         
+                 
+         
+           if (selectedReportType === 'Lead') {
+               const conditions = [];
+               const status = $('.selectedleadstatus').val();
+               const startDate = $('.fromdate').val();
+               const endDate = $('.todate').val();
+               const investigator = $('.selectedInvestigatorUser').val();
+               const fields = "{!$Label.DHS_Export_Pending_Leads}".split(',');
+           
+               if (status !== 'DHS_All') {
+                   conditions.push({ key: 'Status__c', value: status, operator: '=' });
+               }
+               if (startDate) {
+                   startDate = new Date(startDate);
+                   conditions.push({ key: 'Completed_Date__c', value: startDate.toISOString(), operator: '>=', type:'object' });
+               }
+               if (endDate) {
+                   endDate = new Date(endDate);
+                   conditions.push({ key: 'Completed_Date__c', value: endDate.toISOString(), operator: '<=', type:'object' });
+               }
+               if (investigator !== 'DHS_All') {
+                   conditions.push({ key: 'DHS_Assigned_To__c', value: investigator, operator: '=' });
+               }
+           
+               console.log(conditions);
+               exportCSV('DHS_Lead__c', 'Id', conditions, "Name", 'CDRLLeadExport');
+           }
+         
+           if(selectedReportType == 'Check-in/Check-out'){
+           	const conditions = [];
+               const startDate = $('.fromdate').val();
+               const endDate = $('.todate').val();
+               const userType = '{!userType}';
+               const contextINVId = '{!contextINVId}';
+               console.log(userType);
+               if(userType == 'INV' && contextINVId){
+                   conditions.push({ key: 'DHS_TimeSheet__r.DHS_User__c', value: contextINVId, operator: '=' , type:'object'});
+         }
+               if (startDate) {
+                   var nums = startDate.split("/");
+                   var newDateString = `${nums[2]}-${nums[0]}-${nums[1]}`;
+                   conditions.push({ key: 'DHS_TimeSheet__r.Date__c', value:  newDateString, operator: '>=', type:'object' });
+               }
+               if (endDate) {
+                   var nums = endDate.split("/");
+                   var newDateString = `${nums[2]}-${nums[0]}-${nums[1]}`;
+                   conditions.push({ key: 'DHS_TimeSheet__r.Date__c', value: newDateString, operator: '<=', type:'object' });
+               }
+               console.log(conditions);
+               exportCSV('DHS_Investigator_Check__c', 'Id', conditions, "Name", 'CDRLCheckInCheckOut');
+           }
+           if(selectedReportType == 'Waivers'){
+           	exportCSV('DHS_Waiver_Information__c', 'Id', null, "Name", 'CDRLWaiverExport');
+           }
+           
+         }
+         
+           function loaddatatables() {
+               var reportLable = $('.selectedreporttype').val();
+               $('#reportstable').DataTable({
+                   "searching": false,
+                   "bLengthChange": false,
+                   "bPaginate": false,
+                   "bFilter": true,
+                   "bInfo": false,
+                   "bAutoWidth": false
+                   
+               });
+           }
+            
+         function exportCSV(sObjectName, fieldNames, conditions, orderBy = null, reportType) {
+         
+         $Lightning.use("c:exportCSVWrapperApp", function() {
+         
+         $Lightning.createComponent("c:dhsExportCSV",
+         
+         {
+         
+           sObjectName   : sObjectName, // You can pass the value to @api attributes if you have inside JavaScript Class.
+         
+           fieldNames : fieldNames,
+         
+           conditions: conditions,
+         
+           orderBy: orderBy,
+           
+           reportType : reportType
+         
+         },
+         
+         "LwcId", // the Id of div tag where your component will be rendered
+         
+         function(cmp) {
+         
+           console.log('Calling the LWC Component');
+         
+         });
+         
+         });
+         
+         }
+      </script>
+   </body>
+</apex:page>

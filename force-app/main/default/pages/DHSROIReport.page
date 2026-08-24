@@ -1,0 +1,2023 @@
+<apex:page renderAs="pdf" controller="DHSROIReportController" showHeader="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" >
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+         <style type="text/css">
+            @page {
+                size: A4 potrait;
+                border: 1px solid black;
+                padding-left: 5px;
+                border:none;
+                padding-right: 5px;
+                padding-top:5px;
+                padding-bottom:5px;
+                margin-top:70px;
+                @bottom-right {
+                 content: "Page " counter(page) " of " counter(pages);
+                }
+                
+                @top-left {
+                    content: element(header);
+                }                           
+                @bottom-left {   
+                    content: element(footer);
+                } 
+            }
+            .investigatorTable td, .investigatorTable th  {border:1px solid #000; padding:5px}
+            hr{border-bottom:none;border-top: 1px solid #ccc; color:#ccc}
+            div.header {
+                margin-top:20px;
+                position: running(header);
+                width: 100%;
+                margin-right: 10px;
+            }
+            div.footer {                    
+                position: running(footer);
+                width: 100%;
+            }
+            .repeatTableHeader{-fs-table-paginate: paginate;}
+            table td:first-child{text-align:right}
+            .leftTable td:first-child{text-align:left}
+            th {
+                font-weight: bold;
+                text-align: left;
+                color: #000;
+                padding: 2px 5px;
+            }
+
+            td {
+                font-size: 15px;
+                text-align: left;
+                padding: 2px 5px;
+            }
+
+            table {
+                border-collapse: collapse;
+                
+            }
+
+            table,
+            th,
+            td {
+                border: 0px solid black;
+            }
+
+            .pagenumber:before {
+                content: counter(page);
+            }
+
+            .pagecount:before {
+                content: counter(pages);
+            }
+            .customerCaseNuber{
+             font-family: "Segoe UI", Arial, sans-serif;
+            text-align:right;font-weight:bold;color:#000
+            }
+        </style>
+        <script>
+        $(document).ready(function(){
+        $('table').css("display", "none");
+        })
+        </script>
+    </head>
+
+    <body>
+         <div class="header">
+            <center>UNCLASSIFIED/FOROFFICIALUSEONLY</center>
+            <div class="customerCaseNuber">{!caseRecord.Customer_Case_Number__c}</div>    
+        </div>
+        <div class="content">
+            <center>
+                <apex:image id="ISNLogoBlue" value="{!$Resource.ISNLogoBlue}" width="200"/>
+            </center>
+            <br /><br /><br />
+            
+            <!--<center><u>Investigation</u></center><br />-->
+            <p><b>TO:<span style="margin-left:52px">{!caseRecord.PPF_Customer_Contact_Name__c}</span><br />
+                     <span style="margin-left:80px">Department of Defense</span><br />
+                     <span style="margin-left:80px">9800 Savage Road Suite: 6771, A5231 Ft. Meade. MD 20755-6774</span>
+                     <!--<apex:outputtext styleclass="margin-left:80px" escape="false" value="{!caseRecord.PPF_Customer_Contact_Address__c}"></apex:outputtext>-->
+                  
+                </b>
+            </p>
+            <p><b>FROM:<span style="margin-left:25px">Information Systems &amp; Networks Corporation</span><br /><span
+                        style="margin-left:77px">10411 Motor City Dr, Suite 700 Bethesda, MD 20817<br /></span>
+                    </b>
+            </p>
+            <br />
+            <br />
+            <div style="margin-top:15px">
+                <p><b><span>CASE NAME: <span style="text-transform:uppercase">{!caseRecord.DHS_Contact__r.Last_Name__c}</span> {!caseRecord.DHS_Contact__r.First_Name__c}
+                            </span>
+                        <span style="float:right;">SSN: {!caseRecord.DHS_Contact__r.SSN__c}</span>
+                    </b>
+                </p>
+                <p><b><span>CASE Type: {!caseRecord.Subject_Type__c}</span>
+                        <span style="float:right;">BI Provider Report# {!caseRecord.Case_Number__c}</span></b>
+                </p>
+            </div>
+            <br />
+            <p style="margin-top:15px;">This is to certify the review of the attached report of investigation reflects
+                that:<br /><br />
+                1) The report was prepared by the investigator(s) who conducted the investigation for <span style="text-transform:uppercase">{!caseRecord.DHS_Contact__r.Last_Name__c} </span> {!caseRecord.DHS_Contact__r.First_Name__c}.<br /><br />
+                2) The investigation was conducted in accordance with the applicable Federal Investigative
+                Standards.<br /><br />
+                3) Appropriate investigation was conducted to obtain required coverage and to resolve issues and
+                unfavorable information that surfaced in the course of the investigation.<br /><br />
+                4) The information reported is attributes to the sources from which it was obtained.<br /><br />
+                5) The sources appearing in the report were interviewed in depth covering the person's personal attributes
+                of character, habits, honesty, reputation, and mental health, personal conduct, use of intoxicants, affiliations, and loyalty.
+            </p>
+            
+            <div>
+            <br/>
+            <br/>
+            <div><b>Signature:</b></div>
+            <br/>
+            <br/>
+            <div ><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date:</b></div>
+            </div>
+
+            <div style="page-break-before:always;" />
+            <center><b>REPORT OF INVESTIGATION</b></center><br />
+            <center><b>SUMMARY</b></center><br />
+            <p><b><span>Subject Name: {!caseRecord.DHS_Contact__r.First_Name__c}
+                        {!caseRecord.DHS_Contact__r.Last_Name__c}</span>
+                    <span style="float:right; width:200px; text-align:right;">Case Type:
+                        {!caseRecord.Case_Type__c}</span></b>
+            </p>
+            <table class="leftTable" style="border-spacing: 0px;" cellpadding="6" width="100%">
+                <tr>
+                    <th>Section</th>
+                    <th>Number</th>
+                </tr>
+                <apex:outputPanel layout="none" rendered="{!caseRecord.Employment_Count__c > 0}">
+                    <tr>
+                        <td>EMPLOYMENT</td>
+                        <td style="border-bottom:1px solid #000;width:30px;text-align:center">{!caseRecord.Employment_Count__c}</td>
+                    </tr>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!caseRecord.General_Count__c > 0}">
+                    <tr>
+                        <td>GENERAL</td>
+                        <td style="border-bottom:1px solid #000;width:30px;text-align:center">{!caseRecord.General_Count__c}</td>
+                    </tr>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!caseRecord.Medical_Count__c > 0}">
+                    <tr>
+                        <td>MEDICAL</td>
+                        <td style="border-bottom:1px solid #000;width:30px;text-align:center">{!caseRecord.Medical_Count__c}</td>
+                    </tr>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!caseRecord.Subject_Interview_Count__c > 0}">
+                    <tr>
+                        <td>SUBJECT INTERVIEW</td>
+                        <td style="border-bottom:1px solid #000;width:30px;text-align:center">{!caseRecord.Subject_Interview_Count__c}</td>
+                    </tr>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!caseRecord.Attachment_Count__c > 0}">
+                    <tr>
+                        <td>ATTACHMENTS</td>
+                        <td style="border-bottom:1px solid #000;width:30px;text-align:center">{!caseRecord.Attachment_Count__c}</td>
+                    </tr>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!caseRecord.Total_References_Count__c > 0}">
+                    <tr>
+                        <td><b>TOTAL REFERENCES</b> </td>
+                        <td style="border-bottom:1px solid #000;width:30px;text-align:center"><b>{!caseRecord.Total_References_Count__c}</b></td>
+                    </tr>
+                </apex:outputPanel>
+            </table>
+
+            <p><b>RESULTS</b><br />
+                DHS_All records obtained.<br />
+                DHS_All sources recommend.
+            </p>
+
+            <p><b>DEROGATORY SUMMARY</b><br />
+                None.
+            </p>
+
+            <p><b>EFI REFERENCES</b><br />
+                None.
+            </p>
+            <p><b>PENDING LEADS</b><br />
+                None.
+            </p>
+
+            <div style="page-break-before:always;" />
+
+            <center><b>REPORT OF INVESTIGATION</b></center><br /><br />
+           
+            <table cellpadding="5" cellspacing="5" width="100%" class="investigatorTable leftTable"  style="text-align:left">
+                <tr>
+                    <th>{!caseRecord.DHS_Contact__r.First_Name__c}
+                        {!caseRecord.DHS_Contact__r.Last_Name__c}</th>
+                    <th>BI Provider Report ID</th>
+                    <th>Investigation Dates</th>
+                    <th>Investigators</th>
+                </tr>
+                <tr>
+                    <td>SSN: {!caseRecord.DHS_Contact__r.SSN__c}</td>
+                    <td>{!caseRecord.Case_Number__c}</td>
+                    <td>{!investigationDates}</td>
+                    <td>{!investigators}</td>
+                </tr>
+            </table><br/>
+
+            <!-- Subject Interview Section -->
+             <apex:outputPanel rendered="{!subjectInterviewList.size >0}">
+                  <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Subject Interview</u></b></center>
+            </apex:outputPanel>
+            <apex:repeat value="{!subjectInterviewList}" var="esiId">
+                <apex:outputpanel >
+                    <p>
+                        <b>IDENTIFICATION 1:</b> {!leadsMap[esiId].DHS_Contact__r.Last_Name__c} provided his
+                        {!leadsMap[esiId].Identification_Type__c} and Document#
+                        {!leadsMap[esiId].Identification_Document_Number__c}
+                        which was viewed and verified. The ID was issued on
+                        <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                            <apex:param value="{!leadsMap[esiId].Identification_Issuance_Date__c}" />
+                        </apex:outputText> and expires on
+                        <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                            <apex:param value="{!leadsMap[esiId].Identification_Expiry_Date__c}" />
+                        </apex:outputText>. It contained all the appropriate identifiers and appeared to be valid.
+                    </p>
+                    <apex:outputpanel rendered="{!leadsMap[esiId].Identification_Type2__c != Null}">
+                        <p>
+                            <b>IDENTIFICATION 2:</b> {!leadsMap[esiId].DHS_Contact__r.Last_Name__c} provided his
+                            {!leadsMap[esiId].Identification_Type2__c} and Document#
+                            {!leadsMap[esiId].Identification_Document_Number2__c}
+                            which was viewed and verified. The ID was issued on
+                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                <apex:param value="{!leadsMap[esiId].Identification_Issuance_Date2__c}" />
+                            </apex:outputText> and expires on
+                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                <apex:param value="{!leadsMap[esiId].Identification_Expiry_Date2__c}" />
+                            </apex:outputText>. It contained all the appropriate identifiers and appeared to be valid.
+                        </p>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!leadsMap[esiId].Identification_Type3__c != Null}">
+                        <p>
+                            <b>IDENTIFICATION 3:</b> {!leadsMap[esiId].DHS_Contact__r.Last_Name__c} provided his
+                            {!leadsMap[esiId].Identification_Type3__c} and Document#
+                            {!leadsMap[esiId].Identification_Document_Number3__c}
+                            which was viewed and verified. The ID was issued on
+                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                <apex:param value="{!leadsMap[esiId].Identification_Issuance_Date3__c}" />
+                            </apex:outputText> and expires on
+                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                <apex:param value="{!leadsMap[esiId].Identification_Expiry_Date3__c}" />
+                            </apex:outputText>. It contained all the appropriate identifiers and appeared to be valid.
+                        </p>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!leadsMap[esiId].Identification_Type4__c != Null}">
+                        <p>
+                            <b>IDENTIFICATION 4:</b> {!leadsMap[esiId].DHS_Contact__r.Last_Name__c} provided his
+                            {!leadsMap[esiId].Identification_Type4__c} and Document#
+                            {!leadsMap[esiId].Identification_Document_Number4__c}
+                            which was viewed and verified. The ID was issued on
+                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                <apex:param value="{!leadsMap[esiId].Identification_Issuance_Date4__c}" />
+                            </apex:outputText> and expires on
+                            <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                <apex:param value="{!leadsMap[esiId].Identification_Expiry_Date4__c}" />
+                            </apex:outputText>. It contained all the appropriate identifiers and appeared to be valid.
+                        </p>
+                    </apex:outputpanel>
+
+                    <p>
+                        <b>BIRTH and CITIZENSHIP: </b> 
+                        <apex:outputPanel rendered="{!leadsMap[esiId].State_Birth_Certificate_Viewed__c == 'Yes'}">
+                            {!leadsMap[esiId].DHS_Contact__r.Last_Name__c} provided State Birth Certificate. The Birth Certificate was viewed and verified on 
+                            <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[esiId].Date_Viewed_and_Verified__c}" /> </apex:outputText>
+                             and has a document# {!leadsMap[esiId].Birth_Certificate_Document_Number__c}.
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!leadsMap[esiId].State_Birth_Certificate_Viewed__c == 'No'}">
+                            <apex:outputPanel rendered="{!leadsMap[esiId].State_Birth_Certificate_Notes__c != Null}">
+                                <apex:outputfield value="{!leadsMap[esiId].State_Birth_Certificate_Notes__c}"/>
+                            </apex:outputPanel>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!leadsMap[esiId].Held_Foreign_Passport__c == 'No'}">
+                            {!leadsMap[esiId].DHS_Contact__r.Last_Name__c} has not held a passport issued by a foreign country.
+                        </apex:outputpanel>
+                        <apex:outputPanel rendered="{!leadsMap[esiId].Held_Foreign_Passport__c == 'Yes'}">
+                            {!leadsMap[esiId].DHS_Contact__r.Last_Name__c} has held a passport issued by {!leadsMap[esiId].Passport_Country_of_Issuance__c} 
+                            has a document# {!leadsMap[esiId].Passport_Document_Number__c} issued on 
+                            <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[esiId].Passport_Issued_Date__c}" /> </apex:outputText>, 
+                            expires on 
+                            <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[esiId].Passport_Expiration_Date__c}" /> </apex:outputText>.
+                        </apex:outputpanel>
+                    </p>
+
+
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].OTHER_NAMES_USED__c  != Null,'','none')}">OTHER NAMES USED: </b>
+                        <apex:outputField value="{!leadsMap[esiId].OTHER_NAMES_USED__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].RESIDENCE__c  != Null,'','none')}">RESIDENCE: </b>
+                        <apex:outputField value="{!leadsMap[esiId].RESIDENCE__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].EDUCATION__c  != Null,'','none')}">EDUCATION: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].EDUCATION__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].EMPLOYMENT__c  != Null,'','none')}">EMPLOYMENT: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].EMPLOYMENT__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].SELF_EMPLOYMENT__c  != Null,'','none')}">SELF-EMPLOYMENT: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].SELF_EMPLOYMENT__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].UNEMPLOYMENT__c  != Null,'','none')}">UNEMPLOYMENT: </b>
+                        <apex:outputField value="{!leadsMap[esiId].UNEMPLOYMENT__c}" /> 
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].MILITARY_FEDERAL_EMPLOYMENT__c  != Null,'','none')}">MILITARY/FEDERAL EMPLOYMENT: </b>
+                         <apex:outputField value="{!leadsMap[esiId].MILITARY_FEDERAL_EMPLOYMENT__c}" />
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].SELECTIVE_SERVICE_ID__c  != Null,'','none')}">SELECTIVE SERVICE ID: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].SELECTIVE_SERVICE_ID__c}" />
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].PEOPLE_WHO_KNOW_YOU_WELL__c  != Null,'','none')}">PEOPLE WHO KNOW YOU WELL:</b>
+                         <apex:outputField value="{!leadsMap[esiId].PEOPLE_WHO_KNOW_YOU_WELL__c}" />
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].MARITAL_STATUS_SPOUSE_FORMER__c  != Null,'','none')}">MARITAL STATUS, SPOUSE, FORMER SPOUSE(S) and CHILDREN: </b>
+                        <apex:outputField value="{!leadsMap[esiId].MARITAL_STATUS_SPOUSE_FORMER__c}" />
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].FAMILY_RELATIVES_AND_ASSOCIATES__c  != Null,'','none')}">FAMILY, RELATIVES and ASSOCIATES: </b>
+                        <apex:outputField value="{!leadsMap[esiId].FAMILY_RELATIVES_AND_ASSOCIATES__c}" /> 
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].COHABITANT_AND_OR_ROOMMATE_S__c  != Null,'','none')}">COHABITANT and/or ROOMMATE(S): </b>
+                        <apex:outputField value="{!leadsMap[esiId].COHABITANT_AND_OR_ROOMMATE_S__c}" /> 
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(subjectInterviewNLeadRTAExtension[esiId].Foreign_Contacts__c  != Null,'','none')}">FOREIGN CONTACTS: </b> 
+                        <apex:outputfield value="{!subjectInterviewNLeadRTAExtension[esiId].Foreign_Contacts__c}"/>
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(subjectInterviewNLeadRTAExtension[esiId].Foreign_Activities__c  != Null,'','none')}"> FOREIGN ACTIVITIES: </b> 
+                        <apex:outputfield value="{!subjectInterviewNLeadRTAExtension[esiId].Foreign_Activities__c}"/>
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(subjectInterviewNLeadRTAExtension[esiId].Foreign_Travel1__c  != Null,'','none')}">FOREIGN TRAVEL SECTION A: </b> 
+                        <apex:outputfield value="{!subjectInterviewNLeadRTAExtension[esiId].Foreign_Travel1__c}"/>
+                    </p>
+                    <p>
+                        <b style="display:{!If(subjectInterviewNLeadRTAExtension[esiId].Foreign_Travel2__c  != Null,'','none')}">FOREIGN TRAVEL SECTION B: </b>
+                         <apex:outputfield value="{!subjectInterviewNLeadRTAExtension[esiId].Foreign_Travel2__c}"/>
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].MEDICAL_RECORD__c  != Null,'','none')}">MEDICAL RECORD: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].MEDICAL_RECORD__c}" />
+                    </p>
+
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].CRIMINAL_ACTIVITY_CIVIL_LIT__c  != Null,'','none')}">CRIMINAL ACTIVITY: </b>
+                         <apex:outputField value="{!leadsMap[esiId].CRIMINAL_ACTIVITY_CIVIL_LIT__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].CIVIL_LITIGATION_Notes__c  != Null,'','none')}">CIVIL LITIGATION: </b>
+                         <apex:outputField value="{!leadsMap[esiId].CIVIL_LITIGATION_Notes__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].ILLEGAL_SUBSTANCE_ACTIVITY__c  != Null,'','none')}">USE OF ILLEGAL SUBSTANCES AND ACTIVITY: </b>
+                        <apex:outputField value="{!leadsMap[esiId].ILLEGAL_SUBSTANCE_ACTIVITY__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].USE_OF_ALCOHOL__c  != Null,'','none')}">USE OF ALCOHOL: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].USE_OF_ALCOHOL__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].OTHER_INVESTIGATIONS__c  != Null,'','none')}">OTHER INVESTIGATIONS: </b>
+                        <apex:outputField value="{!leadsMap[esiId].OTHER_INVESTIGATIONS__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].FINANCES__c  != Null,'','none')}"> FINANCES: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].FINANCES__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].MISUSE_OF_TECHNOLOGY_SYSTEMS__c  != Null,'','none')}">MISUSE OF TECHNOLOGY SYSTEMS: </b>
+                        <apex:outputField value="{!leadsMap[esiId].MISUSE_OF_TECHNOLOGY_SYSTEMS__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].ASSOC_REC_ORG_MEMBERS__c  != Null,'','none')}">ASSOCIATION RECORD/ORGANIZATION MEMBERSHIPS: </b>
+                        <apex:outputField value="{!leadsMap[esiId].ASSOC_REC_ORG_MEMBERS__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].MEDIA_PUBLICATIONS__c  != Null,'','none')}">MEDIA/PUBLICATIONS: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].MEDIA_PUBLICATIONS__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].LIFESTYLE_HOBBIES_EXTRA_CURR__c  != Null,'','none')}">LIFESTYLE/HOBBIES/EXTRA CURRICULAR: </b> 
+                        <apex:outputField value="{!leadsMap[esiId].LIFESTYLE_HOBBIES_EXTRA_CURR__c}" />
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].CONCLUDING_QUESTIONS__c  != Null,'','none')}">CONCLUDING QUESTIONS: </b>
+                        <span><apex:outputField value="{!leadsMap[esiId].CONCLUDING_QUESTIONS__c}" /></span>
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].Narrator_Comments__c  != Null,'','none')}">NARRATIVE: </b>
+                        <span><apex:outputField value="{!leadsMap[esiId].Narrator_Comments__c}" /></span>
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].subject_loyal_to_united_states__c  != Null,'','none')}">LOYALTY: </b>
+                        <span><apex:outputField value="{!leadsMap[esiId].subject_loyal_to_united_states__c}" /></span>
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].counter_intel_counter_terror__c  != Null,'','none')}">COUNTERINTELLIGENCE/COUNTERTERRORISM: </b>
+                        <span><apex:outputField value="{!leadsMap[esiId].counter_intel_counter_terror__c}" /></span>
+                    </p>
+                    <p>
+                        <b style="display:{!If(leadsMap[esiId].SUBJ_ETHICAL_BEHAV_JUDGEMENT__c  != Null,'','none')}">ETHICAL BEHAVIOR: </b>
+                        <span><apex:outputField value="{!leadsMap[esiId].SUBJ_ETHICAL_BEHAV_JUDGEMENT__c}" /></span>
+                    </p>
+                </apex:outputpanel>    
+            </apex:repeat>
+           
+            <!-- Subject Contact Section-->
+             <apex:outputPanel rendered="{!subjectContactList.size >0}">
+                
+                  <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Subject Recontact</u></b></center>
+            </apex:outputPanel>
+            <apex:repeat value="{!subjectContactList}" var="subjectContactId">
+                    <p>{!leadsMap[subjectContactId].Narrator_Comments__c}</p>
+                    <b>Interview Date:</b> {!leadsMap[subjectContactId].Interview_Date__c} <br />
+                    <p><b>Investigator's Note:</b><apex:outputField value="{!leadsMap[subjectContactId].Investigators_Notes__c}" /></p>
+            </apex:repeat>
+            <div style="page-break-before:always;" />
+            <div style="border: 1px solid black;padding:5px">
+                <center><b>DISCLAIMER</b></center><br />
+                DHS_All sources were advised of the Privacy Act of 1974. In addition to the specific comments reported, and,
+                unless otherwise indicated, each interviewed Source who had personal knowledge of Subject was
+                specifically questioned about and reported no knowledge regarding Subject’s foreign travel/associations;
+                involvement with law enforcement agencies or criminal conduct; use or abuse of drugs, controlled
+                substances or alcohol; adverse personality traits; moral character; financial problems or unexplained
+                affluence; emotional or psychiatric problems/stressors; affiliation with subversive or terrorist
+                organizations; loyalty to the United States; views that would be incompatible with employment with the
+                United States government; exploitable personal conduct; or acts impugning the honesty or Integrity of
+                Subject.
+                <br />
+            </div><br />
+            
+            <!-- Employment Section -->
+            <apex:outputPanel rendered="{!employmentList.size >0}">
+                
+                  <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Employment</u></b></center>
+            </apex:outputPanel>
+            <apex:repeat value="{!employmentList}" var="leadId">
+                <b>Employment {!If(leadsMap[leadId].Coverage_Type__c == 'General Record' || leadsMap[leadId].Coverage_Type__c == 'Record',' Record',' Reference')}</b>
+                <apex:outputpanel rendered="{!IF(leadsMap[leadId].LeadType__c == 'Employment (EMPL)' && (leadsMap[leadId].Coverage_Type__c == 'General Record' || leadsMap[leadId].Coverage_Type__c == 'Record'),true,false)}">
+                    <apex:outputPanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'Yes, record was obtained'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                        {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Date_Record_Provided__c  != Null,'','none')}">DATE RECORD OBTAINED:</b></td>
+                                    <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Date_Record_Provided__c}" /> </apex:outputText></td>
+                                </tr>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_Name_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Verified__c  != Null,'','none')}">SUBJECT NAME VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_Name_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Discrepant_Notes__c  != Null,'','none')}">SUBJECT NAME DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_Name_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_SSN_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Verified__c  != Null,'','none')}">SUBJECT SSN VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_SSN_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Discrepant_Notes__c  != Null,'','none')}">SUBJECT SSN DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_SSN_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_DOB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Verified__c  != Null,'','none')}">SUBJECT DOB VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_DOB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT DOB DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_DOB_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_POB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Verified__c  != Null,'','none')}">SUBJECT POB VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_POB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT POB DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_POB_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].General_Template_Record_Type__c  != Null,'','none')}">RECORD TYPE:</b></td>
+                                    <td>{!leadsMap[leadId].General_Template_Record_Type__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputPanel>
+                    <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, record does not exist'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                        {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, unable to obtain record'}">
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!IF(leadsMap[leadId].LeadType__c == 'Employment (EMPL)' && (leadsMap[leadId].Coverage_Type__c == 'Personal'),true,false)}">
+                    <p style="padding-left:15px">
+                        <table>
+                            <tr style="display:{!If(leadsMap[leadId].Protected_Source__c == 'Yes','','none')}">
+                                <td><b style="display:{!If(leadsMap[leadId].Protected_Source__c  != Null,'','none')}">PROTECTED SOURCE:</b></td>
+                                <td>{!leadsMap[leadId].Protected_Source__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">SOURCE:</b></td>
+                                <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                <td>{!leadsMap[leadId].Source_Title__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                    {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Interview_Date__c  != Null,'','none')}">DATE INTERVIEWED:</b></td>
+                                <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Interview_Date__c}" /> </apex:outputText></td>
+                            </tr>
+                            <apex:outputPanel rendered="{!If(leadsMap[leadId].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Interview_AddressLine1__c  != Null,'','none')}">INTERVIEW ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Interview_AddressLine1__c} {!leadsMap[leadId].Interview_AddressLine2__c}
+                                        {!leadsMap[leadId].Interview_City__c}, {!leadsMap[leadId].Interview_State__c}
+                                        {!leadsMap[leadId].Interview_Zip__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].In_the_presence_of__c != Null,true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].In_the_presence_of__c  != Null,'','none')}">IN THE PRESENCE OF:</b></td>
+                                    <td>{!leadsMap[leadId].In_the_presence_of__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].General_Reference_Association__c  != Null,'','none')}">ASSOCIATION:</b></td>
+                                <td>{!leadsMap[leadId].General_Reference_Association__c}</td>
+                            </tr>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Joint_interview_with__c != Null,true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Joint_interview_with__c  != Null,'','none')}">JOINT INTERVIEW WITH:</b></td>
+                                    <td>{!leadsMap[leadId].Joint_interview_with__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Recommends__c  != Null,'','none')}">RECOMMENDS:</b></td>
+                                <td>{!leadsMap[leadId].Recommends__c}</td>
+                            </tr>
+                        </table>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p> <br />
+                        <p><b  style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: :</b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </p>
+                </apex:outputpanel>
+            </apex:repeat>
+         
+            <!-- Education Section -->
+            <apex:outputPanel rendered="{!educationList.size >0}">
+                
+                    <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Education</u></b></center>
+            </apex:outputPanel>
+            <apex:repeat value="{!educationList}" var="leadId">
+                <b>Education {!If(leadsMap[leadId].Coverage_Type__c == 'General Record' || leadsMap[leadId].Coverage_Type__c == 'Record',' Record',' Reference')}</b>
+                
+                <apex:outputpanel rendered="{!IF(leadsMap[leadId].LeadType__c == 'Education (EDUC)' && (leadsMap[leadId].Coverage_Type__c == 'General Record' || leadsMap[leadId].Coverage_Type__c == 'Record'),true,false)}">
+                    <apex:outputPanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'Yes, record was obtained'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Title__c != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                        {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>DATE RECORD OBTAINED:</b></td>
+                                    <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Date_Record_Provided__c}" /> </apex:outputText></td>
+                                </tr>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_Name_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b>SUBJECT NAME VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_Name_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>SUBJECT NAME DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_Name_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_SSN_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b>SUBJECT SSN VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_SSN_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>SUBJECT SSN DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_SSN_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_DOB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b>SUBJECT DOB VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_DOB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>SUBJECT DOB DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_DOB_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_POB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b>SUBJECT POB VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_POB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>SUBJECT POB DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_POB_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].General_Template_Record_Type__c != Null,'','none')}">RECORD TYPE:</b></td>
+                                    <td>{!leadsMap[leadId].General_Template_Record_Type__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputPanel>
+                    <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, record does not exist'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Title__c != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                        {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, unable to obtain record'}">
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!IF(leadsMap[leadId].LeadType__c == 'Education (EDUC)' && (leadsMap[leadId].Coverage_Type__c == 'Personal'),true,false)}">
+                    <p style="padding-left:15px">
+                        <table>
+                            <tr style="display:{!If(leadsMap[leadId].Protected_Source__c == 'Yes','','none')}">
+                                <td><b style="display:{!If(leadsMap[leadId].Protected_Source__c != Null,'','none')}">PROTECTED SOURCE:</b></td>
+                                <td>{!leadsMap[leadId].Protected_Source__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Last_Name__c != Null,'','none')}">SOURCE:</b></td>
+                                <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Title__c != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                <td>{!leadsMap[leadId].Source_Title__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c != Null,'','none')}">ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                    {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c != Null,'','none')}">PHONE NUMBER:</b></td>
+                                <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Interview_Date__c != Null,'','none')}">DATE INTERVIEWED:</b></td>
+                                <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Interview_Date__c}" /> </apex:outputText></td>
+                            </tr>
+                            <apex:outputPanel rendered="{!If(leadsMap[leadId].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Interview_AddressLine1__c != Null,'','none')}">INTERVIEW ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Interview_AddressLine1__c} {!leadsMap[leadId].Interview_AddressLine2__c}
+                                        {!leadsMap[leadId].Interview_City__c}, {!leadsMap[leadId].Interview_State__c}
+                                        {!leadsMap[leadId].Interview_Zip__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].In_the_presence_of__c != Null,true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].In_the_presence_of__c != Null,'','none')}"> IN THE PRESENCE OF:</b></td>
+                                    <td>{!leadsMap[leadId].In_the_presence_of__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].General_Reference_Association__c != Null,'','none')}">ASSOCIATION:</b></td>
+                                <td>{!leadsMap[leadId].General_Reference_Association__c}</td>
+                            </tr>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Joint_interview_with__c != Null,true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Joint_interview_with__c != Null,'','none')}">JOINT INTERVIEW WITH:</b></td>
+                                    <td>{!leadsMap[leadId].Joint_interview_with__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Recommends__c != Null,'','none')}">RECOMMENDS:</b></td>
+                                <td>{!leadsMap[leadId].Recommends__c}</td>
+                            </tr>
+                        </table>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p> <br />
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </p>
+                </apex:outputpanel>
+            </apex:repeat>
+           
+             <!-- Medical Section -->
+            <apex:outputPanel rendered="{!medicalList.size >0}">
+                
+                    <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Medical</u></b></center>
+            </apex:outputPanel>
+            <apex:repeat value="{!medicalList}" var="leadId">
+                <b>Medical {!If(leadsMap[leadId].Coverage_Type__c == 'General Record' || leadsMap[leadId].Coverage_Type__c == 'Record',' Record',' Reference')}</b>
+                
+                <apex:outputpanel rendered="{!IF(leadsMap[leadId].LeadType__c == 'Medical (MEDI)' && (leadsMap[leadId].Coverage_Type__c == 'General Record' || leadsMap[leadId].Coverage_Type__c == 'Record'),true,false)}">
+                    <apex:outputPanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'Yes, record was obtained'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Title__c != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                        {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Date_Record_Provided__c != Null,'','none')}">DATE RECORD OBTAINED:</b></td>
+                                    <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Date_Record_Provided__c}" /> </apex:outputText></td>
+                                </tr>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_Name_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td style="display:{!If(leadsMap[leadId].Subject_Name_Verified__c != Null,'','none')}"><b>SUBJECT NAME VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_Name_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Discrepant_Notes__c != Null,'','none')}">SUBJECT NAME DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_Name_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_SSN_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Verified__c != Null,'','none')}">SUBJECT SSN VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_SSN_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Discrepant_Notes__c != Null,'','none')}">SUBJECT SSN DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_SSN_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_DOB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Verified__c != Null,'','none')}">SUBJECT DOB VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_DOB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Discrepant_Notes__c != Null,'','none')}">SUBJECT DOB DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_DOB_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_POB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Verified__c != Null,'','none')}">SUBJECT POB VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_POB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Discrepant_Notes__c != Null,'','none')}">SUBJECT POB DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_POB_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].General_Template_Record_Type__c != Null,'','none')}">RECORD TYPE:</b></td>
+                                    <td>{!leadsMap[leadId].General_Template_Record_Type__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputPanel>
+                    <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, record does not exist'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                        {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, unable to obtain record'}">
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!IF(leadsMap[leadId].LeadType__c == 'Medical (MEDI)' && (leadsMap[leadId].Coverage_Type__c == 'Personal'),true,false)}">
+                    <p style="padding-left:15px">
+                        <table>
+                            <tr style="display:{!If(leadsMap[leadId].Protected_Source__c == 'Yes','','none')}">
+                                <td><b style="display:{!If(leadsMap[leadId].Protected_Source__c  != Null,'','none')}">PROTECTED SOURCE:</b></td>
+                                <td>{!leadsMap[leadId].Protected_Source__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">SOURCE:</b></td>
+                                <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                <td>{!leadsMap[leadId].Source_Title__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                    {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Interview_Date__c  != Null,'','none')}">DATE INTERVIEWED:</b></td>
+                                <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Interview_Date__c}" /> </apex:outputText></td>
+                            </tr>
+                            <apex:outputPanel rendered="{!If(leadsMap[leadId].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Interview_AddressLine1__c  != Null,'','none')}">INTERVIEW ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Interview_AddressLine1__c} {!leadsMap[leadId].Interview_AddressLine2__c}
+                                        {!leadsMap[leadId].Interview_City__c}, {!leadsMap[leadId].Interview_State__c}
+                                        {!leadsMap[leadId].Interview_Zip__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].In_the_presence_of__c != Null,true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].In_the_presence_of__c  != Null,'','none')}">IN THE PRESENCE OF:</b></td>
+                                    <td>{!leadsMap[leadId].In_the_presence_of__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].General_Reference_Association__c  != Null,'','none')}">ASSOCIATION:</b></td>
+                                <td>{!leadsMap[leadId].General_Reference_Association__c}</td>
+                            </tr>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Joint_interview_with__c != Null,true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Joint_interview_with__c  != Null,'','none')}">JOINT INTERVIEW WITH:</b></td>
+                                    <td>{!leadsMap[leadId].Joint_interview_with__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Recommends__c  != Null,'','none')}">RECOMMENDS:</b></td>
+                                <td>{!leadsMap[leadId].Recommends__c}</td>
+                            </tr>
+                        </table>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p> <br />
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </p>
+                </apex:outputpanel>
+            </apex:repeat>
+          
+           <!-- General Section -->
+            <apex:outputPanel rendered="{!generalLeadsList.size >0}">
+                
+            <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>General</u></b></center>
+            </apex:outputPanel>
+            <apex:repeat value="{!generalLeadsList}" var="leadId">
+                <b>General {!If(leadsMap[leadId].Coverage_Type__c == 'General Record' || leadsMap[leadId].Coverage_Type__c == 'Record',' Record',' Reference')}</b>
+                
+                <apex:outputpanel rendered="{!IF((leadsMap[leadId].Coverage_Type__c == 'General Record' || leadsMap[leadId].Coverage_Type__c == 'Record'),true,false)}">
+                    <apex:outputPanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'Yes, record was obtained'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                        {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Date_Record_Provided__c  != Null,'','none')}">DATE RECORD OBTAINED:</b></td>
+                                    <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Date_Record_Provided__c}" /> </apex:outputText></td>
+                                </tr>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_Name_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Verified__c  != Null,'','none')}">SUBJECT NAME VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_Name_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Discrepant_Notes__c  != Null,'','none')}">SUBJECT NAME DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_Name_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_SSN_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Verified__c  != Null,'','none')}">SUBJECT SSN VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_SSN_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Discrepant_Notes__c  != Null,'','none')}">SUBJECT SSN DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_SSN_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_DOB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Verified__c  != Null,'','none')}">SUBJECT DOB VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_DOB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT DOB DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_DOB_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_POB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Verified__c  != Null,'','none')}">SUBJECT POB VERIFIED:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_POB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT POB DISCREPANT NOTES:</b></td>
+                                        <td>{!leadsMap[leadId].Subject_POB_Discrepant_Notes__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].General_Template_Record_Type__c  != Null,'','none')}">RECORD TYPE:</b></td>
+                                    <td>{!leadsMap[leadId].General_Template_Record_Type__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputPanel>
+                    <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, record does not exist'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                        {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, unable to obtain record'}">
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!IF((leadsMap[leadId].Coverage_Type__c == 'Personal'),true,false)}">
+                    <p style="padding-left:15px">
+                        <table>
+                            <tr style="display:{!If(leadsMap[leadId].Protected_Source__c == 'Yes','','none')}">
+                                <td><b style="display:{!If(leadsMap[leadId].Protected_Source__c  != Null,'','none')}">PROTECTED SOURCE:</b></td>
+                                <td>{!leadsMap[leadId].Protected_Source__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">SOURCE:</b></td>
+                                <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                <td>{!leadsMap[leadId].Source_Title__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                    {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Interview_Date__c  != Null,'','none')}">DATE INTERVIEWED:</b></td>
+                                <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Interview_Date__c}" /> </apex:outputText></td>
+                            </tr>
+                            <apex:outputPanel rendered="{!If(leadsMap[leadId].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Interview_AddressLine1__c  != Null,'','none')}">INTERVIEW ADDRESS:</b></td>
+                                    <td>{!leadsMap[leadId].Interview_AddressLine1__c} {!leadsMap[leadId].Interview_AddressLine2__c}
+                                        {!leadsMap[leadId].Interview_City__c}, {!leadsMap[leadId].Interview_State__c}
+                                        {!leadsMap[leadId].Interview_Zip__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].In_the_presence_of__c != Null,true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].In_the_presence_of__c  != Null,'','none')}">IN THE PRESENCE OF:</b></td>
+                                    <td>{!leadsMap[leadId].In_the_presence_of__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].General_Reference_Association__c  != Null,'','none')}">ASSOCIATION:</b></td>
+                                <td>{!leadsMap[leadId].General_Reference_Association__c}</td>
+                            </tr>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Joint_interview_with__c != Null,true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Joint_interview_with__c  != Null,'','none')}">JOINT INTERVIEW WITH:</b></td>
+                                    <td>{!leadsMap[leadId].Joint_interview_with__c}</td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Recommends__c  != Null,'','none')}">RECOMMENDS:</b></td>
+                                <td>{!leadsMap[leadId].Recommends__c}</td>
+                            </tr>
+                        </table>
+                        <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p> <br />
+                        <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                    </p>
+                </apex:outputpanel>
+            </apex:repeat>
+            
+            
+            <!--Residence Section-->
+            <apex:variable value="{!1}" var="residenceCnt" />
+            <apex:outputPanel rendered="{!Residencelist.size >0}">
+                
+                <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Residence</u></b></center>
+            </apex:outputPanel>
+            <apex:repeat value="{!Residencelist}" var="leadId">
+                <apex:variable var="residenceCnt" value="{!residenceCnt+1}" />
+                <b>Residence {!residenceCnt}:</b>
+                <p style="padding-left:15px">
+                    <table>
+                        <tr style="display:{!If(leadsMap[leadId].Protected_Source__c == 'Yes','','none')}">
+                            <td><b style="display:{!If(leadsMap[leadId].Protected_Source__c  != Null,'','none')}">PROTECTED SOURCE:</b></td>
+                            <td>{!leadsMap[leadId].Protected_Source__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">SOURCE:</b></td>
+                            <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                            <td>{!leadsMap[leadId].Source_Title__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                            <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                            <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                            <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Interview_Date__c  != Null,'','none')}">DATE INTERVIEWED:</b></td>
+                            <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Interview_Date__c}" /> </apex:outputText></td>
+                        </tr>
+                        <apex:outputPanel rendered="{!If(leadsMap[leadId].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Interview_AddressLine1__c  != Null,'','none')}">INTERVIEW ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Interview_AddressLine1__c} {!leadsMap[leadId].Interview_AddressLine2__c}
+                                    {!leadsMap[leadId].Interview_City__c}, {!leadsMap[leadId].Interview_State__c}
+                                    {!leadsMap[leadId].Interview_Zip__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(leadsMap[leadId].In_the_presence_of__c != Null,true,false)}">
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].In_the_presence_of__c  != Null,'','none')}">IN THE PRESENCE OF:</b></td>
+                                <td>{!leadsMap[leadId].In_the_presence_of__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].General_Reference_Association__c  != Null,'','none')}">ASSOCIATION:</b></td>
+                            <td>{!leadsMap[leadId].General_Reference_Association__c}</td>
+                        </tr>
+                        <apex:outputPanel rendered="{!IF(leadsMap[leadId].Joint_interview_with__c != Null,true,false)}">
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Joint_interview_with__c  != Null,'','none')}">JOINT INTERVIEW WITH:</b></td>
+                                <td>{!leadsMap[leadId].Joint_interview_with__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Recommends__c  != Null,'','none')}">RECOMMENDS:</b></td>
+                            <td>{!leadsMap[leadId].Recommends__c}</td>
+                        </tr>
+                    </table>
+                    <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </p>
+            </apex:repeat>
+            
+            <!--References Section-->
+             <apex:outputPanel rendered="{!referencesList.size >0}">
+                
+                 <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>References</u></b></center>
+            </apex:outputPanel>
+            <apex:variable value="{!1}" var="referenceCnt" />
+            <apex:repeat value="{!referencesList}" var="leadId">
+                <b>Reference {!referenceCnt}: </b>
+                <apex:variable var="referenceCnt" value="{!referenceCnt+1}" />
+                
+                <p style="padding-left:15px">
+                    <table>
+                        <tr style="display:{!If(leadsMap[leadId].Protected_Source__c == 'Yes','','none')}">
+                            <td><b style="display:{!If(leadsMap[leadId].Protected_Source__c  != Null,'','none')}">PROTECTED SOURCE:</b></td>
+                            <td>{!leadsMap[leadId].Protected_Source__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">SOURCE:</b></td>
+                            <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                            <td>{!leadsMap[leadId].Source_Title__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                            <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                            <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                            <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Interview_Date__c  != Null,'','none')}">DATE INTERVIEWED:</b></td>
+                            <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Interview_Date__c}" /> </apex:outputText></td>
+                        </tr>
+                        <apex:outputPanel rendered="{!If(leadsMap[leadId].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Interview_AddressLine1__c  != Null,'','none')}">INTERVIEW ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Interview_AddressLine1__c} {!leadsMap[leadId].Interview_AddressLine2__c}
+                                    {!leadsMap[leadId].Interview_City__c}, {!leadsMap[leadId].Interview_State__c}
+                                    {!leadsMap[leadId].Interview_Zip__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(leadsMap[leadId].In_the_presence_of__c != Null,true,false)}">
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].In_the_presence_of__c  != Null,'','none')}">IN THE PRESENCE OF:</b></td>
+                                <td>{!leadsMap[leadId].In_the_presence_of__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].General_Reference_Association__c  != Null,'','none')}">ASSOCIATION:</b></td>
+                            <td>{!leadsMap[leadId].General_Reference_Association__c}</td>
+                        </tr>
+                        <apex:outputPanel rendered="{!IF(leadsMap[leadId].Joint_interview_with__c != Null,true,false)}">
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Joint_interview_with__c  != Null,'','none')}">JOINT INTERVIEW WITH:</b></td>
+                                <td>{!leadsMap[leadId].Joint_interview_with__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <td><b style="display:{!If(leadsMap[leadId].Recommends__c  != Null,'','none')}">RECOMMENDS:</b></td>
+                            <td>{!leadsMap[leadId].Recommends__c}</td>
+                        </tr>
+                    </table>
+                    <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </p>
+            </apex:repeat>
+            
+            <!--Former Spouse Section-->
+             <apex:outputPanel rendered="{!formerSpouseList.size >0}">
+                
+                  <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Former Spouse</u></b></center>
+            </apex:outputPanel>
+            <apex:variable value="{!1}" var="spouseCnt" />
+            <apex:repeat value="{!formerSpouseList}" var="leadId">
+               
+                <b>Former Spouse {!spouseCnt}:</b>
+                <apex:variable var="spouseCnt" value="{!spouseCnt+1}" />
+                
+                <p style="padding-left:15px">
+                    <table>
+                        <tr style="display:{!If(leadsMap[leadId].Protected_Source__c == 'Yes','','none')}">
+                            <td><b>PROTECTED SOURCE:</b></td>
+                            <td>{!leadsMap[leadId].Protected_Source__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>SOURCE:</b></td>
+                            <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>POSITION/JOB TITLE:</b></td>
+                            <td>{!leadsMap[leadId].Source_Title__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>ADDRESS:</b></td>
+                            <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>PHONE NUMBER:</b></td>
+                            <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>EMAIL ADDRESS:</b></td>
+                            <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>DATE INTERVIEWED:</b></td>
+                            <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Interview_Date__c}" /> </apex:outputText></td>
+                        </tr>
+                        <apex:outputPanel rendered="{!If(leadsMap[leadId].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                            <tr>
+                                <td><b>INTERVIEW ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Interview_AddressLine1__c} {!leadsMap[leadId].Interview_AddressLine2__c}
+                                    {!leadsMap[leadId].Interview_City__c}, {!leadsMap[leadId].Interview_State__c}
+                                    {!leadsMap[leadId].Interview_Zip__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(leadsMap[leadId].In_the_presence_of__c != Null,true,false)}">
+                            <tr>
+                                <td><b>IN THE PRESENCE OF:</b></td>
+                                <td>{!leadsMap[leadId].In_the_presence_of__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <td><b>ASSOCIATION:</b></td>
+                            <td>{!leadsMap[leadId].General_Reference_Association__c}</td>
+                        </tr>
+                        <apex:outputPanel rendered="{!IF(leadsMap[leadId].Joint_interview_with__c != Null,true,false)}">
+                            <tr>
+                                <td><b>JOINT INTERVIEW WITH:</b></td>
+                                <td>{!leadsMap[leadId].Joint_interview_with__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <td><b>RECOMMENDS:</b></td>
+                            <td>{!leadsMap[leadId].Recommends__c}</td>
+                        </tr>
+                    </table>
+                     <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </p>
+            </apex:repeat>
+            
+            <!--UnEmployment Section-->
+             <apex:outputPanel rendered="{!unEmploymentList.size >0}">
+                
+                  <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>UnEmployment</u></b></center>
+            </apex:outputPanel>
+            <apex:variable value="{!1}" var="unEmploymentCnt" />
+            <apex:repeat value="{!unEmploymentList}" var="leadId">
+                <b>UnEmployment Record {!unEmploymentCnt}:</b> 
+                <apex:variable var="unEmploymentCnt" value="{!unEmploymentCnt+1}" />
+                
+                <p style="padding-left:15px">
+                    <table>
+                        <tr style="display:{!If(leadsMap[leadId].Protected_Source__c == 'Yes','','none')}">
+                            <td><b>PROTECTED SOURCE:</b></td>
+                            <td>{!leadsMap[leadId].Protected_Source__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>SOURCE:</b></td>
+                            <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>POSITION/JOB TITLE:</b></td>
+                            <td>{!leadsMap[leadId].Source_Title__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>ADDRESS:</b></td>
+                            <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>PHONE NUMBER:</b></td>
+                            <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>EMAIL ADDRESS:</b></td>
+                            <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                        </tr>
+                        <tr>
+                            <td><b>DATE INTERVIEWED:</b></td>
+                            <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Interview_Date__c}" /> </apex:outputText></td>
+                        </tr>
+                        <apex:outputPanel rendered="{!If(leadsMap[leadId].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                            <tr>
+                                <td><b>INTERVIEW ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Interview_AddressLine1__c} {!leadsMap[leadId].Interview_AddressLine2__c}
+                                    {!leadsMap[leadId].Interview_City__c}, {!leadsMap[leadId].Interview_State__c}
+                                    {!leadsMap[leadId].Interview_Zip__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(leadsMap[leadId].In_the_presence_of__c != Null,true,false)}">
+                            <tr>
+                                <td><b>IN THE PRESENCE OF:</b></td>
+                                <td>{!leadsMap[leadId].In_the_presence_of__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <td><b>ASSOCIATION:</b></td>
+                            <td>{!leadsMap[leadId].General_Reference_Association__c}</td>
+                        </tr>
+                        <apex:outputPanel rendered="{!IF(leadsMap[leadId].Joint_interview_with__c != Null,true,false)}">
+                            <tr>
+                                <td><b>JOINT INTERVIEW WITH:</b></td>
+                                <td>{!leadsMap[leadId].Joint_interview_with__c}</td>
+                            </tr>
+                        </apex:outputPanel>
+                        <tr>
+                            <td><b>RECOMMENDS:</b></td>
+                            <td>{!leadsMap[leadId].Recommends__c}</td>
+                        </tr>
+                    </table>
+                    <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                    <p><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </p>
+            </apex:repeat>
+           
+            <!--Financial Section-->
+            <apex:outputPanel rendered="{!financialList.size >0}">
+                
+                  <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Financial</u></b></center>
+            </apex:outputPanel>
+            <apex:variable value="{!1}" var="financialCnt" />
+            <apex:repeat value="{!financialList}" var="leadId">
+                <center style="margin-top:20px;margin-bottom:15px;display:block"><b><u>Financial</u></b></center>
+               <b> Financial Record {!financialCnt}:</b> 
+                <apex:variable var="financialCnt" value="{!financialCnt+1}" />
+                
+                <apex:outputPanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'Yes, record was obtained'}">
+                    <p style="padding-left:15px">
+                        <table>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                <td>{!leadsMap[leadId].Source_Title__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                    {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Date_Record_Provided__c  != Null,'','none')}">DATE RECORD OBTAINED:</b></td>
+                                <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Date_Record_Provided__c}" /> </apex:outputText></td>
+                            </tr>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_Name_Verified__c == 'Discrepant',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Verified__c  != Null,'','none')}">SUBJECT NAME VERIFIED:</b></td>
+                                    <td>{!leadsMap[leadId].Subject_Name_Verified__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Discrepant_Notes__c  != Null,'','none')}">SUBJECT NAME DISCREPANT NOTES:</b></td>
+                                    <td><apex:outputField value="{!leadsMap[leadId].Subject_Name_Discrepant_Notes__c}" /></td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_SSN_Verified__c == 'Discrepant',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Verified__c  != Null,'','none')}">SUBJECT SSN VERIFIED:</b></td>
+                                    <td>{!leadsMap[leadId].Subject_SSN_Verified__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Discrepant_Notes__c  != Null,'','none')}">SUBJECT SSN DISCREPANT NOTES:</b></td>
+                                    <td><apex:outputField value="{!leadsMap[leadId].Subject_SSN_Discrepant_Notes__c}" /></td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_DOB_Verified__c == 'Discrepant',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Verified__c  != Null,'','none')}">SUBJECT DOB VERIFIED:</b></td>
+                                    <td>{!leadsMap[leadId].Subject_DOB_Verified__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT DOB DISCREPANT NOTES:</b></td>
+                                    <td><apex:outputField value="{!leadsMap[leadId].Subject_DOB_Discrepant_Notes__c}" /></td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_POB_Verified__c == 'Discrepant',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Verified__c  != Null,'','none')}">SUBJECT POB VERIFIED:</b></td>
+                                    <td>{!leadsMap[leadId].Subject_POB_Verified__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT POB DISCREPANT NOTES:</b></td>
+                                    <td><apex:outputField value="{!leadsMap[leadId].Subject_POB_Discrepant_Notes__c}" /></td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].General_Template_Record_Type__c  != Null,'','none')}">RECORD TYPE:</b></td>
+                                <td>{!leadsMap[leadId].General_Template_Record_Type__c}</td>
+                            </tr>
+                        </table>
+                    </p>
+                    <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </apex:outputPanel>
+                <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, record does not exist'}">
+                    <p style="padding-left:15px">
+                        <table>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                <td>{!leadsMap[leadId].Source_Title__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                    {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                            </tr>
+                        </table>
+                    </p>
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, unable to obtain record'}">
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </apex:outputpanel>
+            </apex:repeat>
+           
+            <!--Medical Section-->
+            <apex:repeat value="{!medicalMap}" var="leadtype">
+                <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Medical</u></b></center>
+                <apex:variable value="{!1}" var="mainLeadCnt" />
+                <apex:repeat value="{!medicalMap[leadtype]}" var="mainLead">
+                    <b>Medical {!mainLeadCnt}(Record):</b><br/>
+                    <apex:outputPanel rendered="{!leadsMap[mainLead].Was_the_record_obtained__c == 'Yes, record was obtained'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[mainLead].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[mainLead].Source_First_Name__c} {!leadsMap[mainLead].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[mainLead].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[mainLead].Address_line_1__c} {!leadsMap[mainLead].Address_line_2__c}
+                                        {!leadsMap[mainLead].City__c}, {!leadsMap[mainLead].State__c} {!SUBSTITUTE(leadsMap[mainLead].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[mainLead].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[mainLead].Source_Email_Address__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Date_Record_Provided__c  != Null,'','none')}">DATE RECORD OBTAINED:</b></td>
+                                    <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[mainLead].Date_Record_Provided__c}" /> </apex:outputText></td>
+                                </tr>
+                                <apex:outputPanel rendered="{!IF(leadsMap[mainLead].Subject_Name_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[mainLead].Subject_Name_Verified__c  != Null,'','none')}">SUBJECT NAME VERIFIED:</b></td>
+                                        <td>{!leadsMap[mainLead].Subject_Name_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[mainLead].Subject_Name_Discrepant_Notes__c  != Null,'','none')}">SUBJECT NAME DISCREPANT NOTES:</b></td>
+                                        <td><apex:outputField value="{!leadsMap[mainLead].Subject_Name_Discrepant_Notes__c}" /></td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[mainLead].Subject_SSN_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[mainLead].Subject_SSN_Verified__c  != Null,'','none')}">SUBJECT SSN VERIFIED:</b></td>
+                                        <td>{!leadsMap[mainLead].Subject_SSN_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[mainLead].Subject_SSN_Discrepant_Notes__c  != Null,'','none')}">SUBJECT SSN DISCREPANT NOTES:</b></td>
+                                        <td><apex:outputField value="{!leadsMap[mainLead].Subject_SSN_Discrepant_Notes__c}" /></td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[mainLead].Subject_DOB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[mainLead].Subject_DOB_Verified__c  != Null,'','none')}">SUBJECT DOB VERIFIED:</b></td>
+                                        <td>{!leadsMap[mainLead].Subject_DOB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[mainLead].Subject_DOB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT DOB DISCREPANT NOTES:</b></td>
+                                        <td><apex:outputField value="{!leadsMap[mainLead].Subject_DOB_Discrepant_Notes__c}" /></td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[mainLead].Subject_POB_Verified__c == 'Discrepant',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[mainLead].Subject_POB_Verified__c  != Null,'','none')}">SUBJECT POB VERIFIED:</b></td>
+                                        <td>{!leadsMap[mainLead].Subject_POB_Verified__c}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[mainLead].Subject_POB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT POB DISCREPANT NOTES:</b></td>
+                                        <td><apex:outputField value="{!leadsMap[mainLead].Subject_POB_Discrepant_Notes__c}" /></td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].General_Template_Record_Type__c  != Null,'','none')}">RECORD TYPE:</b></td>
+                                    <td>{!leadsMap[mainLead].General_Template_Record_Type__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[mainLead].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[mainLead].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[mainLead].Investigators_Notes__c}" /></p>
+                    </apex:outputPanel>
+                    <apex:outputpanel rendered="{!leadsMap[mainLead].Was_the_record_obtained__c == 'No, record does not exist'}">
+                        <p style="padding-left:15px">
+                            <table>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                    <td>{!leadsMap[mainLead].Agency_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                    <td>{!leadsMap[mainLead].Source_First_Name__c} {!leadsMap[mainLead].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[mainLead].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[mainLead].Address_line_1__c} {!leadsMap[mainLead].Address_line_2__c}
+                                        {!leadsMap[mainLead].City__c}, {!leadsMap[mainLead].State__c} {!SUBSTITUTE(leadsMap[mainLead].Zip__c, '-____', '')}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[mainLead].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[mainLead].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[mainLead].Source_Email_Address__c}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        <p><apex:outputField value="{!leadsMap[mainLead].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[mainLead].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[mainLead].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!leadsMap[mainLead].Was_the_record_obtained__c == 'No, unable to obtain record'}">
+                        <p><apex:outputField value="{!leadsMap[mainLead].Narrator_Comments__c}" /></p>
+                        <p><b style="display:{!If(leadsMap[mainLead].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[mainLead].Investigators_Notes__c}" /></p>
+                    </apex:outputpanel>
+                    <apex:variable value="{!1}" var="subLeadCnt" />
+                    <apex:repeat value="{!medicalMap[leadtype][mainLead]}" var="subLead">
+                        <b>Medical{!mainLeadCnt} Reference{!subLeadCnt}:</b><br/>
+                      <apex:variable var="subLeadCnt" value="{!subLeadCnt+1}" />
+                         <p style="padding-left:15px">
+                            <table>
+                                <tr style="display:{!If(leadsMap[subLead].Protected_Source__c == 'Yes','','none')}">
+                                    <td><b style="display:{!If(leadsMap[subLead].Protected_Source__c  != Null,'','none')}">PROTECTED SOURCE:</b></td>
+                                    <td>{!leadsMap[subLead].Protected_Source__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[subLead].Source_First_Name__c  != Null,'','none')}">SOURCE:</b></td>
+                                    <td>{!leadsMap[subLead].Source_First_Name__c} {!leadsMap[subLead].Source_Last_Name__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[subLead].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                    <td>{!leadsMap[subLead].Source_Title__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[subLead].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                    <td>{!leadsMap[subLead].Address_line_1__c} {!leadsMap[subLead].Address_line_2__c}
+                                        {!leadsMap[subLead].City__c}, {!leadsMap[subLead].State__c} {!SUBSTITUTE(leadsMap[subLead].Zip__c, '-____', '')}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[subLead].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                    <td>{!leadsMap[subLead].Phone_Number__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[subLead].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                    <td>{!leadsMap[subLead].Source_Email_Address__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[subLead].Interview_Date__c  != Null,'','none')}">DATE INTERVIEWED:</b></td>
+                                    <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[subLead].Interview_Date__c}" /> </apex:outputText></td>
+                                </tr>
+                                <apex:outputPanel rendered="{!If(leadsMap[subLead].Interview_Mailing_Address_Diff__c == 'Yes',true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[subLead].Interview_AddressLine1__c  != Null,'','none')}">INTERVIEW ADDRESS:</b></td>
+                                        <td>{!leadsMap[subLead].Interview_AddressLine1__c} {!leadsMap[subLead].Interview_AddressLine2__c}
+                                            {!leadsMap[subLead].Interview_City__c}, {!leadsMap[subLead].Interview_State__c}
+                                            {!leadsMap[subLead].Interview_Zip__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!IF(leadsMap[subLead].In_the_presence_of__c != Null,true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[subLead].In_the_presence_of__c  != Null,'','none')}">IN THE PRESENCE OF:</b></td>
+                                        <td>{!leadsMap[subLead].In_the_presence_of__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[subLead].General_Reference_Association__c  != Null,'','none')}">ASSOCIATION:</b></td>
+                                    <td>{!leadsMap[subLead].General_Reference_Association__c}</td>
+                                </tr>
+                                <apex:outputPanel rendered="{!IF(leadsMap[subLead].Joint_interview_with__c != Null,true,false)}">
+                                    <tr>
+                                        <td><b style="display:{!If(leadsMap[subLead].Joint_interview_with__c  != Null,'','none')}">JOINT INTERVIEW WITH:</b></td>
+                                        <td>{!leadsMap[subLead].Joint_interview_with__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[subLead].Recommends__c  != Null,'','none')}">RECOMMENDS:</b></td>
+                                    <td>{!leadsMap[subLead].Recommends__c}</td>
+                                </tr>
+                            </table>
+                            <p><apex:outputField value="{!leadsMap[subLead].Narrator_Comments__c}" /></p>
+                            <p><b style="display:{!If(leadsMap[subLead].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[subLead].Investigators_Notes__c}" /></p>
+                        </p>
+                    </apex:repeat>
+                    <apex:variable var="mainLeadCnt" value="{!mainLeadCnt+1}" />
+                </apex:repeat>
+            </apex:repeat>
+            
+            <!--LawEnforcement Section-->
+               <apex:outputPanel rendered="{!lawEnforcementList.size >0}">
+                
+                  <center style="margin-top:20px;margin-bottom:15px;display:block;font-size:22px"><b><u>Law Enforcement</u></b></center>
+            </apex:outputPanel>
+            <apex:variable value="{!1}" var="lawCnt" />
+            <apex:repeat value="{!lawEnforcementList}" var="leadId">
+                <b>Law Enforcement Record {!lawCnt}: </b>
+                <apex:variable var="lawCnt" value="{!lawCnt+1}" />
+                <apex:outputPanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'Yes, record was obtained'}">
+                    <p style="padding-left:15px">
+                        <table>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                <td>{!leadsMap[leadId].Source_Title__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                    {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Date_Record_Provided__c  != Null,'','none')}">DATE RECORD OBTAINED:</b></td>
+                                <td><apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadsMap[leadId].Date_Record_Provided__c}" /> </apex:outputText></td>
+                            </tr>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_Name_Verified__c == 'Discrepant',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Verified__c  != Null,'','none')}">SUBJECT NAME VERIFIED:</b></td>
+                                    <td>{!leadsMap[leadId].Subject_Name_Verified__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_Name_Discrepant_Notes__c  != Null,'','none')}">SUBJECT NAME DISCREPANT NOTES:</b></td>
+                                    <td><apex:outputField value="{!leadsMap[leadId].Subject_Name_Discrepant_Notes__c}" /></td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_SSN_Verified__c == 'Discrepant',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Verified__c  != Null,'','none')}">SUBJECT SSN VERIFIED:</b></td>
+                                    <td>{!leadsMap[leadId].Subject_SSN_Verified__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_SSN_Discrepant_Notes__c  != Null,'','none')}">SUBJECT SSN DISCREPANT NOTES:</b></td>
+                                    <td><apex:outputField value="{!leadsMap[leadId].Subject_SSN_Discrepant_Notes__c}" /></td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_DOB_Verified__c == 'Discrepant',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Verified__c  != Null,'','none')}">SUBJECT DOB VERIFIED:</b></td>
+                                    <td>{!leadsMap[leadId].Subject_DOB_Verified__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_DOB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT DOB DISCREPANT NOTES:</b></td>
+                                    <td><apex:outputField value="{!leadsMap[leadId].Subject_DOB_Discrepant_Notes__c}" /></td>
+                                </tr>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(leadsMap[leadId].Subject_POB_Verified__c == 'Discrepant',true,false)}">
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Verified__c  != Null,'','none')}">SUBJECT POB VERIFIED:</b></td>
+                                    <td>{!leadsMap[leadId].Subject_POB_Verified__c}</td>
+                                </tr>
+                                <tr>
+                                    <td><b style="display:{!If(leadsMap[leadId].Subject_POB_Discrepant_Notes__c  != Null,'','none')}">SUBJECT POB DISCREPANT NOTES:</b></td>
+                                    <td><apex:outputField value="{!leadsMap[leadId].Subject_POB_Discrepant_Notes__c}" /></td>
+                                </tr>
+                            </apex:outputPanel>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].General_Template_Record_Type__c  != Null,'','none')}">RECORD TYPE:</b></td>
+                                <td>{!leadsMap[leadId].General_Template_Record_Type__c}</td>
+                            </tr>
+                        </table>
+                    </p>
+                    <p><apex:outputField value="{!leadsMap[leadId].Narrator_Comments__c}" /></p>
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </apex:outputPanel>
+                <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, record does not exist'}">
+                    <p style="padding-left:15px">
+                        <table>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Agency_Name__c  != Null,'','none')}">AGENCY NAME:</b></td>
+                                <td>{!leadsMap[leadId].Agency_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_First_Name__c  != Null,'','none')}">PROVIDER:</b></td>
+                                <td>{!leadsMap[leadId].Source_First_Name__c} {!leadsMap[leadId].Source_Last_Name__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Title__c  != Null,'','none')}">POSITION/JOB TITLE:</b></td>
+                                <td>{!leadsMap[leadId].Source_Title__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Address_line_1__c  != Null,'','none')}">ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Address_line_1__c} {!leadsMap[leadId].Address_line_2__c}
+                                    {!leadsMap[leadId].City__c}, {!leadsMap[leadId].State__c} {!SUBSTITUTE(leadsMap[leadId].Zip__c, '-____', '')}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Phone_Number__c  != Null,'','none')}">PHONE NUMBER:</b></td>
+                                <td>{!leadsMap[leadId].Phone_Number__c}</td>
+                            </tr>
+                            <tr>
+                                <td><b style="display:{!If(leadsMap[leadId].Source_Email_Address__c  != Null,'','none')}">EMAIL ADDRESS:</b></td>
+                                <td>{!leadsMap[leadId].Source_Email_Address__c}</td>
+                            </tr>
+                        </table>
+                    </p>
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!leadsMap[leadId].Was_the_record_obtained__c == 'No, unable to obtain record'}">
+                    <p><b style="display:{!If(leadsMap[leadId].Investigators_Notes__c  != Null,'','none')}">INVESTIGATOR'S NOTE: </b><apex:outputField value="{!leadsMap[leadId].Investigators_Notes__c}" /></p>
+                </apex:outputpanel>
+            </apex:repeat>
+            
+        </div>
+    </body>
+</apex:page>

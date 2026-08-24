@@ -1,0 +1,232 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0" controller="DHSOrderROIReportController">
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Order ROI Report</title>
+        <style>
+            #leadstable thead th {
+                position: sticky;
+                top: 0;
+                z-index: 3;
+            }
+        </style>
+
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>ROI Report</b></h4>
+                            </div>
+
+                            <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+
+                        </nav>
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12 leadstablecard">
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h4 class="m-0 font-weight-bold text-primary">ROI Report Mapping</h4>
+                                            <i class="fas fa-bars fa-1x toggle-reportcard "></i>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <center class="pb-4">
+                                            <apex:outputPanel >
+                                                <apex:commandlink rendered="{!If(type=='preview',true,false)}" target="_blank" styleclass="btn btn-primary orderRoiReport"  rerender="dummy" status="loader" value="Preview ROI Report" />
+                                                <apex:actionFunction name="generateROIReport" action="{!generateROIReport}" status="loader" rerender="errorpanel" />&nbsp;
+                                                    
+                                                    <apex:commandlink rendered="{!If(type=='preview',true,false)}"
+                                                        target="_blank" styleclass="btn btn-primary reordercards mx-2" action="{!generateROIDraft}"
+                                                        rerender="errorpanel,roireportpanel" status="loader" value="ROI Report (Default sort)"  oncomplete="showroireportpreview();return false;"  />
+                                                    <apex:commandlink rendered="{!If(type=='preview',true,false)}"
+                                                        target="_blank" styleclass="btn btn-primary mx-2" action="{!previewUsingDhsDesigner}"
+                                                        status="loader" value="Preview Using DHS Designer" />
+                                               <apex:commandlink rendered="{!If(type=='generate',true,false)}" target="_blank" styleclass="btn btn-primary orderRoiReportNgenerate"  rerender="dummy" status="loader" value="Generate ROI Report" />
+                                                <apex:actionFunction name="generateNattachROIReport" action="{!generateNattachROIReport}" status="loader" rerender="errorpanel" />
+                                                </apex:outputPanel>
+                                            </center>
+                                            <div class="row pb-1 pt-1 border-bottom" style="display:block;overflow: auto;max-height: 460px;">
+                                                <table class="table" id="leadstable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Lead Type</th>
+                                                            <th>Coverage Type</th>
+                                                            <th>Item Number</th>
+                                                            <th>Investigator</th>
+                                                            <th>Contact Name</th>
+                                                            <th>Contact Address</th>
+                                                            <th>Contact City </th>
+                                                            <th>Contact State </th>  
+                                                            <th>Created Zip </th>
+                                                            <th>Created Other Information </th>
+                                                            <th>Skip Title</th>
+                                                            <th>Sequence</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <apex:repeat value="{!leadRecords}" var="lr">
+                                                            <tr>
+                                                                <td>{!lr.lead.LeadType__c}</td>
+                                                                <td>{!lr.lead.Coverage_Type__c}</td>
+                                                                <td>{!lr.lead.Item_number__c}</td>
+                                                                <td>{!lr.lead.Assigned_To_Name__c}</td>
+                                                               <!-- <td>
+                                                                    <apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!lr.lead.CreatedDate}" /> 
+                                                                    </apex:outputText>
+                                                                </td>-->
+                                                                <td>{!lr.lead.Lead_Contact_Name__c}</td>
+                                                                <td>{!lr.lead.Lead_Contact_Address__c}</td>
+                                                                <td>{!lr.lead.Lead_Contact_City__c}</td>
+                                                                <td>{!lr.lead.Lead_Contact_State__c}</td>
+                                                                <td>{!lr.lead.Lead_Contact_Zip__c}</td>
+                                                                <td>{!lr.lead.Lead_Contact_Other_Information__c}</td>
+                                                                <td><apex:inputCheckbox value="{!lr.headerTitle}" /></td>
+                                                                <td>
+                                                                    <apex:selectlist styleclass="form-select form-select-sm form-control"
+                                                                       size="1" value="{!lr.leadNumber}">
+                                                                       <apex:selectOptions value="{!orderOptions}" />
+                                                                    </apex:selectlist>
+                                                                </td>
+                                                            </tr>
+                                                        </apex:repeat>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 reportiframe">
+                                    
+                                    <apex:outputpanel id="roireportpanel">
+                                        <apex:outputpanel rendered="{!showroireport}">
+                                            <apex:commandButton value="Download ROI Report" styleClass="btn btn-primary" style="font-weight:600;margin-bottom:5px;text-alignment:center"
+                    							onclick="window.open('{!$Site.prefix}/DHSROIReportV2?sequenceid={!currentsequenceid}&id={!caseId}&download=true', '_blank'); return false;" />
+                                            <apex:iframe title="test"
+                                                src="{!$Site.prefix}/DHSROIReportV2?sequenceid={!currentsequenceid}&id={!caseId}" />
+                                        </apex:outputpanel>
+                                    </apex:outputpanel>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="reportModal">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="text-danger">Error!</h4>
+                              </div>
+                              <div class="modal-body">
+                                <h4 class="text-danger " style="font-weight:300">Report cannot be generated because a duplicate sequence has been selected.</h4>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" style="font-weight:600" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                            <!-- /.modal-content -->
+                          </div>
+  <!-- /.modal-dialog -->
+</div>
+                    </div>
+                </div>
+            </div>
+        </apex:form>
+        <script>
+            $(document).ready(function () {
+            $('.toggle-reportcard').on('click',function(){
+                 $('.reportiframe').hasClass('col-5') ? $('.reportiframe').removeClass('col-5').addClass('col-12') : $('.reportiframe').removeClass('col-12').addClass('col-5')
+                 $('.leadstablecard').hasClass('col-7') ? $('.leadstablecard').removeClass('col-7').addClass('col-12') : $('.leadstablecard').removeClass('col-12').addClass('col-7');
+            })
+               
+                $('.reordercards').on('click',function(){
+                     $('.leadstablecard').removeClass('col-12').addClass('col-7');
+                    $('.reportiframe').removeClass('col-12').addClass('col-5');
+                })
+                function reOrderCards(){
+                $('.leadstablecard').removeClass('col-12').addClass('col-7');
+                $('.reportiframe').removeClass('col-12').addClass('col-5');
+                }
+                  function showroireportpreview(){
+                //$('#reportModal').modal('show');
+                reOrderCards();
+                }
+                $('.orderRoiReport').on('click',function(e){
+                     e.preventDefault();
+                    var selectBoxValues = $("select").map(function(){
+                      return $(this).val();
+                    }).get();
+                    selectBoxValues = $.grep(selectBoxValues , function(n){ return (n); });
+                    var isDuplicate = !selectBoxValues.every(function(val, i){
+                    
+                      return selectBoxValues.indexOf(val) === i;
+                   
+                    });
+                    if (isDuplicate || selectBoxValues.length == 0) {
+                        if (selectBoxValues.length == 0) {
+                            $('#reportModal .modal-body h4').text('Choose atleaset one item order.');
+                        } else {
+                            $('#reportModal .modal-body h4').text(
+                                'Report cannot be generated because a duplicate sequence has been selected.'
+                                );
+                        }
+                        $('#reportModal').modal('show');
+                        return false;
+                    } else {
+                        generateROIReport();
+                    }
+               
+                })
+                
+                $('.orderRoiReportNgenerate').on('click',function(e){
+                     e.preventDefault();
+                    var selectBoxValues = $("select").map(function(){
+                      return $(this).val();
+                    }).get();
+                    selectBoxValues = $.grep(selectBoxValues , function(n){ return (n); });
+                    var isDuplicate = !selectBoxValues.every(function(val, i){
+                  
+                      return selectBoxValues.indexOf(val) === i;
+                     
+                    });
+                    if (isDuplicate || selectBoxValues.length == 0) {
+                    if(selectBoxValues.length == 0){
+                    $('#reportModal .modal-body h4').text('Choose atleaset one item order.');
+                    }
+                    else{
+                        $('#reportModal .modal-body h4').text('Report cannot be generated because a duplicate sequence has been selected.');
+                    }
+                      $('#reportModal').modal('show');
+                      return false;
+                    }
+                    
+                    else{generateNattachROIReport();}
+               
+                })
+                
+                
+                
+                
+            });
+
+         
+        </script>
+    </body>
+</apex:page>

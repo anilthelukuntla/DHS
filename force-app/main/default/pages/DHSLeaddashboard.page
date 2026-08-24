@@ -1,0 +1,1253 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="DHSLeadDashboardController"
+    docType="html-5.0">
+
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Lead Management</title>
+
+        <!-- Custom fonts for this template-->
+
+
+        <style>
+      .acdDateContainer {
+
+     display: flex;
+
+    visibility: hidden;
+
+    }
+        span.step {
+            min-width: 26px;
+            padding: 3px 5px !important;
+            background: #e3e8ec;
+            border-radius: 0.8em;
+            -moz-border-radius: 0.8em;
+            -webkit-border-radius: 0.8em;
+            display: inline-block;
+            font-weight: bold;
+            line-height: 1.3em;
+            text-align: center;
+            width: initial !important;
+        }
+        .acdValue{cursor:pointer}
+        .fas{cursor:pointer}
+        .editAcd.active .acdValue,.editAcd .acdEdit{display:none}
+        .editAcd.active .acdEdit{display:block}
+        .acdEdit input{display:inline-block;width:80px;padding: 4px;}
+        .editAcd {width:125px;}
+        th {
+  background-color: #00799B;
+  color: #fff;
+  white-space: nowrap;
+}
+            .extension {
+                background: #e3e6f0;
+            }
+
+            .frame {
+
+
+                width: 100%;
+                height: 400px;
+
+                border-radius: 2px;
+                box-shadow: 4px 8px 16px 0 rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                color: #000;
+
+            }
+
+            .frame .center {
+                width: 100%;
+                height: 100%;
+                border-radius: 3px;
+                box-shadow: 8px 10px 15px 0 rgba(0, 0, 0, 0.2);
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: space-evenly;
+                flex-direction: column;
+            }
+
+            .frame .title {
+                width: 100%;
+                height: 50px;
+                border-bottom: 1px solid #000;
+                text-align: center;
+            }
+
+            ..frame h1 {
+                font-size: 16px;
+                font-weight: 300;
+                color: #000;
+            }
+
+            .frame .dropzone {
+
+                border: 1px dashed #000;
+                border-radius: 3px;
+                text-align: center;
+                padding: 50px;
+            }
+
+            .frame .upload-icon {
+                margin: 25px 2px 2px 2px;
+            }
+
+            .frame .upload-input {
+                position: relative;
+                top: -62px;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+            }
+
+            .dateFormat {
+                display: none
+            }
+
+            .form-group span {
+                font-weight: bold
+            }
+
+            .input-group-append {
+                position: relative;
+                top: 5px;
+                left: 10px;
+            }
+
+            .datepicker.dropdown-menu {
+                padding: 10px;
+            }
+
+            .taskEvent li {
+                display: flex;
+                color: #000;
+            }
+
+            .taskEvent span {
+                position: relative;
+                padding: 0 1.5em;
+            }
+
+            .sidebar #sidebarToggle::after {
+                font-weight: 900;
+                content: '\f104';
+                font-family: 'Font Awesome 6 Free';
+                margin-right: 0.1rem;
+            }
+
+
+            .taskEvent span::after {
+                content: "";
+                position: absolute;
+                z-index: 2;
+                left: -18px;
+                top: 4px;
+                transform: translateX(50%);
+                border-radius: 50%;
+                background: #fff;
+                border: 1px #ccc solid;
+                width: 1.2rem;
+                height: 1.2rem;
+            }
+
+            .taskEvent span.completed::after {
+                content: "";
+                position: absolute;
+                z-index: 2;
+                left: -18px;
+                top: 2px;
+                transform: translateX(50%);
+                border-radius: 50%;
+                background: #00799B;
+                border: 1px #00799B solid;
+                width: 1.2rem;
+                height: 1.2rem;
+            }
+
+            .taskEvent span.completed {
+                color: #00799B;
+            }
+
+            .taskEvent span {
+                padding: 0 1.5em 1.5em 1.5em;
+                position: relative;
+                font-size: 14px;
+                font-weight: bold
+            }
+
+            .taskEvent span.completed::before {
+                content: "";
+                position: absolute;
+                z-index: 1;
+                left: 0;
+                height: 100%;
+                border-left: 2px #00799B solid;
+            }
+
+            .taskEvent span::before {
+                content: "";
+                position: absolute;
+                z-index: 1;
+                left: 0;
+                height: 100%;
+                border-left: 2px #ccc solid;
+            }
+
+            .taskEvent strong {
+                display: block;
+                font-weight: bolder;
+            }
+
+            .taskEvent,
+            .taskEvent *::before,
+            .taskEvent *::after {
+                box-sizing: border-box;
+                font-family: arial;
+            }
+
+            .highlightnoteligbileforassignmentrow {
+                background-color: #f1d4d4;
+            }
+        </style>
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+<apex:includeLightning />
+         <div id="LwcId"></div>
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Lead Management</b></h4>
+                            </div>
+                            <!-- Sidebar Toggle (Topbar) -->
+                            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                                <i class="fa fa-bars"></i>
+                            </button>
+
+
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+                            <apex:outputpanel id="leadssearchcriteriapanel">
+                                <apex:outputpanel rendered="{!showleadssearchcriteriapanel}">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="card shadow mb-4">
+                                                <div
+                                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                    <h4 class="m-0 font-weight-bold text-primary">Lead Search </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div>
+                                                        <div class="mb-2 ">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary">Lead
+                                                                    Information Search</h4>
+                                                                <div class=" mt-2 mb-2 row col-12 px-0">
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>Lead Type</label>
+                                                                        <apex:selectlist styleclass="form-control leadTypeSearchEntry"
+                                                                            size="1" value="{!leadTypeSearchEntry}">
+                                                                            <apex:selectOptions value="{!leadTypeOptions}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-4">
+                                                                        <label>Status</label>
+                                                                        <apex:selectlist styleclass="form-control leadStatusSearchEntry"
+                                                                            size="1" value="{!leadStatusSearchEntry}">
+                                                                            <apex:selectOptions value="{!leadStatusOptions}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>Case Number</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control caseNumberSearchEntry"
+                                                                            html-placeholder="Case Number"
+                                                                            value="{!caseNumberSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-4">
+                                                                        <label>Manifest</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control manifestSearchEntry"
+                                                                            html-placeholder="Manifest"
+                                                                            value="{!manifestSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label> Subject First Name</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control subjectFirstNameSearchEntry"
+                                                                            html-placeholder="Subject First Name"
+                                                                            value="{!subjectFirstNameSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-4">
+                                                                        <label>Subject Last Name</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control subjectLastNameSearchEntry"
+                                                                            html-placeholder="Subject Last Name"
+                                                                            value="{!subjectLastNameSearchEntry}" />
+                                                                    </div>
+                                                                    
+                                                                    <div class="form-group  mb-2 col-4">
+                                                                        <label>City</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control citySearchEntry"
+                                                                            html-placeholder="City"
+                                                                            value="{!citySearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>State</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control stateSearchEntry"
+                                                                            html-placeholder="State"
+                                                                            value="{!stateSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>Zip</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control zipSearchEntry zipCode"
+                                                                            html-placeholder="Zip"
+                                                                            value="{!zipSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+
+                                                                    </div>
+                                                                    <div class="mt-3 col-2">
+                                                                        <button onclick="leadsearch();return false;"
+                                                                            class="btn btn-primary mb-2">Search</button>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class=" mb-2 card ">
+                                                            <div class="card-body ">
+                                                                <h4 class="font-weight-bold text-primary">
+                                                                    <apex:outputpanel rendered="{!If(currentuser.User_Type__c != 'INV',true,false)}">
+                                                                        Assignee Search</apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!If(currentuser.User_Type__c == 'INV',true,false)}">
+                                                                        Manage My Leads</apex:outputpanel>
+                                                                </h4>
+
+                                                                <div class="form-inline mt-2 mb-2 col-12 px-0">
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c == 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input id="radio1" type="radio"
+                                                                                onclick="availableleadsearch();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="radio1">Available Leads&nbsp;<span class="step" style="color: darkblue;"> {!myavailableleadscount}</span></label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c == 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input id="radio2" type="radio"
+                                                                                onclick="myassignedleadsearch();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="radio2">Accepted Leads &nbsp;<span class="step" style="color: darkblue;"> {!myassignedadscount}</span></label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c == 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio901"
+                                                                                onclick="showdiscontinuedleads();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio901">Discontinued Leads &nbsp;<span class="step" style="color: darkblue;"> {!mydiscontinuedcount}</span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c == 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio90"
+                                                                                onclick="showqarejectedleads();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio90">QA Rejected Leads &nbsp;<span class="step" style="color: darkblue;"> {!myqarejectedleadscount}</span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c != 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio3"
+                                                                                onclick="leadunassignedsearch();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio3">Only
+                                                                                Unassigned</label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c != 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio390"
+                                                                                onclick="leadqarejectedsearch();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio390">QA Rejected</label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </apex:outputpanel>
+                            </apex:outputpanel>
+                            <apex:outputpanel id="leadslistpanel">
+                                <apex:outputpanel rendered="{!showleadslistpanel}">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="card shadow mb-4" id="leadListGroup">
+                                                <div
+                                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                    <h4 class="m-0 font-weight-bold text-primary">Leads</h4>
+                                                    <div class="dropdown no-arrow">
+                                                        <a aria-expanded="false" aria-haspopup="true"
+                                                            class="dropdown-toggle" data-toggle="dropdown" href="#"
+                                                            id="dropdownMenuLink" role="button"><span>Search
+                                                                criteria</span> <i
+                                                                class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i></a>
+                                                        <div aria-labelledby="dropdownMenuLink"
+                                                            class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
+                                                            <a aria-controls="subjecsearch" aria-expanded="true"
+                                                                class="dropdown-item" data-toggle="collapse"
+                                                                href="#leadInfomationSearch" role="button">Lead
+                                                                Information search</a> <a aria-controls="caseInfo"
+                                                                aria-expanded="false" class="dropdown-item"
+                                                                data-toggle="collapse" href="#assigneeSearch"
+                                                                role="button">
+                                                                <apex:outputpanel rendered="{!If(currentuser.User_Type__c != 'INV',true,false)}">
+                                                                    Assignee Search</apex:outputpanel>
+                                                                <apex:outputpanel rendered="{!If(currentuser.User_Type__c == 'INV',true,false)}">
+                                                                    Manage My Leads</apex:outputpanel>
+                                                            </a></div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class=" mb2" id="accordionExample">
+                                                        <div class="mb-5 collapse" data-parent="#leadListGroup"
+                                                            id="assigneeSearch">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary">
+                                                                    <apex:outputpanel rendered="{!If(currentuser.User_Type__c != 'INV',true,false)}">
+                                                                        Assignee Search</apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!If(currentuser.User_Type__c == 'INV',true,false)}">
+                                                                        Manage My Leads</apex:outputpanel>
+                                                                </h4>
+
+                                                                <div class="form-inline mt-2 mb-2 col-12">
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c == 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio1"
+                                                                                onclick="availableleadsearch();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio1">Available
+                                                                                Leads</label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c == 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio2"
+                                                                                onclick="myassignedleadsearch();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio2">Accepted
+                                                                                Leads</label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                     <apex:outputpanel rendered="{!CurrentUser.User_Type__c == 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio90"
+                                                                                onclick="showdiscontinuedleads();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio90">Discontinued Leads
+                                                                            </label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c == 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio3"
+                                                                                onclick="showqarejectedleads();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio3">QA Rejected Leads
+                                                                            </label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                   
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c != 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio3"
+                                                                                onclick="leadunassignedsearch();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio3">Only
+                                                                                Unassigned</label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c != 'INV'}">
+                                                                        <div class="custom-control custom-radio pr-5">
+                                                                            <input type="radio" id="customRadio300"
+                                                                                onclick="leadqarejectedsearch();return false;"
+                                                                                name="customRadio"
+                                                                                class="custom-control-input" />
+                                                                            <label class="custom-control-label"
+                                                                                for="customRadio300">QA Rejected</label>
+                                                                        </div>
+                                                                    </apex:outputpanel>
+                                                                    
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-5 collapse" data-parent="#leadListGroup"
+                                                            id="leadInfomationSearch">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary">Lead
+                                                                    Information Search</h4>
+                                                                <div class=" mt-2 mb-2 row col-12">
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>Lead Type</label>
+                                                                        <apex:selectlist styleclass="form-control leadTypeSearchEntry"
+                                                                            size="1" value="{!leadTypeSearchEntry}">
+                                                                            <apex:selectOptions value="{!leadTypeOptions}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-4">
+                                                                        <label>Status</label>
+                                                                        <apex:selectlist styleclass="form-control leadStatusSearchEntry"
+                                                                            size="1" value="{!leadStatusSearchEntry}">
+                                                                            <apex:selectOptions value="{!leadStatusOptions}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>Case Number</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control caseNumberSearchEntry"
+                                                                            html-placeholder="Case Number"
+                                                                            value="{!caseNumberSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-4">
+                                                                        <label>Manifest</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control manifestSearchEntry"
+                                                                            html-placeholder="Manifest"
+                                                                            value="{!manifestSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label> Subject First Name</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control subjectFirstNameSearchEntry"
+                                                                            html-placeholder="Subject First Name"
+                                                                            value="{!subjectFirstNameSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-4">
+                                                                        <label>Subject Last Name</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control subjectLastNameSearchEntry"
+                                                                            html-placeholder="Subject Last Name"
+                                                                            value="{!subjectLastNameSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>Street Address</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control streetaddressSearchEntry"
+                                                                            html-placeholder="Address"
+                                                                            value="{!streetaddressSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-4">
+                                                                        <label>City</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control citySearchEntry"
+                                                                            html-placeholder="City"
+                                                                            value="{!citySearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>State</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control stateSearchEntry"
+                                                                            html-placeholder="State"
+                                                                            value="{!stateSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+                                                                        <label>Zip</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control zipSearchEntry"
+                                                                            html-placeholder="Zip"
+                                                                            value="{!zipSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+
+                                                                    </div>
+                                                                    <div class="form-group mb-2 col-4">
+
+                                                                    </div>
+                                                                    <div class="mt-3 col-2">
+                                                                        <button onclick="leadsearch();return false;"
+                                                                            class="btn btn-primary mb-2">Search</button>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <apex:outputpanel rendered="{!CurrentUser.User_Type__c != 'INV'}">
+                                                        <div class="row d-flex justify-content-end mb-3">
+                                                            <div class="col-7 row mx-4 showleadassignerror">
+                                                                <div class="row col">
+                                                                    <div class="col">
+                                                                        <apex:selectlist styleclass="form-select form-select-sm form-control"
+                                                                            size="1" value="{!assigneeStateSelected}"
+                                                                            onchange="assignestatechangeaction();return false;">
+                                                                            <apex:selectOptions value="{!stateslist}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <apex:actionFunction name="assignestatechangeaction"
+                                                                            action="{!onstatechange}" status="loader"
+                                                                            rerender="assignuserslist" />
+                                                                        <apex:outputPanel id="assignuserslist">
+                                                                            <apex:selectlist styleclass="form-select form-select-sm form-control selectedUserIdForAssignment"
+                                                                                size="1"
+                                                                                value="{!selectedUserIdForAssignment}">
+                                                                                <apex:selectOptions value="{!assignUserList}" />
+                                                                            </apex:selectlist>
+                                                                        </apex:outputPanel>
+                                                                    </div>
+                                                                    <!--
+                                                                    <div class="col">
+                                                                        <apex:input styleclass="form-control datepickerInput " value="{!acdDate}" type="text" html-placeholder="mm/dd/yyyy"/>
+                                                                    </div>
+                                                                    -->
+                                                                    
+                                                                    
+                                                                </div>
+                                                                <div class="col-1" style="margin-right: 5%;">
+                                                                    <button
+                                                                        class="btn btn-primary mx-3 assignleadsbutton"
+                                                                        onclick="assignleads();return false;">Assign</button>
+                                                                    <apex:actionFunction name="assignleadsaction"
+                                                                        action="{!assignLeadsAction}"
+                                                                        rerender="leadslistpanel,leadssearchcriteriapanel"
+                                                                        status="loader" />
+                                                                </div>
+                                                                <div class="col-2">
+                                                                   <button
+                                                                        class="btn btn-primary mx-3 assignleadsbutton"
+                                                                        onclick="unassignleads();return false;">UnAssign</button>
+                                                                  <apex:actionFunction name="unassignleadsaction"
+                                                                        action="{!unAssignLeadsAction}"
+                                                                        rerender="leadslistpanel,leadssearchcriteriapanel"
+                                                                        status="loader" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </apex:outputpanel>
+
+                                                    <div style="overflow-x:auto">
+                                                    <div class="criteriaData">
+                                                   <apex:inputHidden value="{!criteria}"  />
+                                                   </div>
+                                                        <div>
+                                                        Total number of records: <b>{!totalRecordCount}</b>
+                                                    </div>
+                                                    <div align="right" style="margin-bottom:10px;display: flex;justify-content: space-between;align-items: center;">
+                                                         <div class="acdDateContainer form-group col-4" style="text-align: left;margin-top: 30px;align-items: baseline;">
+                                                             <!--<label style="
+                                                        display: block;
+                                                        width: 130px;
+                                                        
+                                                    ">ACD Date</label>-->
+                                                    <input class="form-control datepickerInput updateacddate" placeholder="ACD Date" type="text" />
+                                                        <button style="margin-left:10px;width: inherit;" onclick="updateACDDateFunction();return false" class="btn btn-primary px-4">Set ACD for selected items</button>
+                                                             <apex:actionFunction name="updateACDDate" action="{!updateACDDate}" rerender="leadstable,leadspaginationpanel,leadsdatapanel" status="loader" oncomplete="loaddatatables();return false;">
+                                                             <apex:param name="anticipatedCompletionDate"
+                                                                               assignTo="{!anticipatedCompletionDate}" value="" />
+                                                             </apex:actionFunction>
+                                                        </div>
+                                                   
+                                                        <apex:outputPanel id="leadspaginationpanel">
+                                                        <apex:outputPanel style="margin-right:15px;">
+                                                                <b>Page {!pageNumber} of {!totalPages}</b>
+                                                        </apex:outputPanel>
+                                                            <apex:commandButton style="margin-right:10px;" value="Previous" styleClass="btn btn-primary px-4" rendered="{!disablePrev == true}" disabled="true"/>
+                                                            <apex:outputPanel rendered="{!disablePrev == false}">
+                                                                <button style="margin-right:10px;" onclick="handlePrev();return false" class="btn btn-primary px-4">Previous</button>
+                                                            </apex:outputPanel>
+                                                            <apex:actionFunction name="handlePrev" action="{!handlePrev}" rerender="leadstable,leadspaginationpanel,leadsdatapanel" status="loader"/>
+                                                            
+                                                            
+                                                            <apex:commandButton value="Next" styleClass="btn btn-primary px-4" rendered="{!disableNext == true}" disabled="true"/>
+                                                            <apex:outputPanel rendered="{!disableNext == false}">
+                                                                <button  onclick="handleNext();return false" class="btn btn-primary px-4">Next</button>
+                                                            </apex:outputPanel>
+                                                            <apex:actionFunction name="handleNext" action="{!handleNext}"  rerender="leadstable,leadspaginationpanel,leadsdatapanel" status="loader"/>
+                                                       <button class="export-button btn btn-primary px-4">Export</button>
+                                                       </apex:outputPanel>
+                                                        </div>
+                                                        <apex:outputPanel id="leadsdatapanel">
+                                                        <table cellspacing="0" id="leadstable" class="table"
+                                                            width="100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th
+                                                                        class="{!IF(CurrentUser.User_Type__c != 'INV','','d-none')}">
+                                                                        <input type="checkbox" class="leadselectcheckbox selectCheckbox" />
+                                                                    </th>
+                                                                    <th
+                                                                        class="{!IF(showacceptandrejectbuttons,'d-none','')}">
+                                                                        View</th>
+                                                                    <th
+                                                                        class="{!IF(CurrentUser.User_Type__c == 'INV' && showacceptandrejectbuttons,'','d-none')}">
+                                                                        Accept/Reject</th>
+                                                                    <th>ACD</th>
+                                                                    <th>Case Number</th>
+                                                                    <th>Subject First Name</th>
+                                                                    <th>Subject Last Name</th>
+                                                                    <th>Item Number</th>
+                                                                    <th>Status</th>
+                                                                    <th>Assigned To</th>
+                                                                    <th>Lead Type</th>
+                                                                    <th>Coverage Type</th>
+                                                                    <!-- <th>Address</th>
+                                                                    <th>City</th>
+                                                                    <th>State</th>
+                                                                    <th>Zip</th>-->
+                                                                    <th>Lead Contact</th>
+                                                                    <th
+                                                                        class="{!IF(CurrentUser.User_Type__c != 'INV','','d-none')}">
+                                                                        Comments</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <apex:repeat value="{!leadssearched}" var="leadRecord">
+                                                                    <tr availabelforassignment="{!If(leadRecord.ld.DHS_Case__r.Investigations_Date__c != Null,'true','false')}"
+                                                                        class="{!IF(leadRecord.ld.Extension__c,'extension','')}">
+                                                                        <td
+                                                                            class="{!IF(CurrentUser.User_Type__c != 'INV','','d-none')} ">
+                                                                            <apex:inputcheckbox value="{!leadRecord.isSelected}"
+                                                                                styleclass="leadselectcheckbox {!leadRecord.ld.Status__c}"  />
+
+                                                                        </td>
+                                                                        <td
+                                                                            class="{!IF(showacceptandrejectbuttons,'d-none','')}">
+                                                                            <a class="nav-link p-0"
+                                                                                href="{!$Site.Prefix}/DHSLeaddetail?id={!leadRecord.ld.id}&{!leadDetailURLParams}">View</a>
+                                                                        </td>
+                                                                        <td
+                                                                            class="{!IF(CurrentUser.User_Type__c == 'INV' && showacceptandrejectbuttons,'','d-none')}">
+
+                                                                            <a class="nav-link font-weight-bold text-success mr-2"
+                                                                                style="cursor: pointer;display: contents;"
+                                                                                id="{!leadRecord.ld.id}"
+                                                                                onclick="acceptlead(this);">Accept
+                                                                                &nbsp;&nbsp;</a>
+                                                                            <a class="nav-link font-weight-bold text-danger"
+                                                                                style="cursor: pointer;display: contents;"
+                                                                                id="{!leadRecord.ld.id}"
+                                                                                onclick="rejectlead(this);">Reject</a>
+
+                                                                        </td>
+                                                                        <td class="editAcd">
+                                                                            <div class="acdValue">
+                                                                            <i class="fas fa-pen {!IF(leadRecord.ld.Anticipated_Completion_Date__c != NULL,'d-none','')}"></i>
+                                                                            <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!leadRecord.ld.Anticipated_Completion_Date__c}" /> 
+                                                                            </apex:outputText>
+                                                                            </div>
+                                                                            <div class="acdEdit" data-id="{!leadRecord.ld.id}">
+                                                                            <apex:input styleclass="form-control datepickerInput " value="{!acdDate}" type="text" html-placeholder="mm/dd/yyyy"/>
+                                                                            &nbsp;<i class="fas fa-check"></i>
+                                                                            </div>
+                                                                        </td> 
+                                                                        <td><a class="nav-link p-0"
+                                                                                href="{!$Site.Prefix}/DHSCasedetail?id={!leadRecord.ld.DHS_Case__c}">{!leadRecord.ld.DHS_Case__r.Case_Number__c}</a>
+                                                                        </td>
+                                                                        <td>{!leadRecord.ld.DHS_Contact__r.First_Name__c}
+                                                                        </td>
+                                                                        <td>{!leadRecord.ld.DHS_Contact__r.Last_Name__c}</td>
+                                                                        <td>{!leadRecord.ld.Item_number__c}</td>
+                                                                        <td>{!leadRecord.ld.Status__c}</td>
+                                                                        <td>{!leadRecord.ld.Assigned_To_Name__c}</td>
+                                                                        <td>{!leadRecord.ld.LeadType__c}</td>
+                                                                        <td>{!leadRecord.ld.Coverage_Type__c}</td>
+                                                                        <!--<td>{!leadRecord.ld.DHS_Contact__r.Address__c}</td>
+                                                                        <td>{!leadRecord.ld.DHS_Contact__r.City__c}</td>
+                                                                        <td>{!leadRecord.ld.DHS_Contact__r.State__c}</td>
+                                                                        <td>{!leadRecord.ld.DHS_Contact__r.Zip__c}</td>-->
+                                                                        <td><div>{!leadRecord.ld.Lead_Contact_Name__c}</div> 
+                                                                            <div>{!leadRecord.ld.Lead_Contact_Address__c}</div> 
+                                                                        <div>{!leadRecord.ld.Lead_Contact_City__c}, {!leadRecord.ld.Lead_Contact_State__c} {!leadRecord.ld.Lead_Contact_Zip__c}</div>
+                                                                        </td>
+                                                                        <td
+                                                                            class="{!IF(CurrentUser.User_Type__c != 'INV','','d-none')}">
+                                                                            <apex:outputtext escape="false"
+                                                                                value="{!leadRecord.ld.Lead_Log__c}" />
+                                                                        </td>
+                                                                    </tr>
+                                                                </apex:repeat>
+                                                            </tbody>
+                                                        </table>
+                                                        </apex:outputPanel>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </apex:outputpanel>
+                            </apex:outputpanel>
+
+                        </div>
+                        <!-- /.container-fluid -->
+
+                    </div>
+                    <!-- End of Main Content -->
+
+                    <apex:actionFunction name="leadsearchaction" action="{!searchAction}"
+                        rerender="leadslistpanel,leadssearchcriteriapanel" status="loader"
+                        oncomplete="loaddatatables();return false;" />
+                    <apex:actionFunction name="leadunassignedsearchaction" action="{!searchAction}"
+                        rerender="leadslistpanel,leadssearchcriteriapanel" status="loader"
+                        oncomplete="loaddatatables();return false;">
+                        <apex:param assignTo="{!searchUnassigned}" value="" name="searchUnassigned" />
+                    </apex:actionFunction>
+                    
+                    <apex:actionFunction name="leadqarejectedsearchaction" action="{!searchAction}"
+                        rerender="leadslistpanel,leadssearchcriteriapanel" status="loader"
+                        oncomplete="loaddatatables();return false;">
+                        <apex:param assignTo="{!searchQARejected}" value="" name="searchQARejected" />
+                    </apex:actionFunction>
+                    
+                    <apex:actionFunction name="myassignedleadsearchaction" action="{!searchAction}"
+                        rerender="leadslistpanel,leadssearchcriteriapanel" status="loader"
+                        oncomplete="loaddatatables();return false;">
+                        <apex:param assignTo="{!searchmyAssigned}" value="" name="searchmyAssigned" />
+                    </apex:actionFunction>
+                    <apex:actionFunction name="showqarejectedleadsaction" action="{!searchAction}"
+                        rerender="leadslistpanel,leadssearchcriteriapanel" status="loader"
+                        oncomplete="loaddatatables();return false;">
+                        <apex:param assignTo="{!seachqarejected}" value="" name="seachqarejected" />
+                    </apex:actionFunction>
+                    <apex:actionFunction name="showdiscontinuedleadsaction" action="{!searchAction}"
+                        rerender="leadslistpanel,leadssearchcriteriapanel" status="loader"
+                        oncomplete="loaddatatables();return false;">
+                        <apex:param assignTo="{!searchmydiscontinued}" value="" name="searchmydiscontinued" />
+                    </apex:actionFunction>
+                    <apex:actionFunction name="availableleadsearchaction" action="{!searchAction}"
+                        rerender="leadslistpanel,leadssearchcriteriapanel" status="loader"
+                        oncomplete="loaddatatables();return false;">
+                        <apex:param assignTo="{!searchmyavailableleads}" value="" name="searchmyavailableleads" />
+                    </apex:actionFunction>
+
+                    <apex:actionFunction name="acceptleadaction" action="{!acceptaction}" rerender="leadslistpanel"
+                        status="loader" oncomplete="loaddatatables();return false;">
+                        <apex:param name="leadIdToAccept" value="" assignTo="{!leadIdToAccept}" />
+                    </apex:actionfunction>
+                    <apex:actionFunction name="rejectleadaction" action="{!rejectaction}" rerender="leadslistpanel"
+                        status="loader" oncomplete="loaddatatables();return false;">
+                        <apex:param name="leadIdToReject" value="" assignTo="{!leadIdToReject}" />
+                    </apex:actionfunction>
+                    <apex:actionFunction name="updateleadaction" action="{!updateACDLead}" status="loader"  rerender="errormessagepanel">
+                        <apex:param name="acdDateToUpdate" assignTo="{!acdDateToUpdate}" value=""/>
+                        <apex:param name="leadIdtoupdate" assignTo="{!leadIdtoupdate}" value=""/>
+                    </apex:actionFunction>
+
+
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <div role="alert" aria-live="assertive" data-delay="3000" aria-atomic="true" class="assigntoast fade hide"  style="position: absolute;top: 5rem;right: 0;left: 0;z-index: 99;margin: 0 auto;width: 500px;">
+                  <div class=" bg-danger text-white p-2">
+                    <strong class="me-auto">Please select a Lead</strong>
+                  </div>
+                </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+
+        </apex:form>
+
+
+        <script>
+            function updateACDDateFunction(){
+            var anticipatedCompletionDate = $('.updateacddate').val();
+                if(anticipatedCompletionDate){
+                    $.confirm({
+                         title: 'Update ACD Date',
+                         content: 'Please confirm if you want update the entered ACD Date  '+ anticipatedCompletionDate+' to all the selected leads.',
+                         buttons: {
+                             confirm: function () {
+                                 updateACDDate(anticipatedCompletionDate);
+                             },
+                             cancel: function () {}
+                         }
+                     });
+                }else{
+                    $.alert(
+                             'Please select ACD date.'
+                         );
+                         return false;
+                }
+        }
+        
+            $(document).ready(function () {
+             $('body').on('change','.leadselectcheckbox', function() {
+
+                if ($('.leadselectcheckbox:checked').length > 0) {
+
+                    $('.acdDateContainer').css('visibility', 'visible'); 
+
+                } else {
+
+                     $('.acdDateContainer').css('visibility', 'hidden');
+
+                }
+
+            });
+            $("body").on( 'dblclick','.editAcd',function(){
+             $(".editAcd").removeClass('active');
+              var currentDate = $(this).find('.acdValue').text();
+              $(this).find('input').val(currentDate );
+              $(this).addClass('active');
+                
+             });
+             $("body").on( 'click','.fa-check',function(){
+             $(".editAcd").removeClass('active');
+               var inputVal = $(this).siblings("input").val();
+               var LeadId = $(this).closest('.acdEdit').attr("data-id");
+               if(inputVal != ""){
+               $(this).closest('.acdEdit').siblings(".acdValue").text(inputVal );
+               }
+               
+               updateleadaction(inputVal,LeadId);
+                
+             });
+            
+                $("#content").on('click', '.selectCheckbox', function () {
+                    $('#content input[type="checkbox"]').prop('checked', this.checked)
+                });
+                $('.datepickerInput').datepicker({
+                    weekStart: 1,
+                    daysOfWeekHighlighted: "6,0",
+                    autoclose: true,
+                    todayHighlight: true,
+                });
+                loaddatatables();
+
+            });
+
+            function acceptlead(elem) {
+                console.log(elem);
+                var leadid = elem.id;
+                console.log(leadid);
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, lead will be accepted.',
+                    buttons: {
+                        confirm: function () {
+                            acceptleadaction(leadid);
+                        },
+                        cancel: function () {}
+                    }
+                });
+
+
+            }
+
+            function rejectlead(elem) {
+                console.log(elem);
+                var leadid = elem.id;
+                console.log(leadid);
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, lead will be rejected.',
+                    buttons: {
+                        confirm: function () {
+                            rejectleadaction(leadid);
+                        },
+                        cancel: function () {}
+                    }
+                });
+
+
+            }
+
+
+            function leadsearch() {
+                var zipPattern = /^([0-9]{5})(?:[-\s]*([0-9]{4}))?$/;
+                if ($('.leadTypeSearchEntry').val() == "" && $('.leadStatusSearchEntry').val() == "" && $(
+                        '.caseNumberSearchEntry').val() == "" && $('.manifestSearchEntry').val() == "" && $(
+                        '.subjectFirstNameSearchEntry').val() == "" && $('.subjectLastNameSearchEntry').val() == "" &&
+                    $('.streetaddressSearchEntry').val() == "" && $('.citySearchEntry').val() == "" && $(
+                        '.stateSearchEntry').val() == "" && ($('.zipSearchEntry').val() == "" || $('.zipSearchEntry')
+                        .val().match(zipPattern) == null)) {
+                    if ($('.zipSearchEntry').val().match(zipPattern) == null) {
+                        $(".zipSearchEntry").after(
+                            '<div class="invalid-feedback d-block">Invalid Zip Format</div>');
+
+                    } else {
+                        $(".zipSearchEntry").after(
+                            '<div class="invalid-feedback d-block">Please fill the required fields</div>');
+                    }
+
+                } else {
+                    leadsearchaction();
+                    $('.leadTypeSearchEntry').val('');
+                    $('.leadStatusSearchEntry').val('');
+                    $('.caseNumberSearchEntry').val('');
+                    $('.manifestSearchEntry').val('');
+                    $('.subjectFirstNameSearchEntry').val('');
+                    $('.subjectLastNameSearchEntry').val('');
+                    $('.streetaddressSearchEntry').val('');
+                    $('.citySearchEntry').val('');
+                    $('.stateSearchEntry').val('');
+                    $('.zipSearchEntry').val('');
+
+                }
+            }
+
+            function availableleadsearch() {
+                console.log('inside availableleadsearch');
+                availableleadsearchaction(true);
+            }
+
+            function leadunassignedsearch() {
+                console.log('inside leadunassignedsearch');
+                leadunassignedsearchaction(true);
+            }
+        	function leadqarejectedsearch(){
+                console.log('inside leadqarejectedsearch');
+                leadqarejectedsearchaction(true);
+            }
+
+            function myassignedleadsearch() {
+                console.log('inside myassignedleadsearch');
+                myassignedleadsearchaction(true);
+            }
+
+            function showqarejectedleads() {
+                showqarejectedleadsaction(true);
+            }
+            function showdiscontinuedleads() {
+                showdiscontinuedleadsaction(true);
+            }
+            
+            function unassignleads(){
+                //if($("input.leadselectcheckbox:checkbox:checked").length == $("input.leadselectcheckbox.In-Progress:checkbox:checked").length && $("input.leadselectcheckbox:checkbox:checked").length>0){
+                if($("input.leadselectcheckbox:checkbox:checked").length>0){
+                    $.confirm({
+                        title: 'Please Confirm!',
+                        content: 'On click of confirm, leads will be unassigned.',
+                        buttons: {
+                            confirm: function () {
+                                unassignleadsaction();
+                            },
+                            cancel: function () {}
+                        }
+                    });
+                 }else{
+                   //if($("input.leadselectcheckbox:checkbox:checked").length > 0){
+                   //    $('.assigntoast strong').text('Only In-Progress leads can be unassigned ');
+                   //    $('.assigntoast').toast('show');
+                   //}else{
+                       $('.assigntoast strong').text('Please select a lead');
+                       $('.assigntoast').toast('show');
+                   //}     
+                 }
+            }
+
+            function assignleads() {
+                var numberofleads = $('.leadselectcheckbox:checkbox:checked').length;
+                var assignto = $('.selectedUserIdForAssignment').val();
+                var assigntoname = $(".selectedUserIdForAssignment option:selected").text();
+                var isvalid = true;
+                $('.invalid-feedback').html('');
+
+                $('.leadselectcheckbox:checkbox:checked').each(function () {
+                    var availabelforassignment = $(this).parent().parent().attr('availabelforassignment')
+                    console.log({
+                        availabelforassignment
+                    });
+                    if (availabelforassignment == 'false') {
+                        $(this).parent().parent().addClass('highlightnoteligbileforassignmentrow');
+                        isvalid = false;
+                    } else {
+                        $(this).parent().parent().removeClass('highlightnoteligbileforassignmentrow');
+                    }
+                });
+                if (!isvalid) {
+                    $('.showleadassignerror').after(
+                        '<div class="invalid-feedback d-block">Leads cannot be assigned without marking Lead Completion.</div>'
+                    );
+
+                }
+
+                if (numberofleads > 0 && assignto != '' && isvalid) {
+                    $.confirm({
+                        title: 'Please Confirm!',
+                        content: 'Would you like to proceed with this lead assignment to ' + assigntoname + '?',
+                        buttons: {
+                            confirm: function () {
+                                assignleadsaction();
+                                $('.leadTypeSearchEntry').val('');
+                                $('.leadStatusSearchEntry').val('');
+                                $('.caseNumberSearchEntry').val('');
+                                $('.manifestSearchEntry').val('');
+                                $('.subjectFirstNameSearchEntry').val('');
+                                $('.subjectLastNameSearchEntry').val('');
+                                $('.streetaddressSearchEntry').val('');
+                                $('.citySearchEntry').val('');
+                                $('.stateSearchEntry').val('');
+                                $('.zipSearchEntry').val('');
+                            },
+                            cancel: function () {}
+                        }
+                    });
+                } else if (numberofleads == 0) {
+                    alert('Please select a lead to assign.');
+                } else if (assignto == '') {
+                    alert('Please select a user to assign cases.');
+                }
+
+            }
+
+            function loaddatatables() {
+                $('#leadstable').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                    "bPaginate": false,
+                    "bFilter": true,
+                    "bInfo": false,
+                    "bAutoWidth": false,
+                    "language": {
+                        "zeroRecords": "No Leads found with search criteria."
+                    }
+                });
+            }
+            
+             $(document).ready(function() {
+            $('body').on('click','.export-button',function(e){
+            e.preventDefault();
+
+             const criteriaData = JSON.parse($('.criteriaData input').val());
+                const conditions = criteriaData.map(condition => {
+                    return {
+                        key: condition.FieldName,
+                        value: condition.FieldValue,
+                        operator: condition.Operator,
+                        type: condition.FieldType === 'Date' ? 'object' : null 
+                    };
+                });
+             
+              exportCSV('DHS_Lead__c', "Id", conditions, "Name","DHSLeadDashboardExport");
+             return false;
+            });
+            });
+            function exportCSV(sObjectName, fieldNames, conditions, orderBy = null, reportType) {
+         
+         $Lightning.use("c:exportCSVWrapperApp", function() {
+         
+         $Lightning.createComponent("c:dhsExportCSV",
+         
+         {
+         
+           sObjectName   : sObjectName, // You can pass the value to @api attributes if you have inside JavaScript Class.
+         
+           fieldNames : fieldNames,
+         
+           conditions: conditions,
+         
+           orderBy: orderBy,
+           
+           reportType : reportType
+         
+         },
+         
+         "LwcId", // the Id of div tag where your component will be rendered
+         
+         function(cmp) {
+         
+           console.log('Calling the LWC Component');
+         
+         });
+         
+         });
+         
+         }
+            
+        </script>
+        <style>
+            .dataTables_empty {
+                text-align: center !important;
+                font-size: 14px !important;
+                font-weight: bold !important;
+                color: #093b87 !important;
+            }
+        </style>
+    </body>
+</apex:page>

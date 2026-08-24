@@ -1,0 +1,77 @@
+<template>
+    <div class="slds-m-around_x-small">
+        <div class="slds-grid slds-gutters">
+           
+                <div class="slds-col slds-size_3-of-12">
+                <lightning-select name="reportType" label="Report Type" value={value} options={options}
+                    onchange={handleChange} required></lightning-select>
+                </div>
+                <div class="slds-col slds-size_9-of-12">
+                    <div style="padding-top:20px;">
+                        <lightning-button class="slds-p-around_small"  variant="brand" label="Update Column Order"
+                    title="Update Column Order" onclick={handleSubmit} disabled={unableButtons}></lightning-button>
+                    <lightning-button variant="brand" label="Add Column" title="Add Column"
+                    onclick={handleAddColumn} disabled={unableButtons}></lightning-button>
+                    </div>
+                    
+
+                    
+                </div>
+            
+        </div>
+
+        <div if:true={showDataTable}>
+            <table class="table-dragable slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small"
+                aria-describedby="User Details">
+                <thead>
+                    <tr>
+                        <!--<th scope="col"> &nbsp; </th>-->
+                        <th scope="col">Index</th>
+                        <th scope="col">Label</th>
+                        <th scope="col">Api Name</th>
+                        <th scope="col">Id</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <template for:each={reportData} for:item="user" for:index="index">
+                        <tr class="grabable" key={user.Id} id={user.Id} draggable="true" data-drag-id={index}
+                            ondragstart={onDragStart} ondragover={onDragOver} ondrop={onDrop}>
+                            <!--
+            <th scope="col" >
+              <input class="mychkbox" type="checkbox"></input>
+            </th>-->
+                            <td scope="col" class="myIndex">{index}</td>
+                            <td scope="col">{user.Label__c}</td>
+                            <td scope="col">{user.Api_Name__c}</td>
+                            <td scope="col" class="myId">{user.Id}</td>
+                            <td scope="col" style="cursor:pointer">
+                                <lightning-button-icon data-id={user.Id} data-label={user.Label__c}
+                                    data-apiname={user.Api_Name__c} data-index={user.index} icon-name="utility:edit"
+                                    alternative-text="Edit" title="Edit" onclick={handleClick}></lightning-button-icon>
+                            </td>
+                            <td scope="col" style="cursor:pointer">
+                                <lightning-button-icon data-id={user.Id} data-label={user.Label__c}
+                                    data-apiname={user.Api_Name__c} data-index={user.index} icon-name="utility:delete"
+                                    alternative-text="Delete" title="Delete" onclick={handleDelete}>
+                                </lightning-button-icon>
+                            </td>
+                        </tr>
+                    </template>
+
+
+                </tbody>
+            </table>
+        </div>
+        <div if:true={showUpsertReportExport}>
+            <c-upsert-report-export title="Edit" edit={isEdit} input={rowData} objectname={value}
+                onclosepopup={handleCloseEvt} onsubmitpopup={handleSaveField} currentsystem={currentsystem}>
+            </c-upsert-report-export>
+        </div>
+        <div class="slds-m-top_small">
+
+        </div>
+    </div>
+</template>

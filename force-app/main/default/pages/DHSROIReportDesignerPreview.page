@@ -1,0 +1,87 @@
+<apex:page renderAs="pdf" controller="DHSROIDesignerPreviewController" showHeader="false" standardStylesheets="false"
+    applyHtmlTag="false" applyBodyTag="false">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <style type="text/css">
+            @page {
+                size: A4 portrait;
+                margin: 58px 0 42px 0;
+                @top-center {
+                    content: "UNCLASSIFIED/FOROFFICIALUSEONLY";
+                    font-size: 12px;
+                    font-weight: bold;
+                    padding-top: 14px;
+                }
+                @top-right {
+                    content: "{!customerCaseNumber}";
+                    font-size: 12px;
+                    font-weight: bold;
+                    padding-right: 18px;
+                    padding-top: 26px;
+                    text-align: right;
+                }
+            }
+            body {
+                color: #000;
+                font-family: Arial, sans-serif;
+                margin: 0;
+            }
+            .roi-preview-document {
+                display: block;
+                width: 210mm;
+            }
+            .roi-first-logo {
+                margin: 12px 0 18px;
+                text-align: center;
+                width: 100%;
+            }
+            .roi-first-logo img {
+                display: block;
+                margin: 0 auto;
+                width: 200px;
+            }
+            .roi-preview-page {
+                background: #fff;
+                box-sizing: border-box;
+                display: block;
+                padding-bottom: 24px;
+                padding-top: 12px;
+                page-break-inside: auto;
+                position: relative;
+                width: 210mm;
+            }
+            .roi-preview-block {
+                box-sizing: border-box;
+                overflow: hidden;
+                padding: 6px;
+                position: absolute;
+            }
+            .roi-preview-block p {
+                margin: 0;
+            }
+            .roi-preview-table {
+                border: var(--roi-table-border, 1px solid #999);
+                border-collapse: collapse;
+                width: 100%;
+            }
+            .roi-preview-table th,
+            .roi-preview-table td {
+                border: var(--roi-table-border, 1px solid #999);
+                padding: var(--roi-table-padding, 4px) 8px;
+                text-align: left;
+            }
+            .roi-signature span {
+                border-top: 1px solid #111;
+                display: inline-block;
+                min-width: 220px;
+                padding-top: 6px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="roi-first-logo">
+            <apex:image value="{!$Resource.ISNlogoDhs}" />
+        </div>
+        <apex:outputText value="{!renderedHtml}" escape="false" />
+    </body>
+</apex:page>

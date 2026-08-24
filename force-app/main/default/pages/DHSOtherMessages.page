@@ -1,0 +1,296 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="DHSOtherMessagesController"
+    docType="html-5.0" id="page">
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Messages</title>
+
+    </head>
+
+    <body id="page-top">
+        <apex:form id="form">
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+
+                <style>
+                    .messageBody small {
+                        cursor: pointer
+                    }
+
+                    .messageBody p {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        margin-bottom: 10px;
+                    }
+
+                    .messageBody.active p {
+                        white-space: normal;
+                    }
+
+                    .mail-list-container {
+                        height: 80vh
+                    }
+
+                    .bs-autocomplete-menu {
+                        display: block
+                    }
+
+                    ul.bs-autocomplete-menu a {
+                        background: none;
+                        border: none
+                    }
+
+                    .ui-menu-item {
+                        padding: 10px;
+                        display:
+                    }
+                </style>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Messages</b></h4>
+                            </div>
+
+                            <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+                            <div class="email-wrapper wrapper">
+                                <div class="row align-items-stretch">
+                                    <div class="mail-list-container col-3 pt-4 pb-4 border-right bg-white">
+                                        <apex:outputpanel id="searchpanel">
+                                            <h4 class="text-primary mb-3">Search Messages</h4>
+                                            <div class="col p-0 mb-3">
+                                                <label class="form-label">From User</label>
+                                                <apex:selectlist styleclass="mandatory form-select form-select-sm form-control selectedfromuserid"
+                                                    size="1" value="{!selectedFromUserId}">
+                                                    <apex:selectOptions value="{!fromUserList}" />
+                                                </apex:selectlist> 
+                                            </div>
+                                            <div class="col p-0 mb-3">
+                                                <label class="form-label">To User</label>
+                                                <apex:selectlist styleclass="mandatory form-select form-select-sm form-control selectedtouserid"
+                                                    size="1" value="{!selectedToUserId}">
+                                                    <apex:selectOptions value="{!toUserList}" />
+                                                </apex:selectlist>
+                                            </div>
+                                            <div class="col p-0 mb-3">
+                                                <label class="form-label">Date</label>
+                                                <apex:input type="date" styleclass="form-control"
+                                                    value="{!selectedDate}" />
+                                            </div>
+                                            <div class="col p-0 mb-3">
+                                                <label class="form-label">Type</label>
+                                                <apex:selectlist styleclass="mandatory form-select form-select-sm form-control selectedtype"
+                                                    size="1" value="{!selectedTypeofMessage}">
+                                                    <apex:selectOptions value="{!typeOfMessages}" />
+                                                </apex:selectlist>
+                                            </div>
+                                            <div class="col p-0 pt-3 mt-3">
+                                                <button class="btn btn-primary searchbutton"
+                                                    onclick="fetchmessages();return false;">Search</button>
+                                            </div>
+                                        </apex:outputpanel>
+                                    </div>
+
+                                    <div class="col-9 bg-white">
+                                        <apex:outputpanel id="messagespanel">
+                                            <ul class="nav nav-pills mb-3 py-4" id="pills-tab1" role="tablist">
+                                                <apex:outputpanel rendered="{!IF(selectedTypeofMessage == 'DHS_All' || selectedTypeofMessage == 'Incoming', true, false)}">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link {!IF(selectedTypeofMessage == 'DHS_All' || selectedTypeofMessage == 'Incoming','active','')}"
+                                                            id="pills-home-tab" data-toggle="pill" href="#pills-home"
+                                                            role="tab" aria-controls="pills-home"
+                                                            aria-selected="true">Incoming</a>
+                                                    </li>
+                                                </apex:outputpanel>
+                                                <apex:outputpanel rendered="{!IF(selectedTypeofMessage == 'DHS_All' || selectedTypeofMessage == 'Sent Items', true, false)}">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link {!IF(selectedTypeofMessage == 'Sent Items','active','')}"
+                                                            id="pills-profile-tab" data-toggle="pill"
+                                                            href="#pills-profile" role="tab"
+                                                            aria-controls="pills-profile" aria-selected="false">Sent
+                                                            Items</a>
+                                                    </li>
+                                                </apex:outputpanel>
+                                            </ul>
+                                            <div class="tab-content" id="pills-tabContent1">
+                                                <div class="tab-pane fade {!IF(selectedTypeofMessage == 'DHS_All' || selectedTypeofMessage == 'Incoming','show active','')}"
+                                                    id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                                    <div class="list-group ">
+                                                        <apex:repeat value="{!allIncomingMessages}" var="message">
+                                                            <div
+                                                                class="list-group-item  flex-column align-items-start ">
+                                                                <div class="d-flex w-100 justify-content-between">
+                                                                    <h5 class="mb-1">{!message.Subject__c}</h5>
+                                                                    <small>{!message.createddate}</small>
+                                                                </div>
+                                                                <div class="mb-1 messageBody">
+                                                                    <p><apex:outputtext escape="false" value="{!message.Message_Body__c}"/></p>
+                                                                    <small>View More ...</small>
+                                                                </div>
+                                                            </div>
+                                                        </apex:repeat>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade {!IF(selectedTypeofMessage == 'Sent Items','show active','')}"
+                                                    id="pills-profile" role="tabpanel"
+                                                    aria-labelledby="pills-profile-tab">
+                                                    <div class="list-group ">
+                                                        <apex:repeat value="{!allOutgoingMessages}" var="message">
+                                                            <div
+                                                                class="list-group-item  flex-column align-items-start ">
+                                                                <div class="d-flex w-100 justify-content-between">
+                                                                    <h5 class="mb-1">{!message.Subject__c}</h5>
+                                                                    <small>{!message.createddate}</small>
+                                                                </div>
+                                                                <div class="mb-1 messageBody">
+                                                                    <p><apex:outputtext escape="false" value="{!message.Message_Body__c}"/></p>
+                                                                    <small>View More ...</small>
+                                                                </div>
+                                                            </div>
+                                                        </apex:repeat>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </apex:outputpanel>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+                        <!-- /.container-fluid -->
+
+                    </div>
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; ISN</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+
+            <apex:actionFunction name="fetchmessagesaction" action="{!fetchmessages}" rerender="searchpanel,messagespanel"
+                status="loader">
+            </apex:actionfunction>
+
+        </apex:form>
+
+        <style>
+            ul.bs-autocomplete-menu {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                max-height: 200px;
+                overflow: auto;
+                z-index: 9999;
+                border: 1px solid #eeeeee;
+                border-radius: 4px;
+                background-color: #fff;
+                box-shadow: 0px 1px 6px 1px rgba(0, 0, 0, 0.4);
+            }
+
+            ul.bs-autocomplete-menu a {
+                font-weight: normal;
+                color: #000;
+            }
+              .highlightrequiredfield {
+                border: 1px solid red !important;
+            }
+        </style>
+        <script>
+            $(document).ready(function () {
+                $('body').on('click','.messageBody  small', function () {
+                    $(this).parent().toggleClass('active');
+                })
+                $('body').on('click','#pills-tab1 .nav-link', function () {
+               var TabId =  $(this).attr('href');
+               
+                  $('.tab-pane').removeClass('show active');
+               $(TabId).addClass('show active');
+                      $('.nav-link').removeClass('show active');
+                    $(this).addClass('show active');
+                })
+            })
+            function fetchmessages() {
+                var selectedfromuserid = $('.selectedfromuserid').val();
+                var selectedtouserid = $('.selectedtouserid').val();
+                var selectedtype = $('.selectedtype').val();
+                var isvalid = true;
+                    $(".mandatory").each(function () {
+                        var fieldvalue = $(this).val();
+                        if (fieldvalue == '') {
+                            $(this).addClass('highlightrequiredfield');
+                            isvalid = false;
+                        } else {
+                            $(this).removeClass('highlightrequiredfield');
+                        }
+                    });
+
+                    if (isvalid) {
+                        $.confirm({
+                            title: 'Please Confirm!',
+                            content: 'Would you like to fetch the messages',
+                            buttons: {
+                                confirm: function () {
+                                    fetchmessagesaction();
+                                },
+                                cancel: function () {}
+                            }
+                        });
+                    } else {
+                        $('.invalid-feedback').html('');
+                        $(".searchbutton").after(
+                            '<div class="invalid-feedback d-block">Please fill mandatory information.</div>'
+                        );
+                    }
+
+            }
+        </script>
+
+    </body>
+
+</apex:page>

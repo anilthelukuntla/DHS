@@ -1,0 +1,754 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+           controller="DHSOnBoardingController">
+    
+    
+    <head>
+        
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        
+        <title>Onboarding</title>
+        
+        
+        
+        <style>
+            .sidebar #sidebarToggle::after {
+            font-weight: 900;
+            content: '\f104';
+            font-family: 'Font Awesome 6 Free';
+            margin-right: 0.1rem;
+            }
+            
+            
+            
+            .dataTables_filter {
+            display: flex;
+            justify-content: end;
+            margin-top: -60px;
+            margin-bottom: 20px;
+            }
+            
+            .dataTables_filter label {
+            font-weight: bold;
+            }
+            
+            .dataTables_filter input {
+            width: 300px;
+            }
+            
+            .dataTables_paginate.paging_simple_numbers {
+            display: flex;
+            align-items: flex-end;
+            justify-content: end;
+            padding-right: 40px;
+            margin-top: 40px;
+            }
+            
+            .modal-dialog {
+            max-width: 60% !important;
+            }
+            .mandatory {
+                border-color: red;
+            }
+
+            .mandatory:after {
+                content: " *";
+                color: red;
+            }
+
+            .invalid-feedback {
+                display: none;
+                color: red;
+                font-size: 0.8em;
+            }
+
+            .has-error .invalid-feedback {
+                display: block;
+            }
+            .form-group.mb-2.col-4.systemAccessGroupE td input {
+                margin-right: 5px;
+                position: relative;
+                top: 1px;
+            }
+            .form-group.mb-2.col-4.systemAccessGroupE td {
+                padding: 0 10px 0 0;
+            }
+            span.dateInput.dateOnlyInput:after, .dategroup:after {
+    content: "\f133";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    right: 10px;
+    position: absolute;
+    top: 3px !important;
+}
+
+.systemAccessGroupE table ,.systemAccessGroup table{border:none}
+input[type="checkbox"] {
+    width: auto;
+}
+.systemAccessGroupE table, .systemAccessGroup table{border:none}
+input[type="checkbox"] {
+    width: auto;
+}
+.form-group.mb-2.col-4.systemAccessGroupE td input, .form-group.mb-2.col-4.systemAccessGroup td input {
+                margin-right: 5px;
+                position: relative;
+                top: 1px;
+            }
+            .systemAccessGroup td {
+    padding: 5px;
+}
+        </style>
+    </head>
+    
+    <body id="page-top">
+        <apex:form >
+            
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+                
+                <c:DHSHeader ></c:DHSHeader>
+                
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+                    
+                    <!-- Main Content -->
+                    <div id="content">
+                        
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Onboarding Dashboard</b></h4>
+                            </div>
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+                        </nav>
+                        <!-- End of Topbar -->
+                        
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            
+                                            <div class="d-flex flex-wrap align-items-center" style="gap:8px;">
+                                                <span class="btn btn-primary" data-target="#AddUser" data-toggle="modal">Add
+                                                    New User</span>
+                                                <button type="button" id="bulkEditBtn" class="btn btn-primary {!IF(canManageOnboarding,'','d-none')}" disabled="disabled" onclick="openBulkEditModal();return false;">Bulk Edit</button>
+                                                <button type="button" class="btn btn-primary {!IF(canManageOnboarding,'','d-none')}" onclick="exportOnboardingTable();return false;">Export to Excel</button>
+                                            </div>
+                                            <div class="mt-4 ">
+                                                <apex:outputpanel id="userslistpanel">
+                                                    <table id="onboardingUsersTable" class="table no-wrap user-table mb-0 dataTable onboarding-grid">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium {!IF(canManageOnboarding,'','d-none')}">
+                                                                    <input type="checkbox" id="selectAllOnboardingRows" onclick="toggleAllOnboardingRows(this)" />
+                                                                </th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    First Name</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    Last Name</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    Title</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    Candidate type</th>
+                                                                <th style="display:{!If(currentUser.Profile.Name == 'System Administrator','','none')}" scope="col" class="border-0 text-uppercase font-medium">
+                                                                    BI Candidate type</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    ADP File Number</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    Phone</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    Status</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    Start Date</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    Program</th>
+                                                                    <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    System Access</th>
+                                                                <th scope="col" class="border-0 text-uppercase font-medium">
+                                                                    Actions
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            
+                                                            <apex:repeat value="{!onboardingUsers}" var="user">
+                                                                <tr>
+                                                                    <td class="{!IF(canManageOnboarding,'','d-none')}">
+                                                                        <input type="checkbox" class="onboarding-row-select" value="{!user.Id}" onchange="updateBulkEditButtonState()" />
+                                                                    </td>
+                                                                    <td data-export="{!user.First_Name__c}">
+                                                                        <apex:outputfield styleclass="font-medium mb-0" value="{!user.First_Name__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.Last_Name__c}">
+                                                                        <apex:outputfield styleclass="font-medium mb-0" value="{!user.Last_Name__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.Title__c}">
+                                                                        <apex:outputfield styleclass="text-muted" value="{!user.Title__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.Candidate_type__c}">
+                                                                        <apex:outputfield styleclass="text-muted" value="{!user.Candidate_type__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.BI_Candidate_type__c}" style="display:{!If(currentUser.Profile.Name == 'System Administrator','','none')}">
+                                                                        <apex:outputfield styleclass="text-muted" value="{!user.BI_Candidate_type__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.Paychex_ID__c}">
+                                                                        <apex:outputfield styleclass="text-muted" value="{!user.Paychex_ID__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.Cell_phone__c}">
+                                                                        <apex:outputfield styleclass="text-muted" value="{!user.Cell_phone__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.Status__c}">
+                                                                        <apex:outputfield styleclass="text-muted" value="{!user.Status__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.Start_Date__c}">
+                                                                        <apex:outputfield styleclass="text-muted" value="{!user.Start_Date__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.Program__c}">
+                                                                        <apex:outputfield styleclass="text-muted" value="{!user.Program__c}"/>
+                                                                    </td>
+                                                                    <td data-export="{!user.System_Access__c}">
+                                                                        <apex:outputfield styleclass="text-muted radio-buttons" value="{!user.System_Access__c}"/>
+                                                                    </td>
+                                                                    <td>
+                                                                        <a id="{!user.id}" class="p-2" onclick="edituser(this);"><i class="fa fa-edit"></i></a>
+                                                                        <a id="{!user.id}" title="Deactivate user" onclick="deleteuser(this);" class="p-2 {!IF(AND(canManageOnboarding, user.Status__c != 'Inactive'),'','d-none')}"><i class="fa fa-ban"></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            </apex:repeat>
+                                                            
+                                                        </tbody>
+                                                    </table>
+                                                </apex:outputpanel>
+                                                <apex:actionFunction name="edituseraction" action="{!editOnboardingUser}" rerender="editusermodalpanel" status="loader" oncomplete="openeditusermodal();return false;">
+                                                    <apex:param name="editOnboardingUserId" value="" assignTo="{!editOnboardingUserId}"/>
+                                                </apex:actionfunction>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <!-- /.container-fluid -->
+                    
+                    
+                    <!-- End of Main Content -->
+                    
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; ISN Corporation 2024</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+                </div>
+            </div>
+            <!-- End of Content Wrapper -->
+            
+            
+            <!-- End of Page Wrapper -->
+            
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            <div class="modal fade" id="editUser" tabindex="-1" role="dialog" aria-labelledby="editUserLabel"
+                 aria-hidden="true">
+                <apex:outputPanel id="editusermodalpanel">
+                    <div class="modal-dialog emailbody" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editUserLabel">Edit User Details</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body ">
+                                <div class="row">
+                                        <apex:repeat value="{!$ObjectType.OnBoarding__c.fieldsets.OnboardingUser}"
+                                                 var="fieldValue">
+                                        <div class="form-group mb-2 col-4" style="display:{!If((currentUser.Profile.Name == 'System Administrator' || (fieldValue.label != 'CCPL' && fieldValue.label != 'BI Candidate type')),'','none')}">
+
+                                        <label class="{!IF(fieldValue.label == 'First Name' || fieldValue.label == 'Last Name' || fieldValue.label == 'System Access' || fieldValue.label == 'Email' || fieldValue.label == 'User Profile', 'mandatory', '')}">
+                                            {!fieldValue.Label}
+                                        </label>
+                                            <apex:inputField value="{!editOnboardingUser[fieldValue]}" styleClass="{!IF(fieldValue.type == 'date', 'datepickerInput ', '') + IF(fieldValue.Label == 'First Name' || fieldValue.Label == 'Last Name' || fieldValue.Label == 'Email' || fieldValue.Label == 'User Profile', 'form-control mandatory mandatoryField', 'form-control')}"/>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid {!fieldValue.Label}.
+                                            </div>
+                                            </div>
+                                        </apex:repeat>
+                                    
+                                    
+                                    <div class="form-group mb-2 col-4 systemAccessGroupE">
+                                    <label class="mandatory">System Access</label>
+                                        <apex:selectRadio value="{!userSystemAccess1}" styleClass="mandatory">
+                                            <apex:selectOptions value="{!Items}"/>
+                                        </apex:selectRadio>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="display:block;">
+                                <center>
+                                    <!--<button type="button" class="btn btn-primary" onclick="sendwithdocusign();return false;">Send With Docusign</button>-->
+                                    <button type="button" class="btn btn-primary" onclick="updateedituser();return false;">Update</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </center>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+            </div>
+            
+            <div class="modal fade" id="AddUser" tabindex="-1" role="dialog" aria-labelledby="AddUserLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog emailbody" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="AddUserLabel">Add User Details</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body newuser ">
+                        <apex:outputPanel id="createusermodal">
+                            <div class="row needs-validation" >
+                                <apex:repeat value="{!$ObjectType.OnBoarding__c.fieldsets.OnboardingUser}"
+                                             var="fieldValue">
+                                    <div class="form-group mb-2 col-4" style="display:{!If((currentUser.Profile.Name == 'System Administrator' || (fieldValue.label != 'CCPL' && fieldValue.label != 'BI Candidate type')),'','none')}">
+
+                                         <label class="{!IF(fieldValue.label == 'First Name' || fieldValue.label == 'Last Name' || fieldValue.label == 'System Access' || fieldValue.label == 'Email' || fieldValue.label == 'User Profile', 'mandatory', '')}">
+
+                                            {!fieldValue.Label}
+
+                                        </label>
+                                        
+                                        <apex:inputField value="{!newUser[fieldValue]}" styleClass="{!IF(fieldValue.type == 'date', 'datepickerInput ', '') + IF(fieldValue.Label == 'First Name' || fieldValue.Label == 'Last Name' || fieldValue.Label == 'Email' || fieldValue.Label == 'User Profile', 'form-control mandatory mandatoryField', 'form-control')}"/>
+                                        <div class="invalid-feedback">
+                                            Please provide a valid {!fieldValue.Label}.
+                                        </div>
+                                    </div>
+                                </apex:repeat>
+                                
+                            <div class="form-group mb-2 col-4 systemAccessGroup">
+                                <label class="mandatory">System Access</label>
+                                <apex:selectRadio value="{!userSystemAccess}" styleClass="form-control mandatory">
+                                    <apex:selectOptions value="{!Items}"/>
+                                </apex:selectRadio>
+                                <div class="invalid-feedback">Please select System Access.</div>
+                            </div>
+
+                            </div>
+ </apex:outputPanel>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="createuser();return false;">Create User</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="bulkEditModal" tabindex="-1" role="dialog" aria-labelledby="bulkEditModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="bulkEditModalLabel">Bulk Edit Onboarding Profiles</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <apex:repeat value="{!bulkEditFields}" var="bulkField">
+                                <div class="form-group">
+                                    <label>{!bulkField.label}</label>
+                                    <apex:outputPanel rendered="{!OR(bulkField.isPicklist, bulkField.isBoolean)}">
+                                        <select class="form-control bulk-edit-field" data-field="{!bulkField.apiName}" data-input-type="picklist">
+                                            <option value="">-- Select --</option>
+                                            <apex:repeat value="{!bulkField.picklistOptions}" var="picklistOption">
+                                                <option value="{!picklistOption.value}">{!picklistOption.label}</option>
+                                            </apex:repeat>
+                                        </select>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!bulkField.isTextArea}">
+                                        <textarea class="form-control bulk-edit-field" rows="3" data-field="{!bulkField.apiName}" data-input-type="textarea"></textarea>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel rendered="{!bulkField.showInputField}">
+                                        <input type="{!bulkField.inputType}" class="form-control bulk-edit-field" data-field="{!bulkField.apiName}" data-input-type="{!bulkField.inputType}" />
+                                    </apex:outputPanel>
+                                </div>
+                            </apex:repeat>
+                            <small class="form-text text-muted">Any value you enter here will be applied to all selected onboarding profiles. Leave a field blank to skip it.</small>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="saveBulkEdit();return false;">Save</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+            <apex:actionFunction name="updateedituseraction" action="{!saveModifiedOnboardingUser}" status="loader" rerender="userslistpanel" oncomplete="closeeditusermodal();refreshOnboardingTable();return false;"/>
+            <apex:actionFunction name="sendtodocusignaction" action="{!sendtodocusign}" status="loader" rerender="userslistpanel" oncomplete="closeeditusermodal();return false;"/>
+            
+            <apex:actionfunction name="createuseraction" action="{!createNewUser}" status="loader" rerender="userslistpanel,createusermodal"  oncomplete="closecreateusermodal();refreshOnboardingTable();return false;"/>
+            <apex:actionFunction name="savebulkeditaction" action="{!saveMainScreenUpdates}" status="loader" rerender="userslistpanel" oncomplete="closeBulkEditModal();refreshOnboardingTable();return false;">
+                <apex:param name="bulkUpdatePayload" value="" assignTo="{!bulkUpdatePayload}"/>
+            </apex:actionFunction>
+            <apex:actionFunction name="deleteuseraction" action="{!deleteOnboardingUser}" rerender="userslistpanel" status="loader" oncomplete="refreshOnboardingTable();return false;">
+                <apex:param name="deleteOnboardingUserId" value="" assignTo="{!deleteOnboardingUserId}"/>
+            </apex:actionfunction>
+        </apex:form>
+        
+        <script>
+  function validateMandatoryFields() {
+    var isValid = true;
+
+    // Validate text fields and other inputs with class 'mandatory'
+    $('.newuser .mandatoryField').each(function() {
+        if ($(this).val() === '') {
+            $(this).addClass('is-invalid');
+            isValid = false;
+        } else {
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    // Validate System Access radio buttons
+    var systemAccessGroup = $('.systemAccessGroup');
+    var systemAccessSelected = systemAccessGroup.find('input[type="radio"]:checked').length > 0;
+
+    if (!systemAccessSelected) {
+        systemAccessGroup.addClass('is-invalid');
+        isValid = false;
+    } else {
+        systemAccessGroup.removeClass('is-invalid');
+    }
+
+    return isValid;
+}
+function validateEditMandatoryFields() {
+      var isValid = true;
+
+    // Validate text fields and other inputs with class 'mandatory'
+    $('#editUser .mandatoryField').each(function() {
+        if ($(this).val() === '') {
+            $(this).addClass('is-invalid');
+            isValid = false;
+        } else {
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    // Validate System Access radio buttons
+    var systemAccessGroup = $('.systemAccessGroupE');
+    var systemAccessSelected = systemAccessGroup.find('input[type="radio"]:checked').length > 0;
+
+    if (!systemAccessSelected) {
+        systemAccessGroup.addClass('is-invalid');
+        isValid = false;
+    } else {
+        systemAccessGroup.removeClass('is-invalid');
+    }
+
+    return isValid;
+ 
+}
+
+    
+    function createuser() {
+        if (validateMandatoryFields()) {
+            $.confirm({
+                title: 'Please Confirm!',
+                content: 'On click of confirm, Onboarding user will be created.',
+                buttons: {
+                    confirm: function () {
+                        createuseraction();
+                    },
+                    cancel: function () {}
+                }
+            });
+        } else {
+            $.alert('Please fill in all mandatory fields.');
+        }
+    }
+
+
+
+    function deleteuser(elem){
+        var userid = elem.id;
+        $.confirm({
+            title: 'Please Confirm!',
+            content: 'On click of confirm, the onboarding profile will be marked inactive and the related user will be deactivated.',
+            buttons: {
+                confirm: function () {
+                    deleteuseraction(userid);
+                },
+                cancel: function () {}
+            }
+        });
+    }
+
+    function getSelectedOnboardingRowIds() {
+        return $('.onboarding-row-select:checked').map(function() {
+            return $(this).val();
+        }).get();
+    }
+
+    function updateBulkEditButtonState() {
+        var hasSelectedRows = getSelectedOnboardingRowIds().length > 0;
+        $('#bulkEditBtn').prop('disabled', !hasSelectedRows);
+        $('#selectAllOnboardingRows').prop('checked', $('.onboarding-row-select').length > 0 && $('.onboarding-row-select:checked').length === $('.onboarding-row-select').length);
+    }
+
+    function toggleAllOnboardingRows(elem) {
+        $('.onboarding-row-select').prop('checked', $(elem).is(':checked'));
+        updateBulkEditButtonState();
+    }
+
+    function openBulkEditModal() {
+        if (!getSelectedOnboardingRowIds().length) {
+            return;
+        }
+        $('#bulkEditModal').find('.bulk-edit-field').each(function() {
+            if ($(this).is('select')) {
+                $(this).val('');
+            } else {
+                $(this).val('');
+            }
+        });
+        $('#bulkEditModal').modal('show');
+    }
+
+    function closeBulkEditModal() {
+        $('#bulkEditModal').modal('hide');
+    }
+
+    function saveBulkEdit() {
+        var selectedIds = getSelectedOnboardingRowIds();
+        var bulkFieldValues = {};
+
+        if (!selectedIds.length) {
+            $.alert('Please select at least one onboarding profile.');
+            return;
+        }
+
+        $('#bulkEditModal').find('.bulk-edit-field').each(function() {
+            var fieldName = $(this).attr('data-field');
+            var fieldValue = $(this).val();
+            if (fieldValue !== null && String(fieldValue).trim() !== '') {
+                bulkFieldValues[fieldName] = fieldValue;
+            }
+        });
+
+        if (!Object.keys(bulkFieldValues).length) {
+            $.alert('Please enter at least one bulk edit value.');
+            return;
+        }
+
+        var payload = selectedIds.map(function(recordId) {
+            var rowPayload = { Id: recordId };
+            Object.keys(bulkFieldValues).forEach(function(fieldName) {
+                rowPayload[fieldName] = bulkFieldValues[fieldName];
+            });
+            return rowPayload;
+        });
+
+        $.confirm({
+            title: 'Please Confirm!',
+            content: 'On click of confirm, the selected bulk edit values will be updated for all selected onboarding profiles.',
+            buttons: {
+                confirm: function () {
+                    savebulkeditaction(JSON.stringify(payload));
+                },
+                cancel: function () {}
+            }
+        });
+    }
+
+    function sendwithdocusign(){
+        $.confirm({
+            title: 'Please Confirm!',
+            content: 'On click of confirm, Send to Docusign will be initiated.',
+            buttons: {
+                confirm: function () {
+                    sendtodocusignaction();
+                },
+                cancel: function () {}
+            }
+        });
+    }
+ function updateedituser(){
+  if (validateEditMandatoryFields()) {
+            $.confirm({
+                title: 'Please Confirm!',
+                content: 'On click of confirm, Onboarding user will be created.',
+                buttons: {
+                    confirm: function () {
+                         updateedituseraction();
+                    },
+                    cancel: function () {}
+                }
+            });
+        } else {
+            $.alert('Please fill in all mandatory fields.');
+        }
+
+           
+
+        }
+        
+         function edituser(elem){
+
+            console.log(elem);
+
+            var userid = elem.id;
+
+            console.log(userid);
+
+            edituseraction(userid);    
+
+        }
+
+
+        function openeditusermodal(){
+
+            $('#editUser').modal('show');;
+
+        }
+
+        function closeeditusermodal(){
+
+            $('#editUser').modal('hide');;
+
+        }
+
+
+
+    function closecreateusermodal(){
+        $('#AddUser').modal('hide');
+    }
+
+    function refreshOnboardingTable() {
+        var $table = $('#onboardingUsersTable');
+        if (!$table.length) {
+            return;
+        }
+
+        if ($.fn.DataTable.isDataTable($table)) {
+            $table.DataTable().destroy();
+        }
+
+        $table.DataTable({
+            "searching": true,
+            "paging": false,
+            "ordering": true,
+            "order": [],
+            "bLengthChange": false,
+            "bFilter": true,
+            "bInfo": false,
+            "bAutoWidth": false,
+            "destroy": true,
+            "columnDefs": [{
+                "orderable": false,
+                "targets": [0, -1]
+            }]
+        });
+        updateBulkEditButtonState();
+    }
+
+    function csvEscape(value) {
+        var normalized = value == null ? '' : String(value);
+        return '"' + normalized.replace(/"/g, '""') + '"';
+    }
+
+    function getExportCellValue($cell) {
+        var explicitExportValue = $cell.attr('data-export');
+        if (typeof explicitExportValue !== 'undefined') {
+            return explicitExportValue;
+        }
+
+        var $field = $cell.find('input, select, textarea').first();
+        if ($field.length) {
+            if ($field.is(':checkbox')) {
+                return $field.is(':checked') ? 'true' : 'false';
+            }
+            if ($field.is('select')) {
+                return $field.find('option:selected').text() || $field.val() || '';
+            }
+            return $field.val() || '';
+        }
+        return $cell.text().trim();
+    }
+
+    function exportOnboardingTable() {
+        var $table = $('#onboardingUsersTable');
+        if (!$table.length) {
+            return;
+        }
+
+        var exportIndexes = [];
+        var rows = [];
+
+        $table.find('thead th').each(function(index) {
+            var headerText = $(this).text().trim();
+            if ($(this).is(':visible') && headerText !== 'Actions' && headerText !== '') {
+                exportIndexes.push(index);
+            }
+        });
+
+        rows.push(exportIndexes.map(function(index) {
+            return csvEscape($($table.find('thead th')[index]).text().trim());
+        }).join(','));
+
+        $table.find('tbody tr').each(function() {
+            if (!$(this).find('td[data-export]').length) {
+                return;
+            }
+            var $cells = $(this).children('td');
+            var rowValues = exportIndexes.map(function(index) {
+                return csvEscape(getExportCellValue($cells.eq(index)));
+            });
+            rows.push(rowValues.join(','));
+        });
+
+        var blob = new Blob([rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        var downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.download = 'OnboardingExport.csv';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(downloadLink.href);
+    }
+
+    $(document).ready(function () {
+        $('body').on('focus',".datepickerInput", function(){
+            $(this).datepicker({
+                weekStart: 1,
+                daysOfWeekHighlighted: "6,0",
+                autoclose: true,
+                todayHighlight: true,
+            });
+        });
+
+        refreshOnboardingTable();
+    });
+        </script>
+    </body>
+</apex:page>

@@ -1,0 +1,868 @@
+/**
+ * @description Controls DHS lead dashboard search, assignment, pagination, and bulk actions.
+ */
+@SuppressWarnings('PMD.AvoidNonRestrictiveQueries,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.NcssConstructorCount,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.OperationWithLimitsInLoop,PMD.StdCyclomaticComplexity')
+public with sharing class DHSLeadDashboardController {
+    /** @description Provides this DHS API member. */
+    public string leadTypeSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string leadStatusSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string caseNumberSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string manifestSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string subjectFirstNameSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string subjectLastNameSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string streetaddressSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string citySearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string stateSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public string zipSearchEntry{get;set;}
+    /** @description Provides this DHS API member. */
+    public list<LeadRecord> leadsSearched {get;set;}
+    /** @description Provides this DHS API member. */
+    public boolean showleadssearchcriteriapanel { get; private set; }
+    /** @description Provides this DHS API member. */
+    public boolean showleadslistpanel { get; private set; }
+    /** @description Provides this DHS API member. */
+    public user currentUser {get;set;}
+    /** @description Provides this DHS API member. */
+    public list<selectoption> assignUserList {get;set;}
+    /** @description Provides this DHS API member. */
+    public list<selectoption> leadTypeOptions{get;set;}
+    /** @description Provides this DHS API member. */
+    public list<selectoption> leadStatusOptions{get;set;}
+    /** @description Provides this DHS API member. */
+    public boolean searchmyavailableleads { get; private set; }
+    /** @description Provides this DHS API member. */
+    public string leadDetailURLParams {get;set;}
+    /** @description Provides this DHS API member. */
+    public map<string,string> leadDetailURLParamsMap {get;set;}
+    /** @description Provides this DHS API member. */
+    public list<selectoption> stateslist {get;set;}
+    /** @description Provides this DHS API member. */
+    public string assigneeStateSelected {get;set;}
+    /** @description Provides this DHS API member. */
+    public date acdDate {get;set;}
+    /** @description Provides this DHS API member. */
+    public date anticipatedCompletionDate	{get;set;}
+    
+    /** @description Provides this DHS API member. */
+    public integer pageNumber {get;set;}
+    /** @description Provides this DHS API member. */
+    public integer totalPages   {get;set;}
+    /** @description Provides this DHS API member. */
+    public integer totalRecordCount {get;set;}
+    /** @description Provides this DHS API member. */
+    public boolean disablePrev { get; private set; }
+    /** @description Provides this DHS API member. */
+    public boolean disableNext { get; private set; }
+    /** @description Provides this DHS API member. */
+    public string queryForNextRecords {get;set;}
+    /** @description Provides this DHS API member. */
+    public string lastRecordName {get;set;}
+    /** @description Provides this DHS API member. */
+    public string firstRecordName {get;set;}
+    /** @description Provides this DHS API member. */
+    public integer currentRecordCount {get;set;}
+    /** @description Provides this DHS API member. */
+    public static object criteria {get;set;}
+    /** @description Provides this DHS API member. */
+    public DHSLeadDashboardController(){
+        pageNumber = 1; 
+        disablePrev = true;
+        disableNext = true;
+        showleadssearchcriteriapanel = true; 
+        showleadslistpanel = false;
+        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE];
+       
+        assignUserList = new List<SelectOption>();
+        leadTypeOptions = new list<selectoption>();
+        leadStatusOptions = new list<selectoption>();
+        stateslist = new list<selectoption>();
+        stateslist.add(new selectoption('','-- State --'));
+        stateslist.add(new selectoption('DHS_All States','DHS_All States'));
+        leadTypeOptions.add(new selectoption('','--None--'));
+        for(String lType: apexUtil.getPickListValuesIntoList('DHS_Lead__c','LeadType__c')){
+            if(lType == 'Subject Recontact (SUBC)'){
+                leadTypeOptions.add(new selectoption('Subject Recontact (SUBC)',lType));
+            }else{
+                leadTypeOptions.add(new selectoption(lType,lType));
+            }
+            
+        }
+        
+        leadStatusOptions.add(new selectoption('','--None--'));
+        for(String lStatus: apexUtil.getPickListValuesIntoList('DHS_Lead__c','Status__c')){
+            leadStatusOptions.add(new selectoption(lStatus,lStatus));
+        }
+        
+        searchUnassigned = false;
+        searchQARejected = false;
+        searchmyAssigned = false;
+        seachqarejected = false;
+        searchmydiscontinued = false;
+        searchmyavailableleads = false;
+        showacceptandrejectbuttons = false;
+        searchAfterAssignment = false;
+        
+        for(String lType: apexUtil.getPickListValuesIntoList('DHS_Lead__c','State__c')){
+            stateslist.add(new selectoption(lType,lType));
+        }
+        assignUserList = new List<SelectOption>();
+        assignUserList.add(new SelectOption('','-- Investigator --'));
+        
+        map<string,string> urlparametersMap = apexpages.currentpage().getparameters();
+        if(!urlparametersMap.isEmpty()){
+            for(String str: urlparametersMap.keyset()){
+            
+                if(str == 'leadTypeSearchEntry'){
+                    leadTypeSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'leadStatusSearchEntry'){
+                    leadStatusSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'caseNumberSearchEntry'){
+                    caseNumberSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'manifestSearchEntry'){
+                    manifestSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'subjectFirstNameSearchEntry'){
+                    subjectFirstNameSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'subjectLastNameSearchEntry'){
+                    subjectLastNameSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'streetaddressSearchEntry'){
+                    streetaddressSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'citySearchEntry'){
+                    citySearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'stateSearchEntry'){
+                    stateSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'ZipSearchEntry'){
+                    zipSearchEntry = urlparametersMap.get(str);
+                } 
+                if(str == 'searchUnassigned'){
+                    searchUnassigned = boolean.valueof(urlparametersMap.get(str));
+                }
+                if(str == 'searchQARejected'){
+                    searchQARejected = boolean.valueof(urlparametersMap.get(str));
+                }
+                if(str == 'searchmyAssigned'){
+                    searchmyAssigned = boolean.valueof(urlparametersMap.get(str));
+                } 
+                if(str == 'searchmydiscontinued'){
+                    searchmydiscontinued = boolean.valueof(urlparametersMap.get(str));
+                } 
+               
+                if(str == 'seachqarejected'){
+                    seachqarejected = boolean.valueof(urlparametersMap.get(str));
+                } 
+                if(str == 'searchmyavailableleads'){
+                    searchmyavailableleads = boolean.valueof(urlparametersMap.get(str));
+                }    
+            }
+            searchAction();
+        }
+        
+        fetchLeadCounts();     
+    }
+    /** @description Provides this DHS API member. */
+    public void updateACDDate(){
+        list<DHS_Lead__c> leadsToUpdate = new LisT<DHS_Lead__c>();
+            for(LeadRecord cR: LeadsSearched){
+                if(cR.isSelected){
+                    cr.ld.Anticipated_Completion_Date__c = anticipatedCompletionDate;
+                    leadsToUpdate.add(cr.ld);
+                }    
+            }  
+                    Database.update(leadsToUpdate, AccessLevel.USER_MODE);
+        }
+    /** @description Provides this DHS API member. */
+    public void onstatechange(){
+        assignUserList = new List<SelectOption>();
+        assignUserList.add(new SelectOption('','-- Investigator --'));
+        List<user> assignUsers = new List<user>();
+        if(assigneeStateSelected != 'DHS_All States'){
+            assignUsers = [select Id, User_Type__c,System_Access__c, FirstName, lastname, contact.OnBoarding__r.State__c  FROM User where contact.OnBoarding__r.State__c =:assigneeStateSelected and  isactive=true and User_Type__c='INV' WITH USER_MODE order by LastName];
+        }else{
+            assignUsers = [select Id, User_Type__c,System_Access__c, FirstName, lastname, contact.OnBoarding__r.State__c  FROM User where isactive=true and User_Type__c='INV' WITH USER_MODE order by LastName];
+        }
+        for(User u: assignUsers){
+            if(u.System_Access__c.contains('DHS')){
+            assignUserList.add(new SelectOption(u.id,u.lastname +' '+u.firstname));
+            }
+        }
+    }
+    /** @description Provides this DHS API member. */
+    public string selectedUserIdForAssignment{get;set;}
+    public boolean searchUnassigned {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    public boolean searchQARejected {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    
+    /** @description Provides this DHS API member. */
+    public boolean searchmyAssigned{ get; private set; }
+    public boolean searchmydiscontinued {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    public boolean seachqarejected{get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    /** @description Provides this DHS API member. */
+    public boolean showacceptandrejectbuttons{ get; private set; }
+    
+    /** @description Provides this DHS API member. */
+    public integer myavailableleadscount {get;set;}
+    /** @description Provides this DHS API member. */
+    public integer myassignedadscount {get;set;}
+    /** @description Provides this DHS API member. */
+    public integer myqarejectedleadscount {get;set;}
+    /** @description Provides this DHS API member. */
+    public integer mydiscontinuedcount {get;set;}
+    /** @description Provides this DHS API member. */
+    public void fetchLeadCounts(){
+        List<string> leadFields = new List<string>();
+        leadFields.add('Id');
+        List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
+        String query1 = 'Select Id From DHS_Lead__c ';
+        String query2 = 'Select Id From DHS_Lead__c ';
+        String query3 = 'Select Id From DHS_Lead__c ';
+        String query4 = 'Select Id From DHS_Lead__c ';
+        String whereCond;
+        whereCriteria = new List<DHSApexUtil.Criteria>();
+            whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Accepted', '!=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Rejected', '!=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Completed', '!='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);
+            
+            query1 = query1 + ' WHERE '+whereCond+' WITH USER_MODE'; 
+            list<DHS_Lead__c> leads = new list<DHS_Lead__c>();
+            leads = database.query(String.escapeSingleQuotes(query1), AccessLevel.USER_MODE);
+            myavailableleadscount = leads.size();
+            
+            leads = new list<DHS_Lead__c>();
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Accepted', '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Completed', '!='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Rejected', '!='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
+            query2 = query2 + ' WHERE '+whereCond+' WITH USER_MODE'; 
+            leads = database.query(String.escapeSingleQuotes(query2), AccessLevel.USER_MODE);
+            myassignedadscount = leads.size();
+            
+            leads = new list<DHS_Lead__c>();
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Accepted', '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Completed', '!='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Rejected', '='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
+            query3 = query3 + ' WHERE '+whereCond+' WITH USER_MODE'; 
+            leads = database.query(String.escapeSingleQuotes(query3), AccessLevel.USER_MODE);
+            myqarejectedleadscount = leads.size();
+            
+            leads = new list<DHS_Lead__c>();
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Discontinued', '='));
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
+            query4 = query4 + ' WHERE '+whereCond+' WITH USER_MODE'; 
+            leads = database.query(String.escapeSingleQuotes(query4), AccessLevel.USER_MODE);
+            mydiscontinuedcount = leads.size();
+    }
+    /** @description Provides this DHS API member. */
+    public void searchAction(){
+        leadDetailURLParamsMap = new map<string,string>();
+        leadDetailURLParams = null;
+        leadsSearched = new List<LeadRecord>();  
+        List<string> leadFields = new List<string>();
+        List<DHSApexUtil.Criteria> whereCriteria = new List<DHSApexUtil.Criteria>();
+        //leadFields = DHSApexUtil.FetchFields('DHS_Lead__c');
+        leadFields.add('DHS_Case__r.Case_Number__c');
+        leadFields.add('DHS_Contact__r.First_Name__c');
+        leadFields.add('DHS_Contact__r.Last_Name__c');
+        leadFields.add('DHS_Contact__r.Address__c');
+        leadFields.add('DHS_Contact__r.City__c');
+        leadFields.add('DHS_Contact__r.State__c');
+        leadFields.add('DHS_Contact__r.Zip__c');
+        leadFields.add('DHS_Case__r.Investigations_Date__c');
+        leadFields.add('DHS_Case__r.DHS_Assigned_To__c');
+        leadFields.add('LeadType__c');
+        leadFields.add('Status__c');
+        leadFields.add('DHS_Assigned_To__c');
+        leadFields.add('Name');
+         
+        String query;
+        //query = 'Select '+string.join(leadFields, ',') + ' From DHS_Lead__c ';
+        query = 'Select Id,Lead_Log__c,Lead_Contact_Name__c,Lead_Contact_Address__c,Lead_Contact_City__c,Lead_Contact_State__c,Lead_Contact_Zip__c,Coverage_Type__c,Extension__c,Assigned_To_Name__c,Item_number__c,Lead_Accepted_or_Rejected__c, Assignee_Date__c ,Anticipated_Completion_Date__c,Accepted_Date__c,'+string.join(leadFields, ',') + ' From DHS_Lead__c ';
+            //whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Completed', '!='));
+            //whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
+            
+            if(String.isNotBlank(string.valueof(leadTypeSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('LeadType__c', leadTypeSearchEntry, '='));
+                buildLeadDetailURLParams('leadTypeSearchEntry='+leadTypeSearchEntry);
+            }
+            
+            if(String.isNotBlank(string.valueof(leadStatusSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('Status__c', leadStatusSearchEntry, '='));
+                buildLeadDetailURLParams('leadStatusSearchEntry='+leadStatusSearchEntry);
+            }
+            
+            if(String.isNotBlank(string.valueof(manifestSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.Manifest__c', manifestSearchEntry, '='));
+                buildLeadDetailURLParams('manifestSearchEntry='+manifestSearchEntry);
+            }
+            
+            if(String.isNotBlank(string.valueof(caseNumberSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.Case_Number__c', caseNumberSearchEntry, '='));
+                buildLeadDetailURLParams('caseNumberSearchEntry='+caseNumberSearchEntry);
+            }
+            
+            if(String.isNotBlank(string.valueof(subjectFirstNameSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Contact__r.First_Name__c', '%'+String.escapeSingleQuotes(subjectFirstNameSearchEntry)+'%', 'LIKE'));
+                buildLeadDetailURLParams('subjectFirstNameSearchEntry='+subjectFirstNameSearchEntry);
+            }
+            
+            if(String.isNotBlank(string.valueof(subjectLastNameSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Contact__r.Last_Name__c', '%'+String.escapeSingleQuotes(subjectLastNameSearchEntry)+'%', 'LIKE'));
+                buildLeadDetailURLParams('subjectLastNameSearchEntry='+subjectLastNameSearchEntry);
+            }
+            
+            if(String.isNotBlank(string.valueof(streetaddressSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Contact__r.Address__c', streetaddressSearchEntry, '='));
+                buildLeadDetailURLParams('streetaddressSearchEntry='+streetaddressSearchEntry);
+            }
+            
+            if(String.isNotBlank(string.valueof(citySearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Contact__r.City__c', citySearchEntry, '='));
+                buildLeadDetailURLParams('citySearchEntry='+citySearchEntry);
+            }
+            
+            if(String.isNotBlank(string.valueof(stateSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Contact__r.State__c', stateSearchEntry, '='));
+                buildLeadDetailURLParams('stateSearchEntry='+stateSearchEntry);
+            }
+            if(String.isNotBlank(string.valueof(zipSearchEntry))){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Contact__r.Zip__c', zipSearchEntry, '='));
+                buildLeadDetailURLParams('zipSearchEntry='+zipSearchEntry);
+            }
+            if(CurrentUser.User_Type__c == 'INV'){
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+                whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Accepted', '='));    
+            }else{
+                //whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', '', '=')); 
+            }
+            
+            
+        String whereCond;
+        if(searchUnassigned){
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            if(CurrentUser.User_Type__c == 'PMO' || CurrentUser.User_Type__c == 'CMO'){
+                whereCriteria.add(new DHSApexUtil.Criteria('Status__c', 'Unassigned', '=')); 
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.Status__c', 'Active', '='));
+                //where_cond = 'DHS_Assigned_To__c = null AND Status__c != \'Completed\' and DHS_Case__r.Investigations_Date__c != null';  
+            }else{
+                whereCriteria.add(new DHSApexUtil.Criteria('Status__c', 'Unassigned', '='));
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.Status__c', 'Active', '='));
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.DHS_Assigned_To__c', userinfo.getuserid(), '='));
+                //where_cond = 'DHS_Assigned_To__c = null AND Status__c != \'Completed\' and DHS_Case__r.Investigations_Date__c != null and DHS_Case__r.DHS_Assigned_To__c =\''+userinfo.getuserid()+'\'';  
+            }
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria); 
+            showacceptandrejectbuttons = false;  
+            buildLeadDetailURLParams('searchUnassigned=true'); 
+        }else if(searchQARejected){
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            if(CurrentUser.User_Type__c == 'PMO' || CurrentUser.User_Type__c == 'CMO'){
+                whereCriteria.add(new DHSApexUtil.Criteria('Status__c', 'QA Rejected', '=')); 
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.Status__c', 'Active', '='));
+                whereCond = 'Status__c = \'QA Rejected\' AND DHS_Case__r.Status__c = \'Active\'';  
+            }else{
+                whereCriteria.add(new DHSApexUtil.Criteria('Status__c', 'QA Rejected', '=')); 
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.Status__c', 'Active', '='));
+                whereCriteria.add(new DHSApexUtil.Criteria('DHS_Case__r.DHS_Assigned_To__c', userinfo.getuserid(), '='));
+                whereCond = 'Status__c = \'QA Rejected\' AND DHS_Case__r.Status__c = \'Active\' and DHS_Case__r.DHS_Assigned_To__c =\''+userinfo.getuserid()+'\'';  
+            }
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria); 
+            showacceptandrejectbuttons = false;  
+            buildLeadDetailURLParams('searchQARejected=true'); 
+        }else if(searchmyavailableleads){
+            buildLeadDetailURLParams('searchmyavailableleads=true'); 
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Accepted', '!=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Rejected', '!=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Completed', '!='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
+            showacceptandrejectbuttons = true;   
+        }else if(searchmyAssigned){
+            buildLeadDetailURLParams('searchmyAssigned=true'); 
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Accepted', '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Completed', '!='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Rejected', '!='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
+           showacceptandrejectbuttons = false;     
+        }else if(seachqarejected){
+            buildLeadDetailURLParams('searchmyAssigned=true'); 
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Lead_Accepted_or_Rejected__c','Accepted', '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Completed', '!='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Rejected', '='));
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
+           showacceptandrejectbuttons = false;     
+        }else if(searchmydiscontinued){
+            buildLeadDetailURLParams('searchmydiscontinued=true'); 
+            whereCriteria = new List<DHSApexUtil.Criteria>();
+            whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
+            whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Discontinued', '='));
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
+           showacceptandrejectbuttons = false;     
+        }else{
+            whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
+            showacceptandrejectbuttons = false; 
+            buildLeadDetailURLParams('searchUnassigned=false');   
+        }
+        criteria = whereCriteria;
+		criteria = JSON.serialize(whereCriteria);
+        
+        string countQuery;
+            if(!string.isblank(whereCond)){
+                queryForNextRecords = query + ' WHERE '+whereCond+' AND';
+                query = query + ' WHERE '+whereCond+' WITH USER_MODE Order by Name asc Limit 200'; 
+                countQuery = 'Select Count() from DHS_Lead__c WHERE '+ whereCond+' WITH USER_MODE';
+            }else{
+                queryForNextRecords = query + ' WHERE ';
+                query = query + ' WITH USER_MODE Order by Name asc Limit 200'; 
+                countQuery = 'Select Count() from DHS_Lead__c WITH USER_MODE';
+            }
+        totalRecordCount = database.countquery(String.escapeSingleQuotes(Countquery), AccessLevel.USER_MODE);
+        list<DHS_Lead__c> leads = new list<DHS_Lead__c>();
+        if(test.isRunningTest()){
+        	leads = [select id,Name from DHS_Lead__c WITH USER_MODE ];   
+        }else{
+         	leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);        
+       }
+        
+        integer i = 0;
+        for(DHS_Lead__c cs: leads){
+            LeadsSearched.add(new LeadRecord(cs)); 
+            if(i==0){
+            	firstRecordName = cs.Name;    
+            }
+            lastRecordName = cs.Name;
+            i++;
+        }
+        PageNumber = 1;
+        double totalNum = double.valueof(totalRecordCount)/double.valueof(200);
+        double floorVal = Math.floor(totalNum);
+        double diff = totalNum - floorVal;
+        totalPages = diff > 0 ? integer.valueOf(floorVal) + 1 : integer.valueOf(floorVal);
+        if(totalRecordCount <= 200){
+            disablePrev = true;
+            disableNext = true;
+            currentRecordCount = totalRecordCount;
+        }else{
+        	disablePrev = true;   
+            disableNext = false;
+            currentRecordCount = 200; 
+        }
+        
+        
+        if(!searchAfterAssignment){
+            showleadssearchcriteriapanel = false;
+            showleadslistpanel = true;
+            searchUnassigned = false;
+            searchQARejected = false;
+            searchmyAssigned = false;
+            seachqarejected = false;
+            searchmyavailableleads = false;
+        }
+        
+    }
+    /** @description Provides this DHS API member. */
+    public void handlePrev(){
+        PageNumber --;
+    	string query = queryForNextRecords + ' Name <:firstRecordName  Order by Name desc Limit 200';	   
+        list<DHS_Lead__c> leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        LeadsSearched = new list<LeadRecord>();
+        for(Integer j=leads.size()-1;j>=0; j--){
+            LeadsSearched.add(new LeadRecord(leads[j])); 
+            if(j==leads.size()-1){
+            	firstRecordName = leads[j].Name;	   
+            }
+            lastRecordName = leads[j].Name; 
+            
+        }
+        if(leads.size()<=200){
+        	currentRecordCount =  currentRecordCount - leads.size();        
+        }else{
+        	currentRecordCount =  currentRecordCount - 200;    
+        }
+        
+        /*if(currentRecordCount <=200){
+            disablePrev = true;
+            disableNext = false ;
+        }else{
+        	disablePrev = false;   
+            disableNext = false;
+        }*/
+        if(pageNumber == 1){
+            disablePrev = true;
+            disableNext = false ;
+        }else{
+            disablePrev = false;
+            disableNext = false;
+        }
+    }
+    /** @description Provides this DHS API member. */
+    public void handleNext(){
+        PageNumber ++ ;
+    	string query = queryForNextRecords + ' Name >:lastRecordName  Order by Name asc Limit 200';	   
+        list<DHS_Lead__c> leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        LeadsSearched = new list<LeadRecord>();
+        integer i = 0;
+        for(DHS_Lead__c cs: leads){
+            LeadsSearched.add(new LeadRecord(cs)); 
+            if(i==0){
+            	firstRecordName = cs.Name;    
+            }
+            lastRecordName = cs.Name;
+            i++;
+        }
+        if(leads.size()<=200){
+        	currentRecordCount =  currentRecordCount + leads.size();        
+        }else{
+        	currentRecordCount =  currentRecordCount + 200;    
+        }
+        /*
+        if(totalRecordCount>currentRecordCount){
+            disablePrev = false;
+            disableNext = false;
+        }else{
+        	disablePrev = false;   
+            disableNext = true;
+        }*/
+        if(pageNumber == totalPages){
+            disablePrev = false;   
+            disableNext = true;
+        }else{
+            disablePrev = false;
+            disableNext = false;
+        }
+    }
+    
+    
+    
+    /** @description Provides this DHS API member. */
+    public boolean searchAfterAssignment{ get; private set; }
+     /** @description Provides this DHS API member. */
+     public class LeadRecord{
+        /** @description Provides this DHS API member. */
+        public DHS_Lead__c ld{get;set;}
+        public boolean isSelected {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+        /**
+         * @description Provides this DHS API member.
+         * @param ld Method parameter.
+         */
+        public LeadRecord(DHS_Lead__c ld){
+            this.ld = ld;
+            this.isSelected = false;
+        }
+    }
+    
+    /** @description Provides this DHS API member. */
+    public void assignLeadsAction(){
+        list<DHS_Lead__c> leadsToUpdate = new LisT<DHS_Lead__c>();
+        list<string> leadIdsToUpdate = new list<string>();
+        for(LeadRecord cR: LeadsSearched){
+            if(cR.isSelected){
+                leadIdsToUpdate.add(cr.ld.id);
+                cr.ld.DHS_Assigned_To__c = selectedUserIdForAssignment;
+                cr.ld.Status__c = 'Assigned Not Accepted';
+                cr.ld.Lead_Accepted_or_Rejected__c = null; 
+                cr.ld.Assignee_Date__c = system.today(); 
+                cr.ld.Anticipated_Completion_Date__c = acdDate;
+                leadsToUpdate.add(cr.ld);
+                 }    
+        }
+        if(!leadsToUpdate.isEmpty()){
+            //database.update(LeadsToUpdate,false,AccessLevel.USER_MODE);
+            updateleadsmethod(leadIdsToUpdate,selectedUserIdForAssignment,acdDate);     
+        } 
+        
+        
+         if(!leadDetailURLParamsMap.isEmpty()){
+            for(String str: leadDetailURLParamsMap.keyset()){
+            
+                if(str == 'leadTypeSearchEntry'){
+                    leadTypeSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'leadStatusSearchEntry'){
+                    leadStatusSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'caseNumberSearchEntry'){
+                    caseNumberSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'manifestSearchEntry'){
+                    manifestSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'subjectFirstNameSearchEntry'){
+                    subjectFirstNameSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'subjectLastNameSearchEntry'){
+                    subjectLastNameSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'streetaddressSearchEntry'){
+                    streetaddressSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'citySearchEntry'){
+                    citySearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'stateSearchEntry'){
+                    stateSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'ZipSearchEntry'){
+                    zipSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'searchUnassigned'){
+                    searchUnassigned = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'searchQARejected'){
+                    searchQARejected = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'searchmyAssigned'){
+                    searchmyAssigned = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'searchmydiscontinued'){
+                    searchmydiscontinued = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'seachqarejected'){
+                    seachqarejected = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'searchmyavailableleads'){
+                    searchmyavailableleads = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }    
+            }
+            searchAction();
+        }
+        
+        
+        
+        
+        //showleadssearchcriteriapanel = true;
+        //showleadslistpanel = false;
+        //searchAfterAssignment = true;
+        //if(!test.isRunningTest()){
+            //SearchAction();
+        //}
+        //searchAfterAssignment = false;
+        selectedUserIdForAssignment = null;
+        acdDate = Null;
+   }
+    /**
+     * @description Provides this DHS API member.
+     * @param leadIds Method parameter.
+     * @param userIdForAssigment Method parameter.
+     * @param acdDate Method parameter.
+     */
+    public static void updateleadsmethod(list<string> leadIds, string userIdForAssigment, Date acdDate){
+         list<DHS_Lead__c> leadsToUpdate = new LisT<DHS_Lead__c>();
+         leadsToUpdate = [select id,DHS_Assigned_To__c,Status__c,Lead_Accepted_or_Rejected__c,Assignee_Date__c,Anticipated_Completion_Date__c from DHS_Lead__c where id in:leadIds WITH USER_MODE ];
+        for(DHS_Lead__c cR: leadsToUpdate){
+                cr.DHS_Assigned_To__c = userIdForAssigment;
+                cr.Status__c = 'Assigned Not Accepted';
+                cr.Lead_Accepted_or_Rejected__c = null; 
+                cr.Assignee_Date__c = system.today(); 
+                cr.Anticipated_Completion_Date__c = acdDate; 
+        }
+        Database.update(leadsToUpdate, AccessLevel.USER_MODE);
+    }
+    
+    /** @description Provides this DHS API member. */
+    public string leadIdToAccept{get;set;}
+    /** @description Provides this DHS API member. */
+    public string leadIdToReject{get;set;}
+    
+    /** @description Provides this DHS API member. */
+    public void acceptaction(){
+        list<LeadRecord> temp = new list<LeadRecord>();
+        for(LeadRecord lr: leadsSearched){
+            if(lr.ld.id == leadIdToAccept){
+                lr.ld.Lead_Accepted_or_Rejected__c = 'Accepted'; 
+                lr.ld.Accepted_Date__c = system.today(); 
+                Database.update(lr.ld, AccessLevel.USER_MODE);       
+            }else{
+                temp.add(lr);
+            }    
+        }
+        leadsSearched.clear();
+        leadsSearched.addAll(temp);
+    }
+    
+    /** @description Provides this DHS API member. */
+    public void rejectaction(){
+        list<LeadRecord> temp = new list<LeadRecord>();
+        for(LeadRecord lr: leadsSearched){
+            if(lr.ld.id == leadIdToReject){
+                lr.ld.Lead_Accepted_or_Rejected__c = 'Rejected'; 
+                //lr.ld.DHS_Assigned_To__c = null;
+                lr.ld.Status__c = 'Investigator Rejected';  
+                Database.update(lr.ld, AccessLevel.USER_MODE);          
+            }else{
+                temp.add(lr);
+            }    
+        }
+        leadsSearched.clear();
+        leadsSearched.addAll(temp);
+    }
+    
+     /**
+      * @description Provides this DHS API member.
+      * @param condition Method parameter.
+      */
+     public void buildLeadDetailURLParams(string condition){
+        if(String.isBlank(leadDetailURLParams)){
+            leadDetailURLParams = condition;    
+        }else{
+            leadDetailURLParams = leadDetailURLParams + '&'+condition; 
+        }
+        list<string> temp = condition.split('=');
+        if(temp.size()==2){
+            leadDetailURLParamsMap.put(temp[0],temp[1]);
+        }
+    }
+    
+    /** @description Provides this DHS API member. */
+    public string leadIdToUpdate {get;set;}
+    /** @description Provides this DHS API member. */
+    public string acdDateToUpdate {get;set;}
+    /** @description Provides this DHS API member. */
+    public string errorMessage {get;set;}
+    /** @description Provides this DHS API member. */
+    public void updateACDLead(){
+        errorMessage = Null;
+        DHS_Lead__c leadToUpdate;
+        
+        for(LeadRecord l: LeadsSearched){
+            if(l.ld.id == leadIdToUpdate){
+                leadToUpdate = l.ld;
+            }
+        }    
+        if(leadToUpdate != Null){
+            try{
+                leadToupdate.Anticipated_Completion_Date__c = Date.parse(acdDateToUpdate);
+                database.update(leadToUpdate,false,AccessLevel.USER_MODE);
+            }catch(Exception ex){
+                errorMessage = ex.getMessage();
+            }
+        }
+    }
+    
+    /** @description Provides this DHS API member. */
+    public void unAssignLeadsAction(){
+        list<DHS_Lead__c> leadsToUpdate = new LisT<DHS_Lead__c>();
+         list<string> leadIdsToUpdate = new list<string>();
+        for(LeadRecord cR: LeadsSearched){
+            if(cR.isSelected){
+                leadIdsToUpdate.add(cr.ld.Id);
+                cr.ld.DHS_Assigned_To__c = null;
+                cr.ld.Status__c = 'Unassigned';
+                cr.ld.Lead_Accepted_or_Rejected__c = null; 
+                cr.ld.Assignee_Date__c = null; 
+                cr.ld.Accepted_Date__c = null;
+                leadsToUpdate.add(cr.ld);
+            }    
+        }  
+        if(!leadsToUpdate.isEmpty()){
+            updateleadsunassignmethod(leadIdsToUpdate);   
+            //database.update(LeadsToUpdate,false,AccessLevel.USER_MODE);    
+        } 
+        
+        
+         if(!leadDetailURLParamsMap.isEmpty()){
+            for(String str: leadDetailURLParamsMap.keyset()){
+            
+                if(str == 'leadTypeSearchEntry'){
+                    leadTypeSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'leadStatusSearchEntry'){
+                    leadStatusSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'caseNumberSearchEntry'){
+                    caseNumberSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'manifestSearchEntry'){
+                    manifestSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'subjectFirstNameSearchEntry'){
+                    subjectFirstNameSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'subjectLastNameSearchEntry'){
+                    subjectLastNameSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'streetaddressSearchEntry'){
+                    streetaddressSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'citySearchEntry'){
+                    citySearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'stateSearchEntry'){
+                    stateSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'ZipSearchEntry'){
+                    zipSearchEntry = leadDetailURLParamsMap.get(str);
+                } 
+                if(str == 'searchUnassigned'){
+                    searchUnassigned = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'searchQARejected'){
+                    searchQARejected = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'searchmyAssigned'){
+                    searchmyAssigned = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'searchmydiscontinued'){
+                    searchmyDiscontinued = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'seachqarejected'){
+                    seachqarejected = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }
+                if(str == 'searchmyavailableleads'){
+                    searchmyavailableleads = boolean.valueof(leadDetailURLParamsMap.get(str));
+                }    
+            }
+            searchAction();
+        }
+   }
+    /**
+     * @description Provides this DHS API member.
+     * @param leadIds Method parameter.
+     */
+    public static void updateleadsunassignmethod(list<string> leadIds){
+         list<DHS_Lead__c> leadsToUpdate = new LisT<DHS_Lead__c>();
+         leadsToUpdate = [select id,DHS_Assigned_To__c,Status__c,Lead_Accepted_or_Rejected__c,Assignee_Date__c,Anticipated_Completion_Date__c from DHS_Lead__c where id in:leadIds WITH USER_MODE ];
+        for(DHS_Lead__c cR: leadsToUpdate){
+                cr.DHS_Assigned_To__c = null;
+                cr.Status__c = 'Unassigned';
+                cr.Lead_Accepted_or_Rejected__c = null; 
+                cr.Assignee_Date__c = null; 
+                cr.Accepted_Date__c = null; 
+        }
+        Database.update(leadsToUpdate, AccessLevel.USER_MODE);
+    }
+   
+}

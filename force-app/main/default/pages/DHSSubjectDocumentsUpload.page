@@ -1,0 +1,249 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+    controller="DHSSubjectDocumentsUploadController">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Documents</title>
+        <!-- Custom styles for this template-->
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.1.0/ui/trumbowyg.css" />
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet" />
+        <link href="{!URLFOR($Resource.casedashboard,'css/isndashboard.css')}" rel="stylesheet" />
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css" />
+        <script src="{!URLFOR($Resource.casedashboard,'js/jquery.min.js')}"></script>
+        <script src="{!URLFOR($Resource.casedashboard,'js/bootstrap.bundle.min.js')}"></script>
+        <script src="{!URLFOR($Resource.casedashboard,'js/jquery.easing.min.js')}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="{!URLFOR($Resource.casedashboard,'js/jquery.dataTables.min.js')}"></script>
+        <script src="{!URLFOR($Resource.casedashboard,'js/dataTables.bootstrap4.min.js')}"></script>
+        <script src="{!URLFOR($Resource.casedashboard,'js/isndashboard.js')}"></script>
+        <script src="{!URLFOR($Resource.casedashboard,'js/datatables.js')}"></script>
+        <script src="https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.6.5/js/buttons.flash.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.6.5/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.6.5/js/buttons.print.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.1.0/trumbowyg.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+            <apex:actionStatus id="loader">
+                <apex:facet name="start">
+                    <div class="waitingSearchDiv" id="el_loading"
+                        style="z-index: 9999;background-color: #F1F1F1;height: 100%;opacity:0.8;width:100%; position: fixed;">
+                        <center>
+                            <img style="margin-top: 10%;z-index: 9999;"
+                                src="{!$Site.Prefix}/resource/1474009156000/loadingGif" />
+                        </center>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800">
+                                    <img src="https://www.isncorp.com/wp-content/uploads/2020/06/logo-150.png"
+                                        width="100" />
+                                </h4>
+                            </div>
+                            <!-- Sidebar Toggle (Topbar) -->
+                        </nav>
+                        <!-- End of Topbar -->
+                        <!-- Begin Page Content -->
+                        <apex:outputpanel id="customeruploadpanel">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <!-- Area Chart -->
+                                    <div class="col">
+                                        <div class="card shadow mb-4">
+                                        <div class="card-body" id="documentuploadpanel">
+                                         <h4 class="p-3 bg-primary text-white mb-5">Your investigator {!documentRequest.DHS_Lead__r.Assigned_To_Name__c} has requested to upload files regarding Case# {!documentRequest.DHS_Lead__r.DHS_Case__r.Case_Number__c}</h4>
+                                               <apex:outputpanel rendered="{!showExpiryPanel}">
+                                                
+                                                        <h4 class=" text-secondary mb-5 text-center">Link has been expired.</h4>
+                                                 
+                                            </apex:outputpanel>
+                                        <div class="row">
+                                       
+                                         <div class="col-8">
+                                         
+                                            <apex:outputpanel rendered="{!showUploadPanel}">
+                                                   <!-- <h2 class=" text-primary mb-5">Upload Documents</h2>-->
+                                                    <div class="container row">
+                                                        <div class="col">
+                                                            <c:DHSFileUploadDragAndDrop fId="f2"
+                                                                parentId="{!documentRequestId}" />
+                                                          
+                                                        
+                                                           
+                                                        </div>
+                                                    </div>
+                                            </apex:outputpanel>
+                                             <apex:outputpanel rendered="{!showAfterUploadPanel}">
+                                                    <center>
+                                                        <h2 class=" text-primary mb-5">Thank you for uploading
+                                                            Documents.
+                                                        </h2>
+                                                    </center>
+                                            </apex:outputpanel>
+                                              
+                                         
+                                             </div>
+                                             <div class="col">
+                                                  <apex:outputpanel rendered="{!showUploadPanel}">
+                                           
+                                                <div>
+                                                    <h4 class=" text-primary mb-5"> Documents Uploaded</h4>
+                                                    <table class="table table-hover ">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Document Name</th>
+                                                                <th scope="col">Description</th>
+                                                                <th scope="col">Uploaded Date</th>
+                                                                   <th scope="col"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <apex:repeat value="{!attachmentsList}" var="att">
+                                                                <tr>
+                                                                    <td>{!att.Name}</td>
+                                                                    <td>{!att.Description}</td>
+                                                                    <td>
+                                                                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                            <apex:param value="{!att.createddate}" />
+                                                                        </apex:outputText>
+                                                                    </td>
+                                                                    <td>
+                                                                        <a href="{!URLFOR($Action.Attachment.Download, att.Id)}" target="_blank"><i class="fa fa-eye"></i></a>
+                                                                        <a id="{!att.id}" onclick="deleteattachment(this);" class="p-2"><i class="fa fa-trash"></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            </apex:repeat>
+
+                                                        </tbody>
+                                                    </table>
+                                                  <button class="mt-3 btn btn-primary px-5"
+                                                                onclick="submitaction();return false;">Submit</button>
+                                                  </div>
+                                        </apex:outputpanel>
+                                             
+                                             </div>
+                                             </div>
+                                          </div>
+                                          
+                                        </div>
+                                       
+                                    </div>
+                                    <!-- Content Row -->
+
+                                </div>
+
+                                <!-- /.container-fluid -->
+
+                            </div>
+                        </apex:outputpanel>
+                        <!-- End of Main Content -->
+                    </div>
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            <apex:actionFunction name="autosaveaction" action="{!autosaveaction}" rerender="blank" status="loader" />
+            <apex:actionFunction name="submitapexaction" action="{!submitaction}" rerender="customeruploadpanel" status="loader" />
+             <apex:actionFunction name="deleteattachmentaction" action="{!deleteAttachment}" rerender="customeruploadpanel" status="loader" oncomplete="loaddatatables();return false;">
+                 <apex:param name="deleteAttachmentId" value="" assignTo="{!deleteAttachmentId}"/>
+             </apex:actionfunction>
+
+        </apex:form>
+        <script>
+            $(document).ready(function () {
+                $(".autosave").change(function () {
+                    console.log('Auto Save Executed');
+                    autosaveaction();
+                });
+                loaddatatables();
+
+            });
+            
+            function loaddatatables(){
+                $('.dataTable').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": true,
+                    "bAutoWidth": false
+                });
+            }
+            
+             function deleteattachment(elem){
+              console.log(elem);
+                  var attid = elem.id;
+                  console.log(attid);
+                
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, document uploaded will be deleted.',
+                    buttons: {
+                        confirm: function () {
+                            deleteattachmentaction(attid);
+                        },
+                        cancel: function () {}
+                    }
+                });
+            }
+
+            function submitaction() {
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'Would you like to submit the documents',
+                    buttons: {
+                        confirm: function () {
+                            submitapexaction();
+                        },
+                        cancel: function () {}
+                    }
+                });
+
+            }
+        </script>
+
+    </body>
+</apex:page>

@@ -1,0 +1,885 @@
+<apex:page showHeader="false" sidebar="false" controller="DHSCaseDashboardController" standardStylesheets="false"
+    docType="html-5.0">
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Case Management</title>
+
+    </head>
+
+    <body id="page-top">
+     <apex:includeLightning />
+         <div id="LwcId"></div>
+        <apex:form >
+        
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Case Management</b></h4>
+                            </div>
+
+                            <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile> 
+
+                        </nav>
+                        <!-- End of Topbar -->
+                        <apex:actionFunction name="showunassignedaction" action="{!searchAction}"
+                            rerender="caseslistpanel, casessearchcriteriapanel" status="loader" oncomplete="loaddatatables();return false;">
+                            <apex:param value="" assignTo="{!showUnAssigned}" name="showUnAssigned" />
+                        </apex:actionfunction>
+                         <apex:actionFunction name="showqacasesaction" action="{!searchAction}"
+                            rerender="caseslistpanel, casessearchcriteriapanel" status="loader" oncomplete="loaddatatables();return false;">
+                            <apex:param value="" assignTo="{!showQACases}" name="showQACases" />
+                        </apex:actionfunction>
+                        
+                       
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+                            <!-- Page Heading -->
+                            <apex:outputpanel id="casessearchcriteriapanel">
+                                <apex:outputpanel rendered="{!showcasessearchcriteriapanel}">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="card shadow mb-4">
+                                                <!-- Card Header - Dropdown -->
+                                               
+                                                    <div
+                                                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                        <h4 class="m-0 font-weight-bold text-primary">Case Search</h4>
+                                                         <apex:outputPanel rendered="{!CurrentUser.User_Type__c == 'PMO'}">
+                                                        <button onclick="showunassigned();return false;"
+                                                            class="btn btn-primary">Show Unassigned</button>
+                                                         </apex:outputPanel>
+                                                         <apex:outputPanel rendered="{!CurrentUser.User_Type__c == 'CMO'}">
+                                                         <button onclick="showmyassignedcases();return false;"
+                                                            class="btn btn-primary">Show Assigned</button>
+                                                         </apex:outputPanel>
+                                                         <apex:outputPanel rendered="{!CurrentUser.User_Type__c == 'QA'}">
+                                                         <button onclick="showqacases();return false;"
+                                                            class="btn btn-primary">Show QA Cases</button>
+                                                         </apex:outputPanel>
+                                                    </div>
+                                                
+                                                <!-- Card Body -->
+
+
+                                                <div class="card-body case-container">
+                                                    <div class="">
+                                                        <div class="mb-2 ">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary mb-3">Subject
+                                                                </h4>
+                                                                <div class=" mt-2 mb-2 row">
+                                                                    <div class="form-group mb-2 col-3">
+                                                                        <label>First Name</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control subjectFirstNameSearchEntry"
+                                                                            html-placeholder="First Name"
+                                                                            value="{!subjectFirstNameSearchEntry}" html-data-apiname="DHS_Contact__r.First_Name__c"/>
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-3">
+                                                                        <label>Last Name</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control subjectLastNameSearchEntry"
+                                                                            html-placeholder="Last Name"
+                                                                            value="{!subjectLastNameSearchEntry}"  html-data-apiname="DHS_Contact__r.Last_Name__c" />
+                                                                    </div>
+                                                                        <div class="form-group  mb-2 col-3 {!IF(currentuser.User_Type__c == 'PMO','','d-none')}">
+                                                                            <label>SSN</label>
+                                                                            <apex:input type="text"
+                                                                                styleclass="form-control subjectSSNSearchEntry"
+                                                                                html-placeholder="SSN"
+                                                                                value="{!subjectSSNSearchEntry}"  html-data-apiname="DHS_Contact__r.SSN__c"/>
+                                                                        </div>
+                                                                    <div class="form-group mt-2 mb-2 col-12">
+                                                                        <button
+                                                                            onclick="casesearchwithsubject();return false;"
+                                                                            class="btn btn-primary px-4">Search</button>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary mb-3">Case
+                                                                    Information</h4>
+
+                                                                <div class="row">
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="inputEmail4">Case Number</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control caseNumberSearchEntry"
+                                                                            html-placeholder="Case Number"
+                                                                            value="{!caseNumberSearchEntry}" html-data-apiname="Case_Number__c"/>
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="inputPassword4">Manifest</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control caseManifestSearchEntry"
+                                                                            html-placeholder="Manifest"
+                                                                            value="{!caseManifestSearchEntry}" html-data-apiname="Manifest__c"/>
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="inputState">Case Type</label>
+                                                                        <apex:selectlist styleclass="form-control caseTypeSearchEntry"
+                                                                            size="1" value="{!caseTypeSearchEntry}" html-data-apiname="Case_Type__c">
+                                                                            <apex:selectOptions value="{!caseTypeOptions}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="inputState">Case Status</label>
+                                                                        <apex:selectlist styleclass="form-control caseStatusSearchEntry"
+                                                                            size="1" value="{!caseStatusSearchEntry}" html-data-apiname="Current_Task__c">
+                                                                            <apex:selectOptions value="{!caseStatusOptions}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-12">
+                                                                        <button
+                                                                            onclick="casesearchwithcaseinformation();return false;"
+                                                                            class="btn btn-primary px-4">Search</button>
+                                                                    </div>
+                                                                </div>
+
+
+                                                            </div>
+                                                        </div>
+                                                        <div class=" mb-2">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary mb-3">Date
+                                                                    Search
+                                                                </h4>
+                                                                <b class="mb-3">Requisition Submission Date</b>
+                                                                <div class=" mt-2 mb-2 row">
+                                                                    <div class="form-group dategroup mb-2 col-3">
+                                                                        <label>From</label>
+                                                                        <apex:input type="date"
+                                                                            styleclass="form-control fromSubmissionDateSearchEntry date-field"
+                                                                            html-placeholder="From"
+                                                                            value="{!fromSubmissionDateSearchEntry}" html-data-apiname="Submission_Date__c" html-data-operator=">="/>
+                                                                    </div>
+                                                                    <div class="form-group dategroup mb-2 col-3">
+                                                                        <label>To</label>
+                                                                        <apex:input type="date"
+                                                                            styleclass="form-control toSubmissionDateSearchEntry date-field"
+                                                                            html-placeholder="To"
+                                                                            value="{!toSubmissionDateSearchEntry}" html-data-apiname="Submission_Date__c"  html-data-operator="<="/>
+                                                                    </div>
+                                                                    <div class="form-group mt-2 mb-2 col-12">
+                                                                        <button
+                                                                            onclick="casesearchwithsubmissiondate();return false;"
+                                                                            class="btn btn-primary px-4">Search</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </apex:outputpanel>
+                            </apex:outputpanel>
+                            <apex:outputpanel id="caseslistpanel">
+                                <apex:outputpanel rendered="{!showcaseslistpanel}">
+                                    <div class="row">
+
+                                        <div class="col">
+                                            <div class="card shadow mb-4" id="caseListGroup">
+                                                <!-- Card Header - Dropdown -->
+                                                <div
+                                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                    <h4 class="m-0 font-weight-bold text-primary">Cases</h4>
+                                                    <div class="dropdown no-arrow">
+                                                        <a class="dropdown-toggle" href="#" role="button"
+                                                            id="dropdownMenuLink" data-toggle="dropdown"
+                                                            aria-haspopup="true" aria-expanded="false" >
+                                                            <b>Search criteria</b>
+                                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                            aria-labelledby="dropdownMenuLink">
+
+                                                            <a class="dropdown-item" data-toggle="collapse"
+                                                                href="#subjecsearch" role="button" aria-expanded="true"
+                                                                aria-controls="subjecsearch">
+                                                                Subject
+                                                            </a>
+                                                            <a class="dropdown-item" data-toggle="collapse"
+                                                                href="#caseInfo" role="button" aria-expanded="false"
+                                                                aria-controls="caseInfo">
+                                                                Case Information
+                                                            </a>
+                                                            <a class="dropdown-item" data-toggle="collapse"
+                                                                href="#dateSearched" role="button" aria-expanded="false"
+                                                                aria-controls="dateSearched" >
+                                                                Date search
+                                                            </a>
+                                                            <apex:outputPanel rendered="{!CurrentUser.User_Type__c == 'PMO'}">
+                                                            <a class="dropdown-item"
+                                                                onclick="showunassigned();return false;">
+                                                                Show Unassigned
+                                                            </a>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!CurrentUser.User_Type__c == 'CMO'}">
+                                                            <a class="dropdown-item"
+                                                                onclick="showmyassignedcases();return false;">
+                                                                Show Assigned
+                                                            </a>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!CurrentUser.User_Type__c == 'QA'}">
+                                                         <button onclick="showqacases();return false;"
+                                                            class="btn btn-primary">Show QA Cases</button>
+                                                         </apex:outputPanel>
+                                                            
+                                                           
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Card Body -->
+                                                <div class="card-body p-2">
+                                                    <div class=" mb2" id="accordionExample">
+                                                        <div class="mb-5  collapse " id="subjecsearch"
+                                                            data-parent="#caseListGroup">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary mb-3">Subject
+                                                                </h4>
+                                                                <div class=" mt-2 mb-2 row">
+                                                                    <div class="form-group mb-2 col-3">
+                                                                        <label>First Name</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control subjectFirstNameSearchEntry"
+                                                                            html-placeholder="First Name"
+                                                                            value="{!subjectFirstNameSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-3">
+                                                                        <label>Last Name</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control subjectLastNameSearchEntry"
+                                                                            html-placeholder="Last Name"
+                                                                            value="{!subjectLastNameSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-3 {!IF(currentuser.User_Type__c == 'PMO','','d-none')}">
+                                                                            <label>SSN</label>
+                                                                            <apex:input type="text"
+                                                                                styleclass="form-control subjectSSNSearchEntry"
+                                                                                html-placeholder="SSN"
+                                                                                value="{!subjectSSNSearchEntry}" />
+                                                                        </div>
+                                                                    <div class="form-group mt-2 mb-2 col-12">
+                                                                        <button
+                                                                            onclick="casesearchwithsubject();return false;"
+                                                                            class="btn btn-primary px-4">Search</button>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-5 collapse" id="caseInfo"
+                                                            data-parent="#caseListGroup">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary mb-3">Case
+                                                                    Information</h4>
+
+                                                                <div class="row">
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="inputEmail4">Case Number</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control caseNumberSearchEntry"
+                                                                            html-placeholder="Case Number"
+                                                                            value="{!caseNumberSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="inputPassword4">Manifest</label>
+                                                                        <apex:input type="text"
+                                                                            styleclass="form-control caseManifestSearchEntry"
+                                                                            html-placeholder="Manifest"
+                                                                            value="{!caseManifestSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="inputState">Case Type</label>
+                                                                        <apex:selectlist styleclass="form-control caseTypeSearchEntry"
+                                                                            size="1" value="{!caseTypeSearchEntry}">
+                                                                            <apex:selectOptions value="{!caseTypeOptions}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="form-group col-md-4">
+                                                                        <label for="inputState">Case Status</label>
+                                                                        <apex:selectlist styleclass="form-control caseStatusSearchEntry"
+                                                                            size="1" value="{!caseStatusSearchEntry}">
+                                                                            <apex:selectOptions value="{!caseStatusOptions}" />
+                                                                        </apex:selectlist>
+                                                                    </div>
+                                                                    <div class="form-group  mb-2 col-12">
+                                                                        <button
+                                                                            onclick="casesearchwithcaseinformation();return false;"
+                                                                            class="btn btn-primary px-4">Search</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="collapse mb-5" id="dateSearched"
+                                                            data-parent="#caseListGroup">
+                                                            <div class="card card-body">
+                                                                <h4 class="font-weight-bold text-primary mb-3">Date
+                                                                    Search
+                                                                </h4>
+                                                                <b class="mb-3">Requisition Submission Date</b>
+                                                                <div class=" mt-2 mb-2 row">
+                                                                    <div class="form-group dategroup  mb-2 col-3">
+                                                                        <label>From</label>
+                                                                        <apex:input type="date"
+                                                                            styleclass="form-control fromSubmissionDateSearchEntry"
+                                                                            html-placeholder="From"
+                                                                            value="{!fromSubmissionDateSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group dategroup  mb-2 col-3">
+                                                                        <label>To</label>
+                                                                        <apex:input type="date"
+                                                                            styleclass="form-control toSubmissionDateSearchEntry"
+                                                                            html-placeholder="To"
+                                                                            value="{!toSubmissionDateSearchEntry}" />
+                                                                    </div>
+                                                                    <div class="form-group mt-2 mb-2 col-12">
+                                                                        <button
+                                                                            onclick="casesearchwithsubmissiondate();return false;"
+                                                                            class="btn btn-primary px-4">Search</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <apex:outputPanel rendered="{!CurrentUser.User_Type__c == 'PMO'}">
+                                                <div class="row d-flex justify-content-end ">
+                                                    <div class="col-3 row mx-4">
+                                                        <div class="col-8">
+                                                            <apex:selectlist styleclass="form-select form-select-sm form-control selectedUserIdForAssignment"
+                                                                size="1" value="{!selectedUserIdForAssignment}">
+                                                                <apex:selectOptions value="{!assignUserList}" />
+                                                            </apex:selectlist>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <button class="btn btn-primary mx-3"
+                                                                onclick="assigncases();return false;">Assign</button>
+                                                            <apex:actionFunction name="assigncasesaction"
+                                                                action="{!assignCasesAction}"
+                                                                rerender="caseslistpanel,casessearchcriteriapanel"
+                                                                status="loader" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                </apex:outputPanel>
+                                                <apex:outputpanel id="caselistpanel">
+                                                <div class="card-body">
+                                                
+                                                <div class="criteriaData">
+                                                   <apex:inputHidden value="{!criteria}"  />
+                                                   </div>
+                                                    <div>
+                                                        Total number of records: <b>{!totalRecordCount}</b>
+                                                    </div>
+                                                    <div align="right" style="margin-bottom:10px;">
+                                                        <apex:outputPanel id="leadspaginationpanel">
+                                                        <apex:outputPanel style="margin-right:15px;">
+                                                                <b>Page {!pageNumber} of {!totalPages}</b>
+                                                        </apex:outputPanel>
+                                                            <apex:commandButton style="margin-right:10px;" value="Previous" styleClass="btn btn-primary px-4" rendered="{!disablePrev == true}" disabled="true"/>
+                                                            
+                                                            <apex:outputPanel rendered="{!disablePrev == false}">
+                                                                <button style="margin-right:10px;" onclick="handlePrev();return false" class="btn btn-primary px-4">Previous</button>
+                                                            </apex:outputPanel>
+                                                            <apex:actionFunction name="handlePrev" action="{!handlePrev}" rerender="leadstable,leadspaginationpanel,leadsdatapane,caseslistpanell,leadsdatapanel" status="loader"/>
+                                                        <apex:commandButton value="Next" styleClass="btn btn-primary px-4" rendered="{!disableNext == true}" disabled="true"/>
+                                                            <apex:outputPanel rendered="{!disableNext == false}">
+                                                                <button  onclick="handleNext();return false" class="btn btn-primary px-4">Next</button>
+                                                            </apex:outputPanel>
+                                                            <apex:actionFunction name="handleNext" action="{!handleNext}"  rerender="leadstable,leadspaginationpanel,leadsdatapane,caseslistpanell,leadsdatapanel" status="loader"/>
+                                                            </apex:outputPanel>
+                                                            <button class="export-button btn btn-primary px-4">Export</button>
+                                                        </div>
+                                                    <div class="table-responsive">
+                                                        <apex:outputPanel id="leadsdatapanel">
+                                                            
+                                                    <table id="caseslist" class="table " width="100%" cellspacing="0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="{!IF(Currentuser.user_type__c == 'PMO','','d-none')}"><input onclick="selectAll()" class="select-checkbox" type="checkbox" /></th>
+                                                                <th>View<!--<apex:outputpanel rendered="{!IF(Currentuser.User_Type__c == 'PMO',true,false)}">/Delete</apex:outputpanel>--></th>
+                                                                <th>SLA</th>
+                                                                <th>Case Number</th>
+                                                                <th>Subject First Name</th>
+                                                                <th>Subject Last Name</th>
+                                                                <!--<th>Information</th>-->
+                                                                <th>Status</th>
+                                                                <th>Date submitted </th>
+                                                                <th>Case Type</th>
+                                                                <th>Service Days</th>
+                                                                <th>Due Date</th>
+                                                                 
+                                                                
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <apex:repeat var="case" value="{!casesSearched}">
+
+                                                                <tr>
+                                                                    <td class="{!IF(Currentuser.User_Type__c == 'PMO','','d-none')}">
+                                                                        <apex:inputcheckbox value="{!case.isSelected}" styleclass="caseselectcheckbox "/>
+                                                                    </td>
+                                                                      <td>
+                                                                     
+                                                                       <a class="nav-link font-weight-bold d-inline"
+                                                                            href="{!$site.prefix}/DHSCasedetail?id={!case.cs.id}&{!caseDetailURLParams}"><i class="fa fa-eye"></i></a>
+                                                                       <!--<a id="{!case.cs.id}" onclick="deletecase(this);" class="p-2 {!IF(currentuser.user_type__c =='PMO','d-inline','d-none')}"><i class="fa fa-trash"></i></a>-->
+                                                                    
+                                                                    </td>
+                                                                    
+                                                                    <td>
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="color: {!case.cs.Case_SLA_Code__c};" fill="currentColor" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                                                                              <circle cx="8" cy="8" r="8"/>
+                                                                            </svg>
+                                                                    </td>
+                                                                    <td class="mandatory">
+                                                                        {!case.cs.Case_Number__c}
+                                                                    </td>
+                                                                    <td>
+                                                                        {!case.cs.DHS_Contact__r.First_Name__c}
+                                                                    </td>
+                                                                    <td>
+                                                                        {!case.cs.DHS_Contact__r.Last_Name__c}
+                                                                    </td>
+                                                                    <td>
+                                                                       {!case.cs.Case_Queue_Status__c}
+                                                                    </td>
+                                                                    <td>
+                                                                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                            <apex:param value="{!case.cs.Submission_Date__c}" />
+                                                                        </apex:outputText>
+
+                                                                    </td>
+                                                                    <td class="mandatory">
+                                                                        {!case.cs.Case_Type__c}
+                                                                    </td>
+                                                                    <td class="mandatory">
+                                                                      {!case.cs.Service_Days__c}
+                                                                        
+                                                                    </td>
+                                                                    <td>
+                                                                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                            <apex:param value="{!case.cs.Case_Due_Date__c}" />
+                                                                        </apex:outputText>
+
+                                                                    </td>
+                                                                   
+                                                                   
+                                                                </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+                                                    </table>
+                                                    </apex:outputPanel>
+                                                        </div>
+                                                </div>
+                                                </apex:outputpanel>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </apex:outputpanel>
+                            </apex:outputpanel>
+
+
+                            <!-- Content Row -->
+
+                        </div>
+
+                        <!-- /.container-fluid -->
+
+                    </div>
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; ISN</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+
+
+            <apex:actionFunction action="{!searchAction}" name="searchaction"
+                rerender="caseslistpanel, casessearchcriteriapanel" status="loader" oncomplete="loaddatatables();return false;"/>
+             <apex:actionFunction name="deletecaseaction" action="{!deleteCaseAction}" rerender="caselistpanel" status="loader" oncomplete="loaddatatables();return false;">
+                 <apex:param name="deleteCaseId" value="" assignTo="{!deleteCaseId}"/>
+             </apex:actionfunction>
+
+        </apex:form>
+        <div class="toast " role="alert" aria-live="assertive" data-delay="5000"  aria-atomic="true" style="position: absolute;top: 5rem;right: 0;left: 0;z-index: 99;margin: 0 auto;min-width: 500px;">
+<div class="toast-header bg-danger">
+  <strong class="mr-auto text-white"></strong>
+  <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+</div>
+        <script>
+            $(document).ready(function () {
+                loaddatatables();
+            });
+            
+            function deletecase(elem){
+              console.log(elem);
+                  var caseid = elem.id;
+                  console.log(caseid);
+                  
+              Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.DHSCaseDashboardController.totalNumberLeadsForCase}', caseid,
+
+                    function (result, event) {
+                        if (event.status) {
+                            console.log('totalNumberLeadsForCase...' + result);
+                            if (result > 0) {
+                                   $('.toast strong').text('Case cannot be deleted as there are leads created for the case.')
+                                 $('.toast').toast('show');
+                              
+                            } else {
+                                $.confirm({
+                                    title: 'Please Confirm!',
+                                    content: 'On click of confirm, Case will be deleted.',
+                                    buttons: {
+                                        confirm: function () {
+                                            deletecaseaction(caseid);
+                                        },
+                                        cancel: function () {}
+                                    }
+                                });   
+                            }
+                        }
+                    }, {
+                        escape: true
+                    }
+                );    
+                  
+                  
+                  
+                  
+                
+                
+            }
+
+            function selectAll() {
+                $('input[type="checkbox"]').each(function () {
+                    $(this).attr('checked', !$(this).attr('checked'));
+                });
+            }
+
+            function casesearchwithsubject() {
+                $('.caseNumberSearchEntry').val('');
+                $('.caseManifestSearchEntry').val('');
+                $('.caseTypeSearchEntry').val('');
+                $('.fromSubmissionDateSearchEntry').val('');
+                $('.toSubmissionDateSearchEntry').val('');
+                if ($('.subjectFirstNameSearchEntry').val() == "" && $('.subjectLastNameSearchEntry').val() == "" && $('.subjectSSNSearchEntry').val() == "") {
+                $(".subjectFirstNameSearchEntry ").siblings('.invalid-feedback').remove();
+                    $(".subjectFirstNameSearchEntry").after(
+                        '<div class="invalid-feedback d-block"><i class="fa-solid fa-triangle-exclamation pr-2"></i>Please fill the required fields.</div>');
+
+                } else {
+                    searchaction();
+
+                }
+
+            }
+
+            function casesearchwithcaseinformation() {
+                $('.fromSubmissionDateSearchEntry').val('');
+                $('.toSubmissionDateSearchEntry').val('');
+                $('.subjectFirstNameSearchEntry').val('');
+                $('.subjectLastNameSearchEntry').val('');
+                $('.subjectSSNSearchEntry').val('');
+
+                if ($('.caseNumberSearchEntry').val() == "" && $('.caseManifestSearchEntry').val() == "" && $(
+                        '.caseTypeSearchEntry').val() == "" && $('.caseStatusSearchEntry').val() == "") {
+                         $(".caseNumberSearchEntry").siblings('.invalid-feedback').remove();
+                    $(".caseNumberSearchEntry").after(
+                        '<div class="invalid-feedback d-block"><i class="fa-solid fa-triangle-exclamation pr-2"></i>Please fill the required fields.</div>');
+
+                } else {
+                    searchaction();
+
+                }
+            }
+
+            function casesearchwithsubmissiondate() {
+                $('.subjectFirstNameSearchEntry').val('');
+                $('.subjectLastNameSearchEntry').val('');
+                $('.subjectSSNSearchEntry').val('');
+                $('.caseNumberSearchEntry').val('');
+                $('.caseManifestSearchEntry').val('');
+                $('.caseTypeSearchEntry').val('');
+                if ($('.fromSubmissionDateSearchEntry').val() == "" || $('.toSubmissionDateSearchEntry').val() == "") {
+                $(".fromSubmissionDateSearchEntry").siblings('.invalid-feedback').remove();
+                    $(".fromSubmissionDateSearchEntry").after(
+                        '<div class="invalid-feedback d-block"><i class="fa-solid fa-triangle-exclamation pr-2"></i>Please fill the required fields.</div>');
+
+                } else {
+                    searchaction();
+                }
+            }
+            
+            function showqacases(){
+                $('.subjectFirstNameSearchEntry').val('');
+                $('.subjectLastNameSearchEntry').val('');
+                $('.subjectSSNSearchEntry').val('');
+                $('.caseNumberSearchEntry').val('');
+                $('.caseManifestSearchEntry').val('');
+                $('.caseTypeSearchEntry').val('');
+                $('.fromSubmissionDateSearchEntry').val('');
+                $('.toSubmissionDateSearchEntry').val('');
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.DHSCaseDashboardController.totalNumberOfQACases}',
+                    function (result, event) {
+                        if (event.status) {
+                            console.log('qacases...' + result);
+                            if (result > 0) {
+                                showqacasesaction(true);
+                            } else {
+                             $('.toast strong').text('There are no assigned cases at this time.')
+                                 $('.toast').toast('show');
+                              
+                            }
+                        }
+                    }, {
+                        escape: true
+                    }
+                );
+            }
+            
+            function showmyassignedcases(){
+                $('.subjectFirstNameSearchEntry').val('');
+                $('.subjectLastNameSearchEntry').val('');
+                $('.subjectSSNSearchEntry').val('');
+                $('.caseNumberSearchEntry').val('');
+                $('.caseManifestSearchEntry').val('');
+                $('.caseTypeSearchEntry').val('');
+                $('.fromSubmissionDateSearchEntry').val('');
+                $('.toSubmissionDateSearchEntry').val('');
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.DHSCaseDashboardController.totalNumberOfassignedCases}',
+
+                    function (result, event) {
+                        if (event.status) {
+                            console.log('unassignedcases...' + result);
+                            if (result > 0) {
+                                showunassignedaction(false);
+                            } else {
+                             $('.toast strong').text('There are no assigned cases at this time.')
+                                 $('.toast').toast('show');
+                              
+                            }
+                        }
+                    }, {
+                        escape: true
+                    }
+                );
+            
+            }
+
+            function showunassigned() {
+                $('.subjectFirstNameSearchEntry').val('');
+                $('.subjectLastNameSearchEntry').val('');
+                $('.subjectSSNSearchEntry').val('');
+                $('.caseNumberSearchEntry').val('');
+                $('.caseManifestSearchEntry').val('');
+                $('.caseTypeSearchEntry').val('');
+                $('.fromSubmissionDateSearchEntry').val('');
+                $('.toSubmissionDateSearchEntry').val('');
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.DHSCaseDashboardController.totalNumberOfUnassignedCases}',
+
+                    function (result, event) {
+                        if (event.status) {
+                            console.log('unassignedcases...' + result);
+                            if (result > 0) {
+                                showunassignedaction(true);
+                            } else {
+                             $('.toast strong').text('There are no assigned cases at this time.')
+                                 $('.toast').toast('show');
+                               
+                            }
+                        }
+                    }, {
+                        escape: true
+                    }
+                );
+            }
+
+            function assigncases() {
+            debugger;
+                var numberofcases = $('.caseselectcheckbox:checkbox:checked').length;
+                var rowsvalidated = true;
+                
+                $('.caseselectcheckbox:checkbox:checked').each(function () {
+                       var parentRow = $(this).closest('tr');
+                        $(parentRow).each(function(){
+                          var validaterows = true;
+                            $(this).find('td').each(function(){
+                               if($(this).hasClass('mandatory')){
+                                    if($(this).text().trim() == ''){
+                                        validaterows = false;
+                                        rowsvalidated = false;
+                                    } 
+                                }
+                            });
+                            
+                            if(!validaterows){
+                                $(this).addClass('bg-secondary text-white');
+                                 $('.toast strong').text('Selected Case do not have complete details')
+                                 $('.toast').toast('show');
+                            }
+                        });
+                    });
+                var assignto = $('.selectedUserIdForAssignment').val();
+                var assigntoname = $( ".selectedUserIdForAssignment option:selected" ).text();
+                if(numberofcases > 0 && assignto != '' && rowsvalidated){
+                    $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'Would you like to proceed with this case assignment to '+assigntoname+'?',
+                    buttons: {
+                        confirm: function () {
+                            assigncasesaction();
+                        },
+                        cancel: function () {}
+                    }
+                    });
+                }
+                else if(numberofcases == 0){
+                                 $('.toast strong').text('Please select a case to assign.')
+                                 $('.toast').toast('show');
+                   
+                }else if(assignto == ''){
+                  $('.toast strong').text('Please select a user to assign cases.')
+                                 $('.toast').toast('show');
+                   
+                }
+                
+               
+                
+            }
+            
+            function loaddatatables(){
+            $('#caseslist').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                "bPaginate": false,
+                    "bFilter": true,
+                    "bInfo": false,
+                    "bAutoWidth": false,
+                    "language": {
+                        "zeroRecords": "No cases found with search criteria."
+                      }
+                });
+                }
+           
+            $(document).ready(function() {
+            $('body').on('click','.export-button',function(e){
+            e.preventDefault();
+
+             const criteriaData = JSON.parse($('.criteriaData input').val());
+                const conditions = criteriaData.map(condition => {
+                    return {
+                        key: condition.FieldName,
+                        value: condition.FieldValue,
+                        operator: condition.Operator,
+                        type: condition.FieldType === 'Date' ? 'object' : null // Adjust type if it's a Date
+                    };
+                });
+             var fields = "{!$Label.DHS_Export_Pending_Cases_Fields}";
+             exportCSV('DHS_Case__c', fields.split(','), conditions, "Name","DHSCaseDashboardExport");
+             return false;
+            });
+            });
+            function exportCSV(sObjectName, fieldNames, conditions, orderBy = null, reportType) {
+         
+         $Lightning.use("c:exportCSVWrapperApp", function() {
+         
+         $Lightning.createComponent("c:dhsExportCSV",
+         
+         {
+         
+           sObjectName   : sObjectName, // You can pass the value to @api attributes if you have inside JavaScript Class.
+         
+           fieldNames : fieldNames,
+         
+           conditions: conditions,
+         
+           orderBy: orderBy,
+           
+           reportType : reportType
+         
+         },
+         
+         "LwcId", // the Id of div tag where your component will be rendered
+         
+         function(cmp) {
+         
+           console.log('Calling the LWC Component');
+         
+         });
+         
+         });
+         
+         }
+        </script>
+        <style>
+            .dataTables_empty{
+                text-align: center !important;
+                font-size: 14px !important;
+                font-weight: bold !important;
+                color: #093b87 !important;
+            }
+        </style>
+
+
+
+
+
+    </body>
+
+</apex:page>

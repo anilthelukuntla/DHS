@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultLandingTab>standard-home</defaultLandingTab>
+    <description>DHS application for DHS project metadata.</description>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>DHS</label>
+    <navType>Standard</navType>
+    <tabs>standard-home</tabs>
+    <tabs>DHS_Auto_Lead_Generation_Setting__c</tabs>
+    <tabs>DHS_Auto_Lead_Generation_Template__c</tabs>
+    <tabs>DHS_CaseCancellationRequest__c</tabs>
+    <tabs>DHS_Case_And_Lead_Template__c</tabs>
+    <tabs>DHS_Case_History__c</tabs>
+    <tabs>DHS_Case__c</tabs>
+    <tabs>DHS_Contact__c</tabs>
+    <tabs>DHS_Contract_Setting__c</tabs>
+    <tabs>DHS_Customer_Order_Upload_Log__c</tabs>
+    <tabs>DHS_Customer_Order__c</tabs>
+    <tabs>DHS_DataLoad_Activity__c</tabs>
+    <tabs>DHS_Deliverable__c</tabs>
+    <tabs>DHS_Document_Request__c</tabs>
+    <tabs>DHS_Document__c</tabs>
+    <tabs>DHS_Investigator_Check__c</tabs>
+    <tabs>DHS_Invoice__c</tabs>
+    <tabs>DHS_Knowledge_Base__c</tabs>
+    <tabs>DHS_Lead_Grammar_Check__c</tabs>
+    <tabs>DHS_Lead_RTA_Extension__c</tabs>
+    <tabs>DHS_Lead__c</tabs>
+    <tabs>DHS_Message__c</tabs>
+    <tabs>OTP__c</tabs>
+    <tabs>DHS_PPF_Shipping_Information__c</tabs>
+    <tabs>DHS_PayrollSetting__c</tabs>
+    <tabs>DHS_ROI_Report_Order__c</tabs>
+    <tabs>DHS_Report_Export__c</tabs>
+    <tabs>DHS_Subject_Message__c</tabs>
+    <tabs>DHS_TimeSheet__c</tabs>
+    <tabs>DHS_Training__c</tabs>
+    <tabs>DHS_Waiver_Information__c</tabs>
+    <tabs>DHS_Workload__c</tabs>
+    <tabs>MS_Team_Call_Schedule__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>

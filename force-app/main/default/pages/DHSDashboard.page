@@ -1,0 +1,566 @@
+<apex:page showHeader="false" sidebar="false"  standardStylesheets="false"
+   docType="html-5.0" controller="DHSDashboardController" readonly="true">
+    <apex:includeLightning />
+   <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+      <meta name="description" content="" />
+      <meta name="author" content="" />
+      <title>Dashboard</title>
+      <style>
+         :root {
+            --dhs-brand-primary: #00799B;
+            --dhs-line: #dfe6f0;
+         }
+         #content-wrapper {
+            background: #f5f8fc;
+            font-family: Open Sans, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.45;
+         }
+         #content .topbar h4 {
+            color: var(--dhs-brand-primary) !important;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.15;
+         }
+         #content .topbar h4 b {
+            font-weight: 600;
+         }
+         .dashboard-metric-card {
+            background: #fff;
+            border: 1px solid var(--dhs-line) !important;
+            border-bottom: 4px solid var(--dhs-brand-primary) !important;
+            border-radius: 0.5rem;
+            box-shadow: 0 8px 24px rgba(6, 31, 74, 0.08);
+            min-height: 6.25rem;
+         }
+         .dashboard-metric-card .card-body {
+            padding: 1rem !important;
+         }
+         .dashboard-metric-card .flex-grow-1 {
+            display: flex;
+            flex-direction: column;
+         }
+         .dashboard-metric-card h3 {
+            color: var(--dhs-brand-primary) !important;
+            display: block;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.1;
+            margin: 0 !important;
+            order: 2;
+         }
+         .dashboard-metric-card p {
+            color: var(--dhs-brand-primary) !important;
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.45;
+            margin: 0 0 0.15rem !important;
+            order: 1;
+         }
+         #content .card:not(.dashboard-metric-card) {
+            background: #fff;
+            border: 1px solid var(--dhs-line);
+            border-radius: 0.5rem;
+            box-shadow: 0 8px 24px rgba(6, 31, 74, 0.08);
+         }
+         #content .card-header {
+            background: #fff;
+            border-bottom: 1px solid var(--dhs-line);
+            padding: 0.9rem 1rem;
+         }
+         #content .card-title {
+            color: var(--dhs-brand-primary) !important;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.45;
+         }
+         #content .card-title i {
+            color: var(--dhs-brand-primary) !important;
+         }
+          .chart-container {
+          width: 100%;
+          height: 400px;
+         margin: 0 auto;
+         }
+         .highcharts-credits{display:none}
+      </style>
+   </head>
+   <body id="page-top">
+      <apex:form >
+          <div id="LwcId"></div>
+         <!-- Page Wrapper -->
+         <div id="wrapper">
+            <c:DHSHeader ></c:DHSHeader>
+            <!-- Content Wrapper -->
+            <div id="content-wrapper" class="d-flex flex-column">
+               <!-- Main Content -->
+               <div id="content">
+                  <!-- Topbar -->
+                  <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                     <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                        <h4 class=" mb-0 text-gray-800"><b>Dashboard</b></h4>
+                     </div>
+                     <!-- Topbar Navbar -->
+                     <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+                  </nav>
+                  <!-- End of Topbar -->
+                  <!-- Begin Page Content -->
+                  <div class="container-fluid">
+                     <div class="container-fluid p-0">
+                        <div class="row">
+                           <div class="col-12 col-sm-3 col-xxl-3 d-flex">
+                              <div class="card flex-fill dashboard-metric-card">
+                                 <div class="card-body py-4">
+                                    <div class="d-flex align-items-start">
+                                       <div class="flex-grow-1">
+                                          <h3 class="mb-2"> {!totalCases}</h3>
+                                          <p class="mb-2">Total Cases</p>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="col-12 col-sm-3 col-xxl-3 d-flex">
+                              <div class="card flex-fill dashboard-metric-card">
+                                 <div class="card-body py-4">
+                                    <div class="d-flex align-items-start">
+                                       <div class="flex-grow-1">
+                                          <h3 class="mb-2"> {!totalCompletedCases}</h3>
+                                          <p class="mb-2">Total Completed Cases</p>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="col-12 col-sm-3 col-xxl-3 d-flex">
+                              <div class="card flex-fill dashboard-metric-card">
+                                 <div class="card-body py-4">
+                                    <div class="d-flex align-items-start">
+                                       <div class="flex-grow-1">
+                                          <h3 class="mb-2">{!totalPendingCases}</h3>
+                                          <p class="mb-2">Cases Pending</p>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="col-12 col-sm-3 col-xxl-3 d-flex">
+                              <div class="card flex-fill dashboard-metric-card">
+                                 <div class="card-body py-4">
+                                    <div class="d-flex align-items-start">
+                                       <div class="flex-grow-1">
+                                          <h3 class="mb-2">{!totalCancelledCases }</h3>
+                                          <p class="mb-2">Cases Cancelled</p>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="row mb-4 mt-4 ">
+                            <div class="col-12 col-lg-4  d-flex">
+                               <div class="card flex-fill dashboard-metric-card">
+                                  <div class="card-header">
+                                     <div class="card-actions float-end">
+                                        <div class="dropdown position-relative">
+                                           <div class="dropdown-menu dropdown-menu-end">
+                                              <a class="dropdown-item" >Action</a>
+                                           </div>
+                                        </div>
+                                     </div>
+                                     <h5 class="card-title mb-0 d-flex justify-content-between">Cases Summary By Task
+                                     <i class="fa-solid fa-download {!If(currentuser.user_type__c == 'Customer User','d-none','')}" style="cursor: pointer;"  onclick="exportPendingCases();return false;"></i>
+                                     </h5>
+                                  </div>
+                                  <div class="card-body d-flex">
+                                     <div class="align-self-center w-100">
+                                        <div class="align-self-center chart chart-lg">
+                                           <div id="highcharts-area" class="chart-container"></div>
+                                        </div>
+                                     </div>
+                                  </div>
+                               </div>
+                            </div>
+                            <div class="col-12 col-lg-8 d-flex">
+                               <div class="card flex-fill w-100">
+                                  <div class="card-header">
+                                     <div class="card-actions float-end">
+                                        <div class="dropdown position-relative">
+                                           <div class="dropdown-menu dropdown-menu-end">
+                                              <a class="dropdown-item" >Download</a>
+                                           </div>
+                                        </div>
+                                     </div>
+                                     <h5 class="card-title mb-0 d-flex justify-content-between">Cases Completed Report
+                                     <i class="fa-solid fa-download {!If(currentuser.user_type__c == 'Customer User','d-none','')}" style="cursor: pointer;"  onclick="exportCasesCompleted();return false;"></i>
+                                     </h5>
+                                  </div>
+                                  <div class="card-body">
+                                     <div class="align-self-center chart chart-lg">
+                                        <div class="chartjs-size-monitor">
+                                           <div class="chartjs-size-monitor-expand">
+                                              <div class=""></div>
+                                           </div>
+                                           <div class="chartjs-size-monitor-shrink">
+                                              <div class=""></div>
+                                           </div>
+                                        </div>
+                                        <div id="highcharts-column" class="chart-container"></div>
+                                     </div>
+                                  </div>
+                               </div>
+                            </div>
+                         </div>
+                        <div class="row mb-4 {!If(currentuser.user_type__c == 'Customer User','d-none','')}">
+                           <div class="col-12 col-sm-3 col-xxl-3 d-flex">
+                              <div class="card flex-fill dashboard-metric-card">
+                                 <div class="card-body py-4">
+                                    <div class="d-flex align-items-start">
+                                       <div class="flex-grow-1">
+                                          <h3 class="mb-2">{!totalLeads}</h3>
+                                          <p class="mb-2">Total Leads</p>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="col-12 col-sm-3 col-xxl-3 d-flex">
+                              <div class="card flex-fill dashboard-metric-card">
+                                 <div class="card-body py-4">
+                                    <div class="d-flex align-items-start">
+                                       <div class="flex-grow-1">
+                                          <h3 class="mb-2">{!totalPendingLeads}</h3>
+                                          <p class="mb-2">Leads In-progress</p>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="row  mb-4 mt-4 {!If(currentuser.user_type__c == 'Customer User','d-none','')}">
+                            <div class="col-12 col-lg-6 d-flex">
+                               <div class="card flex-fill w-100">
+                                  <div class="card-header">
+                                     <div class="card-actions float-end">
+                                        <div class="dropdown position-relative">
+                                           <div class="dropdown-menu dropdown-menu-end">
+                                              <a class="dropdown-item" >Action</a>
+                                           </div>
+                                        </div>
+                                     </div>
+                                     <h5 class="card-title mb-0 d-flex justify-content-between">Pending Leads By Status
+                                     <i class="fa-solid fa-download" style="cursor: pointer;"  onclick="exportPendingLeads();return false;"></i>
+                                     </h5>
+                                  </div>
+                                  <div class="card-body w-100">
+                                     <div class="align-self-center">
+                                        <div id="highcharts-bar" class="chart-container"></div>
+                                     </div>
+                                  </div>
+                               </div>
+                            </div>
+                            <div class="col-12 col-lg-6 d-flex {!If(currentuser.user_type__c == 'Customer User','d-none','')}">
+                               <div class="card flex-fill w-100">
+                                  <div class="card-header">
+                                     <h5 class="card-title mb-0 d-flex justify-content-between">Pending Leads By Type
+                                     <i class="fa-solid fa-download" style="cursor: pointer;" onclick="exportPendingLeadsByType();return false;"></i>
+                                     </h5>
+                                  </div>
+                                  <div class="align-self-center flex-fill w-100 p-4">
+                                     <div id="highcharts-line" class="chart-container"></div>
+                                  </div>
+                               </div>
+                            </div>
+                         </div>
+                       
+                     </div>
+                  </div>
+                  <!-- /.container-fluid -->
+               </div>
+               <!-- End of Main Content -->
+               <!-- Footer -->
+               <footer class="sticky-footer bg-white">
+                  <div class="container my-auto">
+                     <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; ISN</span>
+                     </div>
+                  </div>
+               </footer>
+               <!-- End of Footer -->
+            </div>
+            <!-- End of Content Wrapper -->
+         </div>
+         <!-- End of Page Wrapper -->
+         <!-- Scroll to Top Button-->
+         <a class="scroll-to-top rounded" href="#page-top">
+         <i class="fas fa-angle-up"></i>
+         </a>
+         <div class="toast " role="alert" aria-live="assertive" data-delay="5000"  aria-atomic="true" style="position: absolute;top: 5rem;right: 0;left: 0;z-index: 99;margin: 0 auto;min-width: 500px;">
+            <div class="toast-header bg-danger">
+               <strong class="mr-auto text-white"></strong>
+               <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+               <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+         </div>
+      </apex:form>
+      <script src="https://code.highcharts.com/highcharts.js"></script>
+      <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+      <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+    // Common 3D options without tilt
+    const common3dOptions = {
+        enabled: true,
+        alpha: 0,
+        beta: 0,
+        depth: 50,
+        viewDistance: 25
+    };
+
+    Highcharts.chart('highcharts-bar', {
+        chart: {
+            type: 'column',
+            options3d: common3dOptions
+        },
+        xAxis: {
+            type: 'category',
+            title: {
+                text: '<b style="margin-top:10px">Lead Status</b>' // Set Y-axis title
+            }
+        },
+    
+         yAxis: {
+            title: {
+                text: 'Count' // Set Y-axis title
+            }
+        },
+        
+        tooltip: {
+        shared: true,
+            headerFormat: '<b>Lead Status: {point.key}</b><br>',
+            pointFormat: 'Lead count: <b>{point.y}</b>', // Add point formatting
+      
+        },
+        title: {
+            text: '',
+            align: 'left'
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            column: {
+                depth: 25,
+                cursor: 'pointer',
+                point: {
+                    events: {
+                        mouseOver: function () {
+                            this.series.chart.tooltip.refresh(this);
+                        }
+                    }
+                }
+            }
+        },
+        series: [{
+            data: {!pendingLeadsByStatus},
+            colorByPoint: true
+        }]
+    });
+
+    // Line Chart
+    Highcharts.chart('highcharts-line', {
+        chart: {
+            type: 'column', // Change to 'line' for line chart
+            options3d: common3dOptions
+        },
+        xAxis: {
+            type: 'category',
+             title: {
+                text: '<b style="margin-top:10px">Lead Type</b>' // Set Y-axis title
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Count' // Set Y-axis title
+            }
+        },
+        tooltip: {
+        shared: true,
+            headerFormat: 'Lead Type: <b>{point.key}</b><br>',
+            pointFormat: 'Lead Count: {point.y}' // Adjust tooltip format
+        },
+        title: {
+            text: '',
+            align: 'left'
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            line: {
+                depth: 25
+            }
+        },
+        series: [{
+            data: {!pendingLeadsByType},
+            colorByPoint: true
+        }]
+    });
+
+ Highcharts.chart('highcharts-area', {
+    chart: {
+        type: 'pie'
+    },
+    title: {
+        text: ''
+    },
+    tooltip: {
+        pointFormat: '{series.name}: {point.percentage:.1f}%',
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                distance: -10,
+                format: '{point.name}: {point.percentage:.1f}%',
+          
+            }
+        }
+    },
+    series: [
+        {
+            name: 'Percentage',
+            colorByPoint: true,
+            data: {!currentPendingCaseStatus}
+        }
+    ]
+});
+
+    // Column Chart
+    Highcharts.chart('highcharts-column', {
+        chart: {
+            type: 'line', // Change to 'line' for line chart
+            options3d: common3dOptions
+        },
+        title: {
+            text: ''
+        },
+        xAxis: {
+            type: 'category',
+            title: {
+                text: '<b style="margin-top:10px">Weekly</b>' // Set Y-axis title
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Count' // Set Y-axis title
+            }
+        },
+        tooltip: {
+            headerFormat: '<b> {point.key}</b><br>',
+            pointFormat: 'Case Count: {point.y}' // Adjust tooltip format
+        },
+        series: [{
+         showInLegend: false,     
+            data: {!currentWeekCompletedCaseStatus},
+            colorByPoint: true
+        }]
+    });
+});
+       
+       
+       function exportCSV(sObjectName, fieldNames, conditions, orderBy = null, reportType) {
+
+    $Lightning.use("c:exportCSVWrapperApp", function() {
+
+        $Lightning.createComponent("c:dhsExportCSV",
+
+        {
+
+            sObjectName   : sObjectName, // You can pass the value to @api attributes if you have inside JavaScript Class.
+
+            fieldNames : fieldNames,
+
+            conditions: conditions,
+
+            orderBy: orderBy,
+            
+            reportType : reportType
+
+        },
+
+        "LwcId", // the Id of div tag where your component will be rendered
+
+        function(cmp) {
+
+            console.log('Calling the LWC Component');
+
+        });
+
+    });
+
+}
+
+
+
+function exportPendingCases() {
+
+    var fields = "{!$Label.DHS_Export_Pending_Cases_Fields}";
+    
+    var testCMOIds = "{!testCMOIds}";
+    
+    const pendingCaseCondition = [{'key': 'Status__c', 'value': 'Active','operator' : '='},
+                                 {'key': 'DHS_Assigned_To__c', 'value': testCMOIds,'operator' : 'NOT IN'}];
+    
+    exportCSV('DHS_Case__c', fields.split(','), pendingCaseCondition, "Status__c","DHSpendingCasesByStatus");
+
+}
+
+
+
+function exportCasesCompleted() {
+    var testCMOIds = "{!testCMOIds}";
+    var fields = "{!$Label.DHS_Export_Cases_Completed}";
+    const completedCaseCondition = [{'key': 'Status__c', 'value': 'Delivered','operator' : '='} ,
+                                 {'key': 'DHS_Assigned_To__c', 'value': testCMOIds,'operator' : 'NOT IN'}];
+    
+    exportCSV('DHS_Case__c', fields.split(','), completedCaseCondition, "Status__c","DHSCasesCompletedThisWeek");
+
+}
+
+
+
+function exportPendingLeads() {
+    var testINVIds = "{!testINVIds}";
+    var fields = "{!$Label.DHS_Export_Pending_Leads}";
+
+    const pendingLeadsCondition = [{'key': 'Status__c', 'value': 'Completed','operator' : '!='},
+                                 {'key': 'DHS_Assigned_To__c', 'value': testINVIds,'operator' : 'NOT IN'}];
+
+    exportCSV('DHS_Lead__c', fields.split(','), pendingLeadsCondition, 'Status__c',"DHSPendingLeadsByStatus");
+
+}
+
+
+
+function exportPendingLeadsByType() {
+    var testINVIds = "{!testINVIds}";
+    var fields = "{!$Label.DHS_Export_Pending_Leads_By_Type}";
+
+    const pendingLeadsByTypeCondition = [{'key': 'Status__c', 'value': 'Completed','operator' : '!='},
+                                        {'key': 'DHS_Assigned_To__c', 'value': testINVIds,'operator' : 'NOT IN'}];
+
+    exportCSV('DHS_Lead__c', fields.split(','), pendingLeadsByTypeCondition, 'Status__c',"DHSPendingLeadsByType");
+
+}
+
+      </script>
+   </body>
+</apex:page>
