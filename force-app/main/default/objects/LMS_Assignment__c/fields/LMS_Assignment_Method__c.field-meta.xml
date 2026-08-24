@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LMS_Assignment_Method__c</fullName>
+    <label>Assignment Method</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Specific Users</fullName>
+                <default>false</default>
+                <label>Specific Users</label>
+            </value>
+            <value>
+                <fullName>User Status</fullName>
+                <default>false</default>
+                <label>User Status</label>
+            </value>
+            <value>
+                <fullName>Department</fullName>
+                <default>false</default>
+                <label>Department</label>
+            </value>
+            <value>
+                <fullName>All Users</fullName>
+                <default>false</default>
+                <label>All Users</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

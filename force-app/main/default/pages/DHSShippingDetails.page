@@ -1,0 +1,896 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+    controller="DHSShippingDetailsController">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Shipping Details</title>
+        <style>
+        .collapseTable tr:not(.collapsed) .fa-angle-right:before{content:"\f107"}
+        .commentArea {min-height:150px;margin-bottom:20px}
+            .custom-control-input {
+                z-index: 1!important;
+            }
+            .multiSelectPicklistCell {
+                text-align: center
+            }
+
+            .multiSelectPicklistCell a {
+                padding: 0 20px;
+                text-decoration: none
+            }
+
+            .multiSelectPicklistCell a img {
+                display: none
+            }
+
+            .multiSelectPicklistCell a:first-child:before {
+                content: "\f105";
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+                padding: 20px;
+                padding: 5px;
+                text-decoration: none;
+                cursor: pointer;
+                border: 1px solid #c3c3c3;
+            }
+
+            .multiSelectPicklistCell a:last-child:before {
+                content: "\f104";
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+                padding: 20px;
+                padding: 5px;
+                text-decoration: none;
+                cursor: pointer;
+                border: 1px solid #c3c3c3;
+            }
+
+            .multiSelectPicklistRow td:last-child {
+                min-width: 200px;
+            }
+
+            .table thead th {
+                border-top: none
+            }
+
+            .collapseTable tr {
+                cursor: pointer
+            }
+
+            .lightGray {
+                background: #F5F5F5
+            }
+
+            .shippingcontent .nav-tabs .nav-link.active,
+            .nav-tabs .nav-item.show .nav-link {
+                background: #00799B;
+                color: #fff;
+                border-radius: 0;
+            }
+
+            .custom-disabled {
+                pointer-events: none;
+            }
+        </style>
+    </head>
+
+    <body id="page-top">
+        <!-- Page Wrapper -->
+        <div id="wrapper">
+            <c:DHSHeader ></c:DHSHeader>
+            <!-- Content Wrapper -->
+            <div id="content-wrapper" class="d-flex flex-column">
+                <!-- Main Content -->
+                <div id="content">
+                    <!-- Topbar -->
+                    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                        <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                            <h4 class=" mb-0 text-gray-800"><b>Shipping Details</b></h4>
+                        </div>
+                        <!-- Sidebar Toggle (Topbar) -->
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+                    </nav>
+                    <!-- End of Topbar -->
+                    <!-- Begin Page Content -->
+                    <div class="container-fluid">
+                        <apex:form >
+                            <apex:outputpanel rendered="{!If(currentuser.User_Type__c == 'INV',true,false)}">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div
+                                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h4 class="m-0 font-weight-bold text-primary">New Shipping Information
+                                                </h4>
+                                            </div>
+                                            <div class="card-body row">
+                                                <div class="col-5">
+                                                    <div class="p-3 py-3">
+                                                        <apex:outputpanel id="shippingdetailspanel">
+                                                            <div class="col-12 mt-2 px-0">
+                                                                <label class="labels">Select Case:</label>
+                                                                <apex:selectlist onchange="onselectofcaseaction();"
+                                                                    styleclass="form-select form-control mb-3 selectedcaseidforshipping"
+                                                                    size="1" value="{!selectedcaseidforshipping}">
+                                                                    <apex:selectOptions value="{!caseOptions}" />
+                                                                </apex:selectlist>
+                                                            </div>
+                                                            <apex:outputpanel rendered="{!showshippingdetailspanel}">
+                                                                <div class="col-12 px-0 " id="shipping-info">
+                                                                    <div class="row mt-2">
+                                                                        <div class="col-md-6">
+                                                                            <label class="labels">Manifest
+                                                                                Name</label>
+                                                                            <apex:inputField styleclass="form-control mb-3"
+                                                                                value="{!newShippingInfo.Manifest_Number__c}" />
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <label class="labels">Tracking
+                                                                                Number</label>
+                                                                            <apex:inputField styleclass="form-control mb-3"
+                                                                                value="{!newShippingInfo.Tracking_Number__c}" />
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <label class="labels"> Date of
+                                                                                Manifest Ship </label>
+                                                                            <apex:inputField styleclass="form-control mb-3"
+                                                                                type="date"
+                                                                                value="{!newShippingInfo.Date_of_Manifest_Ship__c}" />
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <label class="labels">
+                                                                                Shipping Staff Name </label>
+                                                                            <apex:inputField styleclass="form-control mb-3"
+                                                                                value="{!newShippingInfo.Shipping_Staff_Name__c}" />
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <label class="labels">
+                                                                                Shipping Staff Credential/ID Number
+                                                                            </label>
+                                                                            <apex:inputField styleclass="form-control mb-3"
+                                                                                value="{!newShippingInfo.Shipping_Staff_Cred_ID_Num__c}" />
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <label class="labels">For Each
+                                                                                Case, Indicate (check box for each) type
+                                                                                of
+                                                                                documents included in package</label>
+                                                                            <apex:inputField styleclass="form-control mb-3"
+                                                                                value="{!newShippingInfo.Docs_Included_In_Package__c}" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class=""><button
+                                                                        class="btn btn-primary profile-button {!IF(currentuser.user_type__c == 'INV','','d-none')}"
+                                                                        onclick="createppfshippinginformation();return false;"
+                                                                        type="button">Submit</button></div>
+                                                            </apex:outputpanel>
+                                                        </apex:outputpanel>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 mt-3">
+                                        <div class="card">
+                                            <div
+                                                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                <h4 class="m-0 font-weight-bold text-primary">Recent Shipping details
+                                                    list
+                                                </h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <apex:outputpanel rendered="{!currentuser.User_Type__c == 'INV'}">
+                                                    <div class="col">
+                                                        <div class="panel panel-default">
+                                                            <div class="panel-heading">
+                                                                <!--<h4 class="m-0 font-weight-bold text-primary my-4">
+                                                                Recent Shipping details list</h4>-->
+                                                            </div>
+                                                            <div class="panel-body">
+                                                                <div class="mt-3">
+                                                                    <div class=" row">
+                                                                        <div class="col">
+                                                                            <div class="rounded">
+                                                                                <div class="">
+                                                                                    <apex:outputpanel id="shippingdetailslistpanel">
+                                                                                        <table class="table datatable">
+                                                                                            <thead>
+                                                                                                <tr>
+                                                                                                    <th>Manifest
+                                                                                                        Number
+                                                                                                    </th>
+                                                                                                    <th>Tracking
+                                                                                                        Number
+                                                                                                    </th>
+                                                                                                    <th>Manifest
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <th>Shipping
+                                                                                                        Staff
+                                                                                                    </th>
+                                                                                                    <th>Staff
+                                                                                                        Credential
+                                                                                                    </th>
+                                                                                                    <th><div>Items</div>
+                                                                                                    <div>Recieved</div>
+                                                                                                    </th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody class="table-body">
+                                                                                                <apex:repeat value="{!recentPPFShippinginformationofInvestigator}"
+                                                                                                    var="shippinginfo">
+                                                                                                    <tr>
+                                                                                                        <td>{!shippinginfo.Manifest_Number__c}
+                                                                                                        </td>
+                                                                                                        <td>{!shippinginfo.Tracking_Number__c}
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <apex:outputText value="{0,date,MM/dd/yy}">
+                                                                                                                <apex:param value="{!shippinginfo.Date_of_Manifest_Ship__c}" />
+                                                                                                            </apex:outputText>
+                                                                                                        </td>
+                                                                                                        <td>{!shippinginfo.Shipping_Staff_Name__c}
+                                                                                                        </td>
+                                                                                                        <td>{!shippinginfo.Shipping_Staff_Cred_ID_Num__c}
+                                                                                                        </td>
+                                                                                                        <td>{!shippinginfo.Docs_Included_In_Package__c}
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                </apex:repeat>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </apex:outputpanel>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </apex:outputpanel>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </apex:outputpanel>
+                            <apex:outputpanel id="qashippingdetailslistpanel">
+                                <apex:outputpanel rendered="{!If(currentuser.User_Type__c == 'QA',true,false)}">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div
+                                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                                    <h4 class="m-0 font-weight-bold text-primary">  <ul class="nav nav-tabs" role="tablist">
+                                                                        <li class="nav-item">
+                                                                            <a class="nav-link active" data-toggle="tab"
+                                                                                href="#tabs-1" role="tab">Pending</a>
+                                                                        </li>
+                                                                        <li class="nav-item">
+                                                                            <a class="nav-link" data-toggle="tab"
+                                                                                href="#tabs-2" role="tab">Completed</a>
+                                                                        </li>
+                                                                    </ul>
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body row" style="display: block;">
+                                                    <div class="shippingcontent row">
+                                                        <div class="col-12">
+                                                            <div class="card " style="border:none">
+                                                                <div class="card-body pt-0">
+                                                                  
+                                                                    <!-- Tab panes -->
+                                                                    <div class="tab-content ">
+                                                                        <div class="tab-pane active" id="tabs-1"
+                                                                            role="tabpanel">
+                                                                            <!--<h4 class="my-2"> Pending Shipping List</h4>-->
+                                                                            <div class="table table-responsive ">
+                                                                                <table
+                                                                                    class="table datatable collapseTable ">
+                                                                                    <thead>
+                                                                                        <tr >
+                                                                                        <th></th>
+                                                                                            <th>Investigator Name</th>
+                                                                                            <th>Case Number</th>
+                                                                                            <th>Manifest
+                                                                                                Number
+                                                                                            </th>
+                                                                                            <th>Tracking
+                                                                                                Number
+                                                                                            </th>
+                                                                                            <th>Manifest
+                                                                                                Date
+                                                                                            </th>
+                                                                                            <th>Shipping
+                                                                                                Staff
+                                                                                            </th>
+                                                                                            <th>Staff
+                                                                                                Credential
+                                                                                            </th>
+                                                                                            <th><div>Items</div>
+                                                                                            <div>Sent</div>
+                                                                                            </th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <apex:repeat value="{!pendingShippingInformations}"
+                                                                                            var="shippinginfo">
+                                                                                            <tr data-toggle="collapse"
+                                                                                                data-target=".order{!shippinginfo.id}" class="collapsed">
+                                                                                                <td><i class="fas fa-angle-right"></i></td>
+                                                                                                <td>{!shippinginfo.DHS_Investigator__r.FirstName}&nbsp;{!shippinginfo.DHS_Investigator__r.LastName}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.DHS_Case__r.Case_Number__c}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Manifest_Number__c}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Tracking_Number__c}
+                                                                                                </td>
+                                                                                                <td>
+                                                                                                    <apex:outputText value="{0,date,MM/dd/yy}">
+                                                                                                        <apex:param value="{!shippinginfo.Date_of_Manifest_Ship__c}" />
+                                                                                                    </apex:outputText>
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Shipping_Staff_Name__c}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Shipping_Staff_Cred_ID_Num__c}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Docs_Included_In_Package__c}
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr
+                                                                                                class="collapse order{!shippinginfo.id}">
+                                                                                                <td colspan="100"
+                                                                                                    class="lightGray">
+                                                                                                    <div class="row">
+                                                                                                        <div
+                                                                                                            class="card border-0 mb-2 col-12 lightGray">
+                                                                                                            <div
+                                                                                                                class="card-body p-2 row lightGray">
+                                                                                                                <div
+                                                                                                                    class="col-4 ">
+                                                                                                                    <div
+                                                                                                                        class="mb-3">
+                                                                                                                       Items Received
+                                                                                                                    </div>
+                                                                                                                    <ul
+                                                                                                                        class="list-group">
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Briefing/Scoping Notes'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputfield value="{!shippingInfo.Briefing_Scoping_Notes_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck1">Briefing/Scoping
+                                                                                                                                    Notes
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Case Messages'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Case_Messages_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck2">Case
+                                                                                                                                    Messages
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Case Papers'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Case_Papers_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck3">Case
+                                                                                                                                    Papers
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Credit Report'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Credit_Report_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck4">Credit
+                                                                                                                                    Report
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Handwritten Case Notes'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Handwritten_Case_Notes_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">Handwritten
+                                                                                                                                    Case
+                                                                                                                                    Notes
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Hardcopy Records'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Hardcopy_Records_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">Hardcopy
+                                                                                                                                    Records
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'OF-306'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.OF_306_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">OF-306
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Releases'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Releases_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">Releases
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Resume'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Resume_Received__c}"
+                                                                                                                                    styleclass="custom-control-input" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">Resume
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                    </ul>
+                                                                                                                </div>
+                                                                                                                <div
+                                                                                                                    class="col-8">
+                                                                                                                    <div
+                                                                                                                        class="col">
+                                                                                                                        <label
+                                                                                                                            class="labels">Recipient
+                                                                                                                            Name</label>
+                                                                                                                        <apex:inputField styleclass="form-control mb-3"
+                                                                                                                            value="{!shippingInfo.Recipients_Name__c}" />
+                                                                                                                    </div>
+                                                                                                                    <div
+                                                                                                                        class="col">
+                                                                                                                        <label
+                                                                                                                            class="labels">Recipient
+                                                                                                                            Cred/ID
+                                                                                                                            Number</label>
+                                                                                                                        <apex:inputField styleclass="form-control mb-3"
+                                                                                                                            value="{!shippingInfo.Recipients_Cred_ID_Number__c}" />
+                                                                                                                    </div>
+                                                                                                                    <div
+                                                                                                                        class="col">
+                                                                                                                        <label
+                                                                                                                            class="labels">
+                                                                                                                            Date
+                                                                                                                            Received
+                                                                                                                            at
+                                                                                                                            ISN
+                                                                                                                        </label>
+                                                                                                                        <apex:inputField styleclass="form-control mb-3"
+                                                                                                                            type="date"
+                                                                                                                            value="{!shippingInfo.Date_Received_at_ISN__c}" />
+                                                                                                                    </div>
+                                                                                                                    <div
+                                                                                                                        class="col">
+                                                                                                                        <label
+                                                                                                                            class="labels">Comments</label>
+                                                                                                                        <apex:inputField styleclass="form-control commentArea mb-3"
+                                                                                                                            value="{!shippingInfo.QA_Comments__c}" />
+                                                                                                                    </div>
+                                                                                                                    <div
+                                                                                                                        class="p-2 d-flex justify-content-center">
+                                                                                                                        <button
+                                                                                                                            class="btn col-3  py-3 btn-primary profile-button"
+                                                                                                                            onclick="updateppfshippinginformation('{!shippingInfo.id}');return false;"
+                                                                                                                            type="button">Confirm Receipt</button>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </apex:repeat>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="tab-pane" id="tabs-2"
+                                                                            role="tabpanel">
+                                                                            <!-- <h4 class="my-2"> Recieved Shipping List</h4> -->
+                                                                            <div class="table table-responsive ">
+                                                                                <table
+                                                                                    class="table datatable collapseTable ">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                        <th></th>
+                                                                                            <th>Investigator Name</th>
+                                                                                            <th>Case Number</th>
+                                                                                            <th>Manifest
+                                                                                                Number
+                                                                                            </th>
+                                                                                            <th>Tracking
+                                                                                                Number
+                                                                                            </th>
+                                                                                            <th>Manifest
+                                                                                                Date
+                                                                                            </th>
+                                                                                            <th>Shipping
+                                                                                                Staff
+                                                                                            </th>
+                                                                                            <th>Staff
+                                                                                                Credential
+                                                                                            </th>
+                                                                                            <th><div>Items</div>
+                                                                                            <div>Sent</div>
+                                                                                            </th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <apex:repeat value="{!completedShippingInformations}"
+                                                                                            var="shippinginfo">
+                                                                                            <tr data-toggle="collapse"
+                                                                                                data-target=".order{!shippinginfo.id}" class="collapsed">
+                                                                                                 <td><i class="fas fa-angle-right"></i></td>
+                                                                                                <td>{!shippinginfo.DHS_Investigator__r.FirstName}&nbsp;{!shippinginfo.DHS_Investigator__r.LastName}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.DHS_Case__r.Case_Number__c}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Manifest_Number__c}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Tracking_Number__c}
+                                                                                                </td>
+                                                                                                <td>
+                                                                                                    <apex:outputText value="{0,date,MM/dd/yy}">
+                                                                                                        <apex:param value="{!shippinginfo.Date_of_Manifest_Ship__c}" />
+                                                                                                    </apex:outputText>
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Shipping_Staff_Name__c}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Shipping_Staff_Cred_ID_Num__c}
+                                                                                                </td>
+                                                                                                <td>{!shippinginfo.Docs_Included_In_Package__c}
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr
+                                                                                                class="collapse order{!shippinginfo.id}">
+                                                                                                <td colspan="100"
+                                                                                                    class="lightGray">
+                                                                                                    <div class="row">
+                                                                                                        <div
+                                                                                                            class="card border-0 mb-2 col-12 lightGray">
+                                                                                                            <div
+                                                                                                                class="card-body p-2 row lightGray">
+                                                                                                                <div
+                                                                                                                    class="col-4 ">
+                                                                                                                    <div
+                                                                                                                        class="mb-3">
+                                                                                                                        Items Received
+                                                                                                                    </div>
+                                                                                                                    <ul
+                                                                                                                        class="list-group">
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Briefing/Scoping Notes'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Briefing_Scoping_Notes_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck1">Briefing/Scoping
+                                                                                                                                    Notes
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Case Messages'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Case_Messages_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck2">Case
+                                                                                                                                    Messages
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Case Papers'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Case_Papers_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck3">Case
+                                                                                                                                    Papers
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Credit Report'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Credit_Report_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck4">Credit
+                                                                                                                                    Report
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Handwritten Case Notes'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Handwritten_Case_Notes_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">Handwritten
+                                                                                                                                    Case
+                                                                                                                                    Notes
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Hardcopy Records'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Hardcopy_Records_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">Hardcopy
+                                                                                                                                    Records
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'OF-306'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.OF_306_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">OF-306
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Releases'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Releases_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">Releases
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                        <li
+                                                                                                                            class="list-group-item rounded-0 {!If(Contains(shippingInfo.Docs_Included_In_Package__c,'Resume'),'','d-none')}">
+                                                                                                                            <div
+                                                                                                                                class="custom-control custom-checkbox">
+                                                                                                                                <apex:inputcheckbox value="{!shippingInfo.Resume_Received__c}"
+                                                                                                                                    styleclass="custom-control-input custom-disabled" />
+                                                                                                                                <label
+                                                                                                                                    class="cursor-pointer font-italic d-block custom-control-label"
+                                                                                                                                    for="customCheck5">Resume
+                                                                                                                                    Received</label>
+                                                                                                                            </div>
+                                                                                                                        </li>
+                                                                                                                    </ul>
+                                                                                                                </div>
+                                                                                                                <div
+                                                                                                                    class="col-8">
+                                                                                                                    <div
+                                                                                                                        class="col">
+                                                                                                                        <label
+                                                                                                                            class="labels">Recipient
+                                                                                                                            Name</label>
+                                                                                                                        <apex:inputField styleclass="form-control mb-3 custom-disabled"
+                                                                                                                            value="{!shippingInfo.Recipients_Name__c}" />
+                                                                                                                    </div>
+                                                                                                                    <div
+                                                                                                                        class="col">
+                                                                                                                        <label
+                                                                                                                            class="labels">Recipient
+                                                                                                                            Cred/ID
+                                                                                                                            Number</label>
+                                                                                                                        <apex:inputField styleclass="form-control mb-3 custom-disabled"
+                                                                                                                            value="{!shippingInfo.Recipients_Cred_ID_Number__c}" />
+                                                                                                                    </div>
+                                                                                                                    <div
+                                                                                                                        class="col">
+                                                                                                                        <label
+                                                                                                                            class="labels">
+                                                                                                                            Date
+                                                                                                                            Received
+                                                                                                                            at
+                                                                                                                            ISN
+                                                                                                                        </label>
+                                                                                                                        <apex:inputField styleclass="form-control mb-3 custom-disabled"
+                                                                                                                            type="date"
+                                                                                                                            value="{!shippingInfo.Date_Received_at_ISN__c}" />
+                                                                                                                    </div>
+                                                                                                                    <div
+                                                                                                                        class="col">
+                                                                                                                        <label
+                                                                                                                            class="labels">Comments</label>
+                                                                                                                        <apex:inputField styleclass="form-control mb-3 custom-disabled"
+                                                                                                                            value="{!shippingInfo.QA_Comments__c}" />
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </apex:repeat>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </apex:outputpanel>
+                            </apex:outputpanel>
+                            <apex:actionFunction status="loader" name="onselectofcaseaction" action="{!onselectofcase}"
+                                rerender="shippingdetailspanel,isnshippinginformationrecievedpanel"
+                                oncomplete="disableinputfields();return false;" />
+                            <apex:actionFunction status="loader" name="createppfshippinginformationaction"
+                                action="{!createppfshippinginformationaction}"
+                                rerender="shippingdetailspanel,shippingdetailslistpanel,isnshippinginformationrecievedpanel" />
+                            <apex:actionFunction status="loader" name="updateppfshippinginformationaction"
+                                action="{!updateppfshippinginformationaction}" rerender="qashippingdetailslistpanel" oncomplete="afterupdateppfshippinginformationaction();return false;">
+                                <apex:param name="currentppfshippingid" value="" assignTo="{!currentppfshippingid}"  />
+                            </apex:actionfunction>
+                        </apex:form>
+
+                    </div>
+                </div>
+                <!-- /.container-fluid -->
+                <!-- End of Main Content -->
+                <!-- Footer -->
+                <footer class="sticky-footer bg-white">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <span>Copyright &copy; Your Website 2021</span>
+                        </div>
+                    </div>
+                </footer>
+                <!-- End of Footer -->
+            </div>
+        </div>
+        <!-- End of Content Wrapper -->
+        <!-- End of Page Wrapper -->
+        <!-- Scroll to Top Button-->
+        <a class="scroll-to-top rounded" href="#page-top">
+            <i class="fas fa-angle-up"></i>
+        </a>
+        <script>
+            $(document).ready(function () {
+                $('.datepickerInput').datepicker({
+                    weekStart: 1,
+                    daysOfWeekHighlighted: "6,0",
+                    autoclose: true,
+                    todayHighlight: true,
+                });
+
+
+
+                $('.datatable').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": true,
+                    "bAutoWidth": false
+                });
+
+                $('.custom-disabled').prop("disabled", true);
+
+
+            });
+
+            function disableinputfields() {
+                var userType = '{!currentuser.User_Type__c}';
+                console.log({
+                    userType
+                });
+                if (userType == 'QA') {
+                    $("#shipping-info input").prop("disabled", true);
+                    $("#shipping-info select").prop("disabled", true);
+                    $("#shipping-info textarea").prop("disabled", true);
+                }
+            }
+            
+            function afterupdateppfshippinginformationaction(){
+                $('.custom-disabled').prop("disabled", true);
+            }
+
+            function createppfshippinginformation() {
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, PPF Shipping information will be created.',
+                    buttons: {
+                        confirm: function () {
+                            createppfshippinginformationaction();
+                        },
+                        cancel: function () {}
+                    }
+                });
+            }
+
+            function updateppfshippinginformation(ppfShippingId){
+                console.log({ppfShippingId});
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, PPF Shipping information will be submitted.',
+                    buttons: {
+                        confirm: function () {
+                            updateppfshippinginformationaction(ppfShippingId);
+                        },
+                        cancel: function () {}
+                    }
+                });
+                
+            }
+        </script>
+    </body>
+</apex:page>

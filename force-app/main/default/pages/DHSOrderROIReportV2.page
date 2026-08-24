@@ -1,0 +1,375 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0" controller="DHSOrderROIReportControllerV2">
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Order ROI Report</title>
+        <style>
+            #leadstable thead th {
+                position: sticky;
+                top: 0;
+                z-index: 3;
+            }
+        </style>
+
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>ROI Report</b></h4>
+                            </div>
+
+                            <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+
+                        </nav>
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12 leadstablecard">
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h4 class="m-0 font-weight-bold text-primary">ROI Report Mapping</h4>
+                                            <i class="fas fa-bars fa-1x toggle-reportcard "></i>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <center class="pb-4">
+                                            <apex:outputPanel id="roireportv2">
+                                                <apex:commandlink rendered="{!If(type=='preview',true,false)}" target="_blank" styleclass="btn btn-primary orderRoiReport"  rerender="dummy" status="loader" value="Preview ROI Report" />
+                                                <apex:actionFunction name="generateROIReport" action="{!generateROIReport}" status="loader" rerender="errorpanel" />&nbsp;
+                                                    
+                                                    <apex:commandlink rendered="{!If(type=='preview',true,false)}"
+                                                        target="_blank" styleclass="btn btn-primary reordercards mx-2" action="{!generateROIDraft}"
+                                                        rerender="errorpanel,roireportpanel" status="loader" value="ROI Report (Default sort)"  oncomplete="showroireportpreview();return false;"  />
+                                                    <apex:commandlink rendered="{!If(type=='preview',true,false)}"
+                                                        target="_blank" styleclass="btn btn-primary mx-2" action="{!previewUsingDhsDesigner}"
+                                                        status="loader" value="Preview Using DHS Designer" />
+                                               <apex:commandlink rendered="{!If(type=='generate',true,false)}" target="_blank" styleclass="btn btn-primary orderRoiReportNgenerate"  rerender="dummy" status="loader" value="Generate ROI Report" />
+                                                
+                                                <apex:commandButton value="Back to ROI Preparation"
+                                                    styleClass="btn btn-primary mr-2"
+                                                    style="font-weight:600;text-align:center"
+                                                    onclick="window.location.href='{!$Site.prefix}/DHSOrderROIReportV2PreForm?id={!caseId}'; return false;" />
+                                                
+                                                <!--<apex:commandlink target="_blank" styleclass="btn btn-primary mx-2" action="{!updateLeads}"
+                                                        rerender="errorpanel,roireportpanel" status="loader" value="Update Leads"  oncomplete="showroireportpreview();return false;"  />-->
+                                                
+                                                
+                                                <apex:actionFunction name="generateNattachROIReport" action="{!generateNattachROIReport}" status="loader" rerender="errorpanel" />
+                                                </apex:outputPanel>
+                                            </center>
+                                            <div class="row pb-1 pt-1 border-bottom" style="display:block;overflow: auto;max-height: 460px;">
+                                            <apex:outputPanel id="roireportv2table">
+                                                <table class="table" id="leadstable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Lead Type</th>
+                                                            <th>Coverage Type</th>
+                                                            <th>Item Number</th>
+                                                            <th>Investigator</th>
+                                                            <th>Contact Name</th>
+                                                            <th>Contact Address</th>
+                                                            <th>Contact City </th>
+                                                            <th>Contact State </th>  
+                                                            <th>Contact Zip </th>
+                                                            <th>Contact Other Information </th>
+                                                            <th>Skip Title</th>
+                                                            <th>Header</th>
+                                                            <th>Sequence</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <apex:repeat value="{!leadRecordss}" var="lr">
+                                                            <tr>
+                                                                <td>{!lr.leadrecord.LeadType__c}</td>
+                                                                <td>{!lr.leadrecord.Coverage_Type__c}</td>
+                                                                <td>{!lr.leadrecord.Item_number__c}</td>
+                                                                <td>{!lr.leadrecord.Assigned_To_Name__c}</td>
+                                                               <!-- <td>
+                                                                    <apex:outputText value="{0,date,MM/dd/yy}"> <apex:param value="{!lr.lead.CreatedDate}" /> 
+                                                                    </apex:outputText>
+                                                                </td>-->
+                                                                <td>{!lr.leadrecord.Lead_Contact_Name__c}</td>
+                                                                <td>{!lr.leadrecord.Lead_Contact_Address__c}</td>
+                                                                <td>{!lr.leadrecord.Lead_Contact_City__c}</td>
+                                                                <td>{!lr.leadrecord.Lead_Contact_State__c}</td>
+                                                                <td>{!lr.leadrecord.Lead_Contact_Zip__c}</td>
+                                                                <td>{!lr.leadrecord.Lead_Contact_Other_Information__c}</td>
+                                                                
+                                                                <td style="text-align:center"><apex:inputCheckbox value="{!lr.headerTitle}" /></td>
+                                                                <td >
+                                                                     <apex:outputPanel >
+                                                                    <div  style="display:{!If((lr.issubheader  == true)  ,'','none')}">
+                                                                        <apex:selectlist styleclass="form-select form-select-sm form-control subheader-select"
+                                                                               size="1" value="{!lr.subheaderNumber}">
+                                                                               <apex:selectOptions value="{!subheaderOptions[lr.leadrecord.LeadType__c]}" />
+                                                                            </apex:selectlist>
+                                                                        
+                                                                    </div>
+                                                                     </apex:outputPanel>
+                                                                </td>
+                                                                <td >
+                                                                    <apex:selectlist styleclass="form-select form-select-sm form-control select" style="display:{!If((lr.hasSequence  == true)  ,'','none')}"
+                                                                       size="1" value="{!lr.leadNumber}">
+                                                                       <apex:selectOptions value="{!orderOptions}" />
+                                                                    </apex:selectlist>
+                                                                </td>
+                                                            </tr>
+                                                        </apex:repeat>
+                                                    </tbody>
+                                                </table>
+                                                </apex:outputPanel>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 reportiframe">
+                                    <apex:outputpanel id="roireportpanel">
+                                        <apex:outputpanel rendered="{!showroireport}">
+                                            <apex:commandButton value="Download ROI Report" styleClass="btn btn-primary" style="font-weight:600;margin-bottom:5px;text-alignment:center"
+                                                onclick="window.open('{!$Site.prefix}/DHSROIReportV3?sequenceid={!currentsequenceid}&id={!caseId}&download=true', '_blank'); return false;" />
+                                            <apex:iframe title="test"
+                                                src="{!$Site.prefix}/DHSROIReportV3?sequenceid={!currentsequenceid}&id={!caseId}" />
+                                        </apex:outputpanel>
+                                    </apex:outputpanel>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="reportModal">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="text-danger">Error!</h4>
+                              </div>
+                              <div class="modal-body">
+                                <h4 class="text-danger " style="font-weight:300">Report cannot be generated because a duplicate sequence has been selected.</h4>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" style="font-weight:600" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                            <!-- /.modal-content -->
+                          </div>
+  <!-- /.modal-dialog -->
+</div>
+                    </div>
+                </div>
+            </div>
+        </apex:form>
+        <script>
+            $(document).ready(function () {
+            $('.toggle-reportcard').on('click',function(){
+                 $('.reportiframe').hasClass('col-5') ? $('.reportiframe').removeClass('col-5').addClass('col-12') : $('.reportiframe').removeClass('col-12').addClass('col-5')
+                 $('.leadstablecard').hasClass('col-7') ? $('.leadstablecard').removeClass('col-7').addClass('col-12') : $('.leadstablecard').removeClass('col-12').addClass('col-7');
+            })
+               
+                $('.reordercards').on('click',function(){
+                     $('.leadstablecard').removeClass('col-12').addClass('col-7');
+                    $('.reportiframe').removeClass('col-12').addClass('col-5');
+                })
+                function reOrderCards(){
+                $('.leadstablecard').removeClass('col-12').addClass('col-7');
+                $('.reportiframe').removeClass('col-12').addClass('col-5');
+                }
+                  function showroireportpreview(){
+                //$('#reportModal').modal('show');
+                reOrderCards();
+                }
+                $('.orderRoiReport').on('click',function(e){
+                     e.preventDefault();
+                    var selectBoxValues = $(".select").map(function(){
+                      return $(this).val();
+                    }).get();
+                    selectBoxValues = $.grep(selectBoxValues , function(n){ return (n); });
+                    var isDuplicate = !selectBoxValues.every(function(val, i){
+                    
+                      return selectBoxValues.indexOf(val) === i;
+                   
+                    });
+                    if (isDuplicate || selectBoxValues.length == 0) {
+                        if (selectBoxValues.length == 0) {
+                            $('#reportModal .modal-body h4').text('Choose atleaset one item order.');
+                        } else {
+                            $('#reportModal .modal-body h4').text(
+                                'Report cannot be generated because a duplicate sequence has been selected.'
+                                );
+                        }
+                        $('#reportModal').modal('show');
+                        return false;
+                    } else {
+                        generateROIReport();
+                    }
+               
+                })
+                
+                $('.orderRoiReportNgenerate').on('click',function(e){
+                     e.preventDefault();
+                    var selectBoxValues = $("select").map(function(){
+                      return $(this).val();
+                    }).get();
+                    selectBoxValues = $.grep(selectBoxValues , function(n){ return (n); });
+                    var isDuplicate = !selectBoxValues.every(function(val, i){
+                  
+                      return selectBoxValues.indexOf(val) === i;
+                     
+                    });
+                    if (isDuplicate || selectBoxValues.length == 0) {
+                    if(selectBoxValues.length == 0){
+                    $('#reportModal .modal-body h4').text('Choose atleaset one item order.');
+                    }
+                    else{
+                        $('#reportModal .modal-body h4').text('Report cannot be generated because a duplicate sequence has been selected.');
+                    }
+                      $('#reportModal').modal('show');
+                      return false;
+                    }
+                    
+                    else{generateNattachROIReport();}
+               
+                })
+
+                 window.syncHeaderDropdownVisibility = function() {
+            $('#leadstable tbody tr').each(function() {
+                var considerPersonal = $(this).find('.consider-personal-checkbox').prop('checked');
+                var container = $(this).find('.subheader-container');
+                var subheaderSelect = $(this).find('.subheader-select');
+                var hasOptions = subheaderSelect.find('option').length > 0;
+                var hasSelectableOptions = subheaderSelect.find('option').filter(function() {
+                    var value = ($(this).attr('value') || '').trim();
+                    var text = ($(this).text() || '').trim();
+                    return value !== '' && text !== '' && text !== '--None--';
+                }).length > 0;
+                if (!container.length) {
+                    return;
+                }
+                if (considerPersonal && hasOptions && hasSelectableOptions) {
+                    container.show();
+                } else {
+                    container.hide();
+                    subheaderSelect.val('');
+                }
+            });
+        };
+                
+                 window.normalizeSubheaderSelects = function() {
+            $('.subheader-select').each(function() {
+                var selectedValue = $(this).val();
+                var seen = {};
+                $(this).find('option').each(function() {
+                    var value = ($(this).attr('value') || '').trim();
+                    var text = ($(this).text() || '').trim();
+                    var key = value + '||' + text;
+                    if (seen[key]) {
+                        $(this).remove();
+                    } else {
+                        seen[key] = true;
+                    }
+                });
+                $(this).val(selectedValue);
+            });
+        };
+
+                 window.applySubheaderColors = function() {
+            window.normalizeSubheaderSelects();
+            $('tr').css('background-color', '');
+            
+            const colorMap = {};
+            const usedColors = {};
+            const colors = [
+                '#FFE6E6', '#E6FFE6', '#E6E6FF', 
+                '#FFFFE6', '#E6FFFF', '#F0E6FF',
+                '#FFE6F0', '#E6FFF0', '#FFE6CC',
+                '#CCE6FF', '#FFCCE6', '#E6FFCC'
+            ];
+
+            $('.subheader-select').each(function() {
+                const selectedValue = $(this).val();
+                if (selectedValue && selectedValue !== "0") {
+                    if (!colorMap[selectedValue]) {
+                        for (let i = 0; i < colors.length; i++) {
+                            if (!usedColors[colors[i]]) {
+                                colorMap[selectedValue] = colors[i];
+                                usedColors[colors[i]] = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    const currentRow = $(this).closest('tr');
+                    currentRow.css('background-color', colorMap[selectedValue]);
+
+                    const itemNumber = currentRow.find('td:nth-child(3)').text().trim();
+                    $('tr').each(function() {
+                        const rowItemNumber = $(this).find('td:nth-child(3)').text().trim();
+                        if (rowItemNumber === selectedValue) {
+                            $(this).css('background-color', colorMap[selectedValue]);
+                        }
+                    });
+                }
+            });
+        };
+
+        window.syncHeaderDropdownVisibility();
+        window.normalizeSubheaderSelects();
+        window.applySubheaderColors();
+        $(document).off('change.subheaderColors', '.subheader-select').on('change.subheaderColors', '.subheader-select', function() {
+            window.normalizeSubheaderSelects();
+            window.applySubheaderColors();
+        });
+        $(document).off('change.considerPersonal', '.consider-personal-checkbox').on('change.considerPersonal', '.consider-personal-checkbox', function() {
+            window.syncHeaderDropdownVisibility();
+            window.normalizeSubheaderSelects();
+            window.applySubheaderColors();
+        });
+        $(window).on('load', function() {
+            window.syncHeaderDropdownVisibility();
+            window.normalizeSubheaderSelects();
+            window.applySubheaderColors();
+        });
+                
+                
+            });
+
+         
+        </script>
+        <script>
+            function toggleSelects(row) {
+        var subheaderSelect = row.querySelector('.subheader-select');
+        var orderSelect = row.querySelector('.select');
+
+        if (subheaderSelect && orderSelect) {
+            subheaderSelect.addEventListener('change', function() {
+                orderSelect.disabled = !!subheaderSelect.value;
+            });
+
+            orderSelect.addEventListener('change', function() {
+                subheaderSelect.disabled = !!orderSelect.value;
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('#leadstable tbody tr').forEach(function(row) {
+            toggleSelects(row);
+        });
+    });
+        </script>
+    </body>
+</apex:page>

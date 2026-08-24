@@ -1,0 +1,164 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+    controller="DHSDownloadDeliverablesController">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Download Deliverables</title>
+
+        <style>
+            .dataTables_filter {
+                display: flex;
+                justify-content: end;
+
+            }
+        </style>
+
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+
+                                <h4 class=" mb-0 text-gray-800">
+
+                                    <b>Download Deliverables </b></h4>
+
+                            </div>
+                            <!-- Sidebar Toggle (Topbar) -->
+                            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                                <i class="fa fa-bars"></i>
+                            </button>
+
+
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-4">
+                                        <!-- Card Header - Dropdown -->
+                                        <div class="card-header py-3">
+                                            <h4 class="text-primary">Case Search </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class=" mt-2 mb-2 row">
+                                                <div class="form-group mb-2 pr-2 col-3">
+                                                    <label >Case Number</label>
+                                                    <apex:inputtext styleclass="form-control" html-placeholder="Case Number" value="{!caseNumberToSearch}" />
+                                                </div>
+                                                <div class="col-11">
+                                                <button class="btn btn-primary mb-2" tabindex="-1" onclick=" searchaction();return false;">Search</button>
+                                                </div>
+                                                <apex:actionFunction name="searchaction" action="{!searchAction}" oncomplete="loaddatatables();return false;" rerender="attachmentspanel" status="loader"/>
+                                            </div>
+                                             <apex:outputPanel id="attachmentspanel" >
+                                             <apex:outputPanel rendered="{!showTable}">
+                                            <table class="table dataTable mt-3">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Case Number</th>
+                                                        <th>Case Due Date</th>
+                                                        <th>File Name</th>
+                                                        <th>Download</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                  
+                                                    <apex:repeat value="{!caseAttachments}" var="att">
+                                                        <tr>
+                                                            <td>{!caseRecord.Case_Number__c}</td>
+                                                            <td>{!caseRecord.Case_Due_Date__c}</td>
+                                                            <td>{!att.attachment.Name}</td>
+                                                           
+                                                            <td><a target="_blank"
+                                                                    href="{!URLFOR($Action.Attachment.Download, att.attachment.Id)}"><span
+                                                                        class="glyphicon glyphicon-save-file"></span>
+                                                                    Download</a>
+                                                            </td>
+                                                        </tr>
+                                                    </apex:repeat>
+                                                 
+                                                </tbody>
+                                            </table>
+                                             </apex:outputPanel>
+                                           </apex:outputPanel>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Content Row -->
+
+
+                        </div>
+                        <!-- /.container-fluid -->
+
+                    </div>
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+
+
+        </apex:form>
+
+        <script>
+        function loaddatatables(){
+        $( '.dataTable' ).DataTable( {
+        "search":true,
+        "bLengthChange": false,
+        "bFilter": true,
+        "bInfo": true,
+        "bAutoWidth": false
+        });
+
+            }
+  
+  
+      
+           
+        </script>
+    </body>
+</apex:page>

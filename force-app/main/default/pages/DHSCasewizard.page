@@ -1,0 +1,687 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="DHSCaseWizardController"
+    docType="html-5.0">
+
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Case Ingestion</title>
+
+      
+
+        <style>
+            .frame {
+
+
+                width: 100%;
+                height: 400px;
+
+                border-radius: 2px;
+                box-shadow: 4px 8px 16px 0 rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                color: #000;
+
+            }
+
+            .frame .center {
+                width: 100%;
+                height: 100%;
+                border-radius: 3px;
+                box-shadow: 8px 10px 15px 0 rgba(0, 0, 0, 0.2);
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: space-evenly;
+                flex-direction: column;
+            }
+
+            .frame .title {
+                width: 100%;
+                height: 50px;
+                border-bottom: 1px solid #000;
+                text-align: center;
+            }
+
+            ..frame h1 {
+                font-size: 16px;
+                font-weight: 300;
+                color: #000;
+            }
+
+            .frame .dropzone {
+
+                border: 1px dashed #000;
+                border-radius: 3px;
+                text-align: center;
+                padding: 50px;
+            }
+
+            .frame .upload-icon {
+                margin: 25px 2px 2px 2px;
+            }
+
+            .frame .upload-input {
+                position: relative;
+                top: -62px;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+            }
+
+            .dateFormat {
+                display: none
+            }
+
+            .form-group span {
+                font-weight: bold
+            }
+
+            .input-group-append {
+                position: relative;
+                top: 5px;
+                left: 10px;
+            }
+
+            .datepicker.dropdown-menu {
+                padding: 10px;
+            }
+
+            .taskEvent li {
+                display: flex;
+                color: #000;
+            }
+
+            .taskEvent span {
+                position: relative;
+                padding: 0 1.5em;
+            }
+
+            .sidebar #sidebarToggle::after {
+                font-weight: 900;
+                content: '\f104';
+                font-family: 'Font Awesome 6 Free';
+                margin-right: 0.1rem;
+            }
+
+
+            .taskEvent span::after {
+                content: "";
+                position: absolute;
+                z-index: 2;
+                left: -18px;
+                top: 4px;
+                transform: translateX(50%);
+                border-radius: 50%;
+                background: #fff;
+                border: 1px #ccc solid;
+                width: 1.2rem;
+                height: 1.2rem;
+            }
+
+            .taskEvent span.completed::after {
+                content: "";
+                position: absolute;
+                z-index: 2;
+                left: -18px;
+                top: 2px;
+                transform: translateX(50%);
+                border-radius: 50%;
+                background: #00799B;
+                border: 1px #00799B solid;
+                width: 1.2rem;
+                height: 1.2rem;
+            }
+
+            .taskEvent span.completed {
+                color: #00799B;
+            }
+
+            .taskEvent span {
+                padding: 0 1.5em 1.5em 1.5em;
+                position: relative;
+                font-size: 14px;
+                font-weight: bold
+            }
+
+            .taskEvent span.completed::before {
+                content: "";
+                position: absolute;
+                z-index: 1;
+                left: 0;
+                height: 100%;
+                border-left: 2px #00799B solid;
+            }
+
+            .taskEvent span::before {
+                content: "";
+                position: absolute;
+                z-index: 1;
+                left: 0;
+                height: 100%;
+                border-left: 2px #ccc solid;
+            }
+
+            .taskEvent strong {
+                display: block;
+                font-weight: bolder;
+            }
+
+            .taskEvent,
+            .taskEvent *::before,
+            .taskEvent *::after {
+                box-sizing: border-box;
+                font-family: arial;
+            }
+        </style>
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+           
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+             <c:DHSHeader ></c:DHSHeader>
+             <style>
+             sup {
+    top: -0.1em;
+    font-size: 15px;
+    color: #dc3545;
+}</style>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Case Ingestion</b></h4>
+                            </div>
+                            <!-- Sidebar Toggle (Topbar) -->
+                            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                                <i class="fa fa-bars"></i>
+                            </button>
+
+
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile> 
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3  ">
+                                            <h4 class="text-primary">Welcome to Investigation Case Wizard</h4>
+                                            <p>Begin by reviewing the subject information below, then click to create or
+                                                select to continue, when you have entered all required information, you
+                                                can review your request prior to submission <br></br>Request this
+                                                service for a new Investigation</p>
+
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-5">
+                                                <h5>Use the Create new subject when requesting a new investigation for
+                                                    someone not in the system already</h5>
+                                                <button aria-controls="createNewSubject" aria-expanded="true"
+                                                    class="btn btn-primary mt-3" data-target="#createNewSubject"
+                                                    data-toggle="collapse" type="button">Create New Subject </button>
+                                                <div class="mt-5 mb-2 collapse" id="createNewSubject">
+                                                    <apex:outputPanel id="createnewsubjectpanel">
+                                                        <div class="row col-6">
+                                                            <div class=" col-md-6 mb-3">
+                                                                <div class="col-md-12">
+                                                                    <label for="inputEmail4">First Name<sup>*</sup></label>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <apex:inputfield value="{!newSubject.First_Name__c}"
+                                                                        styleclass="form-control mandatory" />
+                                                                </div>
+                                                            </div>
+                                                            <div class=" col-md-6  mb-3">
+                                                                <div class="col-md-12">
+                                                                    <label for="inputPassword4">Last Name <sup>*</sup></label>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <apex:inputfield value="{!newSubject.Last_Name__c}"
+                                                                        styleclass="form-control mandatory" />
+                                                                </div>
+                                                            </div>
+                                                             <!--<div class="form-group col-md-6 ">
+                                                                <div class="col-md-6">
+                                                                    <label for="inputState">Contact Type</label>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <apex:inputfield value="{!newSubject.Contact_Type__c}"
+                                                                        styleclass="form-control" />
+                                                                </div>
+                                                            </div>-->
+                                                            <div class="col-md-6  mb-3">
+                                                                <div class="col-md-12">
+                                                                    <label for="inputState">SSN<sup>*</sup></label>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <apex:inputfield value="{!newSubject.SSN__c}"
+                                                                        styleclass="form-control mandatory ssn"  html-placeholder="XXX-XX-XXXX" />
+                                                                </div>
+                                                            </div>
+                                                            <div class=" col-md-6  mb-3">
+                                                                <div class="col-md-12">
+                                                                    <label for="inputCity">Email</label>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <apex:inputfield value="{!newSubject.Email__c}"
+                                                                        styleclass="form-control email" />
+                                                                </div>
+                                                            </div>
+                                                              <div class=" col-md-6  mb-3">
+                                                                <div class="col-md-12">
+                                                                    <label for="inputPassword4">Phone</label>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <apex:inputfield value="{!newSubject.Phone__c}"
+                                                                        styleclass="form-control phoneNumber " html-placeholder="(xxx) xxx-xxx"/>
+                                                                </div>
+
+                                                            </div>
+                                                             <div class=" col-md-6  mb-3">
+                                                                <div class="col-md-6">
+                                                                    <label for="inputPassword4">Street Address</label>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <apex:inputfield value="{!newSubject.Address__c}"
+                                                                        styleclass="form-control " />
+                                                                </div>
+
+
+                                                            </div>
+                                                            <div class=" col-md-6  mb-3">
+                                                                <div class="col-md-12 ">
+                                                                    <label for="inputCity">City</label>
+
+                                                                </div>
+                                                                <div class="col-md-12 input-group">
+                                                                    <apex:inputfield value="{!newSubject.City__c}"
+                                                                        styleclass="form-control" />
+                                                                </div>
+                                                            </div>
+                                                            <div class=" col-md-6  mb-3">
+                                                                <div class="col-md-12">
+                                                                    <label for="inputPassword4">State</label>
+                                                                </div>
+                                                                <div class="col-md-12 input-group">
+                                                                    <apex:inputfield value="{!newSubject.State__c}"
+                                                                        styleclass="form-control " />
+                                                                </div>
+                                                            </div>
+
+                                                            <div class=" col-md-6  mb-3">
+                                                                <div class="col-md-12">
+                                                                    <label for="inputPassword4">Zip</label>
+                                                                </div>
+                                                                <div class="col-md-12 input-group">
+                                                                    <apex:inputfield value="{!newSubject.Zip__c}"
+                                                                        styleclass="form-control zipcode" html-placeholder="XXXXX-XXXX"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class=" col-12 p-3 mx-3">
+                                                             <button onclick="createnewsubject();return false"
+                                                        class="btn btn-primary px-4 mt-3 createnewsubjectbutton">Create</button>
+                                                    <apex:actionFunction name="createnewsubjectaction"
+                                                        action="{!createNewSubjectAction}"
+                                                        rerender="caseinformationpanel" status="loader" />
+                                                        </div>
+                                                        </div>
+                                                    </apex:outputPanel>
+
+                                                   
+                                                </div>
+                                            </div>
+                                            <div class="mb-5">
+                                                <h5>Use the Select Subject when requesting a new investigation for
+                                                    existing member in the system already.</h5>
+                                                <button aria-controls="selectSubject" aria-expanded="true"
+                                                    class="btn btn-primary mt-3" data-target="#selectSubject"
+                                                    data-toggle="collapse" type="button">Select Subject </button>
+                                                <div class="form-inline mt-5 mb-2 collapse" id="selectSubject">
+                                                    <div class="form-group mb-2 ">
+                                                        <label class="sr-only">First Name</label>
+                                                        <apex:input type="text"
+                                                            styleclass="form-control subjectFirstNameSearchEntry"
+                                                            html-placeholder="First Name"
+                                                            value="{!subjectFirstNameSearchEntry}" />
+                                                    </div>
+                                                    <div class="form-group mx-sm-3 mb-2">
+                                                        <label class="sr-only">Last Name</label>
+                                                        <apex:input type="text"
+                                                            styleclass="form-control subjectLastNameSearchEntry"
+                                                            html-placeholder="Last Name"
+                                                            value="{!subjectLastNameSearchEntry}" />
+                                                    </div>
+                                                    <div class="form-group mx-sm-3 mb-2">
+                                                        <label class="sr-only">Email</label>
+                                                        <apex:input type="text"
+                                                            styleclass="form-control subjectEmailSearchEntry"
+                                                            html-placeholder="Email"
+                                                            value="{!subjectEmailSearchEntry}" />
+                                                    </div>
+
+                                                    <button class="btn btn-primary mb-2  subjectsearchbutton"
+                                                        onclick="subjectsearch();return false;">Search</button>
+                                                    <apex:actionfunction status="loader" name="subjectsearchaction"
+                                                        action="{!searchSubjectsAction}" rerender="subjectspanel" oncomplete="loaddatatables();return false;" />
+                                                </div>
+
+                                                <apex:outputPanel id="subjectspanel">
+                                                    <apex:outputPanel rendered="{!showsubjectspanel}">
+                                                        <table class="table mt-3 dataTable" id="dataTable" width="100%"
+                                                            cellspacing="0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th>First Name</th>
+                                                                    <th>Last Name</th>
+                                                                    <th>Email</th>
+                                                                    <th>Phone</th>
+                                                                    <th>Address</th>
+                                                                    <th>City</th>
+                                                                    <th>State</th>
+                                                                    <th>Zip</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <apex:repeat value="{!subjectsSearched}" var="sub">
+                                                                    <tr>
+                                                                        <td>
+                                                                            <apex:inputCheckbox styleclass="subjectcheckbox {!sub.subject.id}" value="{!sub.isSelected}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <apex:outputfield value="{!sub.subject.First_Name__c}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <apex:outputfield value="{!sub.subject.Last_Name__c}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <apex:outputfield value="{!sub.subject.Email__c}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <apex:outputfield value="{!sub.subject.Phone__c}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <apex:outputfield value="{!sub.subject.Address__c}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <apex:outputfield value="{!sub.subject.City__c}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <apex:outputfield value="{!sub.subject.State__c}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <apex:outputfield value="{!sub.subject.Zip__c}" />
+                                                                        </td>
+                                                                    </tr>
+                                                                </apex:repeat>
+                                                            </tbody>
+                                                        </table>
+                                                        <div class="createcaseaction d-none">
+                                                        <apex:outputpanel rendered="{!subjectsSearched.size >0}">
+                                                            <button onclick="createcase();return false"
+                                                                class="btn btn-primary  px-4">Create Case</button>
+                                                        </apex:outputpanel>
+                                                        <apex:actionFunction name="createcaseaction"
+                                                            action="{!createCaseAction}" rerender="subjectspanel"
+                                                            status="loader" />
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                </apex:outputPanel>
+
+
+
+                                            </div>
+                                            <!--  <div class="mb-5">
+                                                        <h5>Upload csv with subject information for bulk upload</h5>
+                                                        <button aria-controls="uploadOption" aria-expanded="true" class="btn btn-primary" data-target="#uploadOption" data-toggle="collapse" type="button">Upload</button>
+                                                        <div class="form-inline mt-5 mb-2 collapse" id="uploadOption">
+                                                            <div class="form-group mb-2 ">
+                                                                <label class="sr-only">First Name</label><input type="text" class="form-control " placeholder="First Name" />
+                                                            </div>
+                                                            <div class="form-group mx-sm-3 mb-2">
+                                                                <label class="sr-only">Last Name</label><input type="text" class="form-control " placeholder="Last Name" />
+                                                            </div>
+                                                            <button class="btn btn-primary mb-2">Create Lead</button>
+                    
+                                                        </div> 
+                                                    </div>
+                                                    -->
+                                            <div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                        <!-- /.container-fluid -->
+
+                    </div>
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            
+            <div class="toast " role="alert" aria-live="assertive" data-delay="5000"  aria-atomic="true" style="position: absolute;top: 5rem;right: 0;left: 0;z-index: 99;margin: 0 auto;min-width: 500px;">
+<div class="toast-header bg-danger">
+  <strong class="mr-auto text-white"></strong>
+  <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+</div>
+
+           
+        </apex:form>
+
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.8/jquery.mask.min.js"></script>
+        <script>
+            $(document).ready(function () {
+           $(".phoneNumber").mask("(999) 999-9999");
+           $(".zipcode").mask("99999-9999");
+            $('body').on('click', 'input[type=checkbox]', function () {
+              $('input[type=checkbox]').prop('checked', false);
+              $(this).prop('checked', true);
+              $('.createcaseaction').removeClass('d-none');
+            });
+          
+             
+                $('.datepickerInput').datepicker({
+                    weekStart: 1,
+                    daysOfWeekHighlighted: "6,0",
+                    autoclose: true,
+                    todayHighlight: true,
+                });
+            });
+
+$('input.ssn').on('keypress', function(event){
+$(this).attr({"size":"11","maxlength":"11"});
+    var character = String.fromCharCode(event.which);
+    if(!isInteger(character)){
+        return false;
+    }    
+});
+function isInteger (s) {
+    if(s === '-') return true;
+   var isInteger_re     = /^\s*(\+|-)?\d+\s*$/;
+   return String(s).search (isInteger_re) != -1
+}
+
+$('input.ssn').on('keyup', function(){
+   var val = this.value.replace(/\D/g, '');
+   var newVal = '';
+    if(val.length > 4) {
+        this.value = val;
+    }
+    if((val.length > 3) && (val.length < 6)) {
+        newVal += val.substr(0, 3) + '-';
+        val = val.substr(3);
+    }
+    if (val.length > 5) {
+        newVal += val.substr(0, 3) + '-';
+        newVal += val.substr(3, 2) + '-';
+        val = val.substr(5);
+    }
+    newVal += val;
+    this.value = newVal;   
+});
+
+            function createnewsubject() {
+                var isvalid = true;
+             
+                $(".mandatory").each(function () {
+                       var fieldvalue = $(this).val();
+                       if(fieldvalue == ''){
+                            $(this).addClass('highlightrequiredfield');
+                            isvalid = false;
+                       }
+                       else if( $(this).hasClass('ssn')){
+                     
+                         if( $(this).val().length != 11){
+                         $(this).addClass('highlightrequiredfield');
+                          isvalid = false;}
+                          else{
+                          $(this).removeClass('highlightrequiredfield');
+                          }
+                       }
+                     
+                       else if( $(this).hasClass('email')){
+                         debugger;
+                       var email = $(this).val();
+                            var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                            if(!regex.test(email)) {
+                              $(this).addClass('highlightrequiredfield');
+                               isvalid = false;
+                            }
+                            else{ $(this).removeClass('highlightrequiredfield');}
+                       }
+                       else{
+                    
+                           $(this).removeClass('highlightrequiredfield');
+                       }
+                });
+                if(isvalid){
+                    $.confirm({
+                        title: 'Please Confirm!',
+                        content: 'On click of confirm, new subject and case will be created.',
+                        buttons: {
+                            confirm: function () {
+                                createnewsubjectaction();
+                            },
+                            cancel: function () {}
+                        }
+                    });
+                }else{
+                    $('.invalid-feedback').html('');
+                        $(".createnewsubjectbutton").before(
+                        '<div class="invalid-feedback d-block">Subject cannot be assigned without created without mandatory fields.</div>');
+                }
+
+            }
+
+            function subjectsearch() {
+                 var subjectFirstNameSearchEntry = $('.subjectFirstNameSearchEntry').val();
+                var subjectLastNameSearchEntry = $('.subjectLastNameSearchEntry').val();
+                var subjectEmailSearchEntry = $('.subjectEmailSearchEntry').val();
+                if (subjectFirstNameSearchEntry == "" && subjectLastNameSearchEntry == "" && subjectEmailSearchEntry == "") {
+                    $(".subjectsearchbutton").after(
+                        '<div class="invalid-feedback d-block">Please fill the required fields.</div>');
+
+                } else {
+                     $('.invalid-feedback').html('');
+                    subjectsearchaction();
+                }
+            }
+
+            function createcase() {
+                var classes = $("input.subjectcheckbox:checkbox:checked").attr('class').split(/\s+/);
+                var subjectid = classes[1];
+                console.log({subjectid});
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.DHSCaseWizardController.checkIfCaseExists}', subjectid,
+
+                    function (result, event) {
+                        if (event.status) {
+                            console.log('checkIfCaseExists...' + result);
+                            if (result) {
+                                 $('.toast strong').text('Case cannot be created for the selected subject as there are open cases for the subject.')
+                                 $('.toast').toast('show');                               
+                            } else {
+                                $.confirm({
+                                title: 'Please Confirm!',
+                                content: 'On click of confirm, case will be created with selected subject.',
+                                buttons: {
+                                    confirm: function () {
+                                        createcaseaction();
+                                    },
+                                    cancel: function () {}
+                                }
+                            });  
+                            }
+                        }
+                    }, {
+                        escape: true
+                    }
+                );    
+            
+            
+            
+                
+            }
+            function loaddatatables(){
+                 $('.dataTable').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": true,
+                    "bAutoWidth": false
+                });
+            }
+            $(document).ready(function () {
+                 loaddatatables();  
+            });
+        </script>
+    </body>
+</apex:page>

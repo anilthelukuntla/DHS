@@ -1,0 +1,218 @@
+﻿<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+    controller="DIALeadCreationSettingsController">
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Auto Lead Generation Settings</title>
+
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DIAHeader ></c:DIAHeader>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Auto Lead Generation Settings</b></h4>
+                            </div>
+                            <!-- Topbar Navbar -->
+                            <c:DIAHeaderProfile ></c:DIAHeaderProfile> 
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-4">
+
+                                        <div
+                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h4 class="m-0 font-weight-bold text-primary">Auto Lead Generation Settings </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mt-2 mb-2 row">
+                                                <div class="form-group mb-2 col-3">
+                                                    <label>Select Template</label>
+                                                    <apex:outputPanel id="templateselectpanel">
+                                                    <apex:selectlist styleclass="form-select form-control selectedreporttype"
+                                                        size="1" value="{!selectedTemplate}"
+                                                        onchange="onselectoftemplate();return false;">
+                                                        <apex:selectOptions value="{!leadTemplateOptions}" />
+                                                    </apex:selectlist>
+                                                    </apex:outputPanel>
+                                                </div>
+                                                <div class="form-group mb-2 col-6">
+                                                </div>
+                                                <div class="form-group mb-2 col-3">
+                                                    <apex:commandButton status="loader" style="float:right;" styleclass="btn btn-primary mb-2" value="Add Template" action="{!CreateNewTemplate}" reRender="createtemplatepanel,templatesettingspanel,templateselectpanel"/>
+                                                </div>
+                                            </div>
+                                             <div class="mt-2 mb-2 row">
+                                            	<apex:outputPanel id="createtemplatepanel">
+                                                    <apex:outputPanel rendered="{!showtemplatecreatepanel}">
+                                                  		<div class="form-group col-md-12 row">
+                                                         <div class="col-md-6">
+                                                            <label><sup>*</sup>Template Name:</label>
+                                                         </div>
+                                                         <div class="col-md-6">
+                                                            <apex:inputField value="{!newTemplate.Name__c}"
+                                                               styleclass="form-control  mandatory " />
+                                                            
+                                                         </div>
+                                                      </div>
+                                                       <div class="form-group col-md-6 row"> 
+                                                        <div class="mt-3 col-12 row mx-1 justify-content-center">
+                                                	<button class="btn btn-primary mb-2"
+                                                    onclick="savetemplateaction();return false;">Save</button>
+                                                            <apex:actionFunction name="savetemplateaction" action="{!Savetemplate}" rerender="createtemplatepanel,templatesettingspanel,templateselectpanel" status="loader"/>
+                                            			</div>
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                 </apex:outputPanel>
+                                            </div>
+                                                <apex:actionFunction name="onselectoftemplate" action="{!FetchSettingsOfTemplate}" rerender="templatesettingspanel" status="loader"/>
+                                            <apex:outputPanel id="templatesettingspanel">
+                                            <apex:outputPanel rendered="{!showSettingsPanel}">
+                                             <apex:commandButton status="loader" style="float:right;" styleclass="btn btn-primary mb-2" value="Add Lead" action="{!addsetting}" reRender="autoleadgenerationsettingsentrypanel"/>
+                                             <apex:outputPanel id="autoleadgenerationsettingsentrypanel">
+                                                    <apex:variable value="{!0}" var="cnt" />
+                                                 	<apex:variable value="{!0}" var="settingNum"/>
+                                                    <table id="autoleadgenerationsettingsentrytable"
+                                                        class="table" cellspacing="0" width="100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Lead Type</th>
+                                                                <th>Coverage Type</th>
+                                                                <th>Item Number</th>
+                                                                <th>Add/Remove</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <apex:repeat var="algs" value="{!autoLeadGenerationSettings}">
+                                                            <tr>
+                                                                <td>
+                                                                    <apex:inputField styleclass="form-control required"
+                                                                            value="{!algs.setting.Lead_Type__c}" onchange="addclasstocoveragetype();return false;">
+                                                                        </apex:inputField>
+                                                                </td>
+                                                                 <td>
+                                                                    <apex:inputField styleclass="form-control coveragetype required"
+                                                                            value="{!algs.setting.Coverage_Type__c}">
+                                                                        </apex:inputField>
+                                                                </td>
+                                                                 <td>
+                                                                    <apex:inputField styleclass="form-control required"
+                                                                            value="{!algs.setting.Item_number__c}">
+                                                                        </apex:inputField>
+                                                                </td>
+                                                                <td>
+                                                                	
+                                                                    <apex:commandButton status="loader" rendered="{!!algs.recordCreated}" styleclass="btn btn-primary mb-2" value="Remove" action="{!removesetting}" reRender="autoleadgenerationsettingsentrypanel">
+                                                                        <apex:param name="settingIndex" value="{!settingNum}"/>
+                                                                    </apex:commandButton>
+                                                                    <apex:commandButton status="loader" rendered="{!algs.recordCreated}" styleclass="btn btn-primary mb-2" value="Delete" action="{!deletesetting}" reRender="autoleadgenerationsettingsentrypanel">
+                                                                        <apex:param name="settingIdToDelete" assignTo="{!settingIdToDelete}" value="{!algs.setting.id}"/>
+                                                                    </apex:commandButton>
+                                                                    <apex:variable var="settingNum" value="{!settingNum+1}"/>
+                                                                </td>
+                                                            </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+                                                 </table>
+                                            </apex:outputPanel>
+                                            <div class="mt-3 col-12 row mx-1 justify-content-center">
+                                                <button class="btn btn-primary mb-2"
+                                                    onclick="saveautoleadgenerationsettingsaction();return false;">Save</button>
+                                            </div>
+                                            <apex:actionfunction name="saveautoleadgenerationsettingsaction"
+                                                action="{!SaveSettings}" rerender="autoleadgenerationsettingsentrypanel"
+                                                oncomplete="loaddatatables();return false;" status="loader"></apex:actionfunction>
+										  </apex:outputPanel> 
+                                          </apex:outputPanel> 
+
+                                        </div>
+                                    </div>
+                                    </div>
+                           
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.container-fluid -->
+
+
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+                </div>
+            </div>
+            <!-- End of Content Wrapper -->
+
+
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            <c:DIAFooter />
+
+        </apex:form>
+
+        <script>
+        	function addclasstocoveragetype(){
+            	$('.coveragetype').addClass('form-control');    
+            }
+            $(document).ready(function () {
+                $('.datepickerInput').datepicker({
+                    weekStart: 1,
+                    daysOfWeekHighlighted: "6,0",
+                    autoclose: true,
+                    todayHighlight: true,
+                });
+            });
+
+            function updatepayrollsettings() {
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, auto lead generation settings will be updated.',
+                    buttons: {
+                        confirm: function () {
+                            updatepayrollsettingsaction();
+                        },
+                        cancel: function () {}
+                    }
+                });
+
+
+            }
+        </script>
+    </body>
+</apex:page>

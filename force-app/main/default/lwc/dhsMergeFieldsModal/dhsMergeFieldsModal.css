@@ -1,0 +1,28 @@
+.sty{
+	border: none;
+}
+.styleActive{
+	--slds-c-button-neutral-color-background : blue;
+	--slds-c-button-text-color : white;
+}
+.boxstyle{
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+	height:400px;
+}
+.textwrap{
+	text-wrap: pretty;
+}
+.alignCenter{
+	word-wrap: break-word; /* Allows text to break and wrap to the next line */
+    white-space: normal;   /* Ensures the text wraps instead of staying on one line */
+    overflow-wrap: anywhere; /* Provides additional wrapping support for long unbreakable text */
+    text-align: center;
+}
+.btn {
+    display: flex; /* Enables flexbox layout */
+    align-items: center; /* Vertically center the content */
+    justify-content: space-between; /* Pushes the icon to the end */
+}
+.icon-end {
+    margin-left: auto; /* Ensures the icon stays at the far right */
+}

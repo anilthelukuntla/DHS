@@ -1,0 +1,358 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+    controller="DHSInvoiceModuleController">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Invoicing</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <style>
+            .dataTables_filter {
+                display: flex;
+                justify-content: end;
+                margin-top: -60px;
+                margin-bottom: 20px;
+            }
+
+            .dataTables_filter label {
+                font-weight: bold;
+            }
+
+            .dataTables_filter input {
+                width: 300px;
+            }
+
+            .dataTables_paginate.paging_simple_numbers {
+                display: flex;
+                align-items: flex-end;
+                justify-content: end;
+                padding-right: 40px;
+                margin-top: 40px;
+            }
+        </style>
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+            <apex:includeLightning />
+         <div id="LwcId"></div>
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+                <c:DHSHeader ></c:DHSHeader>
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+                    <!-- Main Content -->
+                    <div id="content">
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Reports</b></h4>
+                            </div>
+                            <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile> 
+                        </nav>
+                        <!-- End of Topbar -->
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                        <h4 class="text-primary mb-3">Invoices</h4>
+                                            <div class="row col-12">
+                                                
+                                                <div class=" mt-2 mb-2 row">
+                                                    <div class=" mt-2 mb-2 row col-8">
+                                                        <div class="form-group mb-2 col-6">
+                                                            <label>Cycle Date</label>
+                                                            <apex:selectList styleClass="form-control invoice-cycle-date"
+                                                                size="1" value="{!selectedCycleFilterDate}">
+                                                                <apex:selectOptions value="{!cycleDateOptions}" />
+                                                            </apex:selectList>
+                                                        </div>
+                                                        <div class="form-group mb-2 col-6">
+                                                            <label>Worker Type</label>
+                                                             <apex:selectlist styleclass="form-control caseTypeSearchEntry"
+                                                                            size="1" value="{!selectedUserOption}">
+                                                                 <apex:selectOptions value="{!userTypeOptions}" />
+                                                                 <apex:actionSupport event="onchange" action="{!refreshWorkerOptions}" rerender="workerNamePanel" />
+                                                             </apex:selectlist>
+                                                        </div>
+
+                                                        <apex:outputPanel id="workerNamePanel" layout="block" styleClass="form-group mb-4 mt-2 col-6">
+                                                            <label>Worker Name</label>
+                                                            <apex:selectList styleClass="form-control workerNameSearchEntry" size="1" value="{!selectedWorkerId}">
+                                                                <apex:selectOptions value="{!workerOptions}" />
+                                                            </apex:selectList>
+                                                        </apex:outputPanel>
+                                                        <div class="form-group mt-2 mb-2 col-12">
+                                                            <button class="btn btn-primary px-4 invoice-search-button"
+                                                                onclick="searchinvoices();return false;">Search</button>
+                                                        </div>
+                                                    </div>
+                                                    <apex:actionfunction name="searchinvoicesaction"
+                                                        action="{!fetchInvoiceRecords}" rerender="invoicespanel,invoicespaginationpanel"
+                                                        oncomplete="loadinvoicetable();return false;" status="loader">
+                                                    </apex:actionfunction>
+
+                                                </div>
+                                            </div>
+                                            <section>
+                                                <apex:outputPanel rendered="{!!isPMOUser}">
+                                                    <div class="alert alert-danger">
+                                                        You do not have access to the Invoicing Gizmo.
+                                                    </div>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!isPMOUser}">
+                                                    
+                                                <div class="mb-4 d-flex justify-content-end">
+                                                    <apex:outputPanel id="invoicespaginationpanel" layout="block" styleClass="mb-3">
+                                                    <apex:outputPanel style="margin-right:15px;">
+                                                        <b>Page {!pageNumber} of {!totalPages}</b>
+                                                    </apex:outputPanel>
+                                                    <apex:commandButton style="margin-right:10px;" value="Previous" styleClass="btn btn-primary px-4" rendered="{!disablePrev == true}" disabled="true"/>
+                                                    <apex:outputPanel rendered="{!disablePrev == false}">
+                                                        <button style="margin-right:10px;" onclick="handlePrev();return false" class="btn btn-primary px-4">Previous</button>
+                                                    </apex:outputPanel>
+                                                    <apex:actionFunction name="handlePrev" action="{!handlePrev}" rerender="invoicespanel,invoicespaginationpanel" status="loader" oncomplete="loadinvoicetable();return false;"/>
+
+                                                    <apex:commandButton value="Next" styleClass="btn btn-primary px-4" rendered="{!disableNext == true}" disabled="true"/>
+                                                    <apex:outputPanel rendered="{!disableNext == false}">
+                                                        <button onclick="handleNext();return false" class="btn btn-primary px-4">Next</button>
+                                                    </apex:outputPanel>
+                                                    <apex:actionFunction name="handleNext" action="{!handleNext}" rerender="invoicespanel,invoicespaginationpanel" status="loader" oncomplete="loadinvoicetable();return false;"/>
+                                                	<button class="export-button btn btn-primary px-4" disabled="disabled">
+                                                        Export
+                                                    </button>
+                                                    </apex:outputPanel>
+                                                    
+                                                    
+                                                    <!--<button type="button" class="btn btn-primary mx-2" onclick="exporttoexcel();return false;"><i
+                                                            class="fa-solid fa-file-excel mr-2"></i>Export to
+                                                        Excel</button>
+                                                    <button type="button" class="btn btn-primary mx-2" onclick="exporttopdf();return false;"><i
+                                                            class="fa-solid fa-file-pdf mr-2"></i>Export to PDF</button>
+                                                    <button type="button" class="btn btn-primary mx-2" onclick="exporttocsv();return false;"><i
+                                                            class="fa-solid fa-file-csv mr-2"></i> CSV (for Large data
+                                                        reports)</button>-->
+                                                        
+                                                </div>
+                                                
+                                                <apex:outputPanel id="invoicespanel">
+                                                    <div class="criteriaData">
+                                                   	<apex:inputHidden value="{!criteria}"  />
+                                                   </div>
+                                                    <table class="table" id="invoicetable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Costpoint Code</th>
+                                                                <th scope="col">Case Number</th>
+                                                                <th scope="col">Case Name</th>
+                                                                <th scope="col">Case Type</th>
+                                                                <th scope="col">Case Delivery Type</th>
+                                                                <th scope="col">Item Number</th>
+                                                                <th scope="col">Item Type</th>
+                                                                <th scope="col">Interview Method</th>
+                                                                <th scope="col">Completed Date</th>
+                                                                <th scope="col">Item Price</th>
+                                                                <th scope="col">Investigator Name</th>
+                                                                <th scope="col">ADP File Number</th>
+                                                                <th scope="col">PPE</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <apex:repeat value="{!invoices}" var="invoice">
+                                                                <tr>
+                                                                    <td>{!invoice.Costpoint_Code__c}</td>
+                                                                    <td>{!invoice.Case_Number__c}</td>
+                                                                    <td>{!invoice.Case_Name__c}</td>
+                                                                    <td>{!invoice.Case_Type__c}</td>
+                                                                    <td>{!invoice.Case_Delivery_Type__c}</td>
+                                                                    <td>{!invoice.Item_Number__c}</td>
+                                                                    <td>{!invoice.Item_Type__c}</td>
+                                                                    <td>{!invoice.Interview_Method__c}</td>
+                                                                
+                                                                    <td>
+                                                                        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                                            <apex:param value="{!invoice.Completed_Date__c}" />
+                                                                        </apex:outputText>
+                                                                    </td>
+                                                                
+                                                                    <td>
+                                                                        <apex:outputText value="{0,number,0.00}">
+                                                                            <apex:param value="{!invoice.Item_Price__c}" />
+                                                                        </apex:outputText>
+                                                                    </td>
+                                                                
+                                                                    <td>{!invoice.Investigator_Name__c}</td>
+                                                                    <td>{!invoice.ADP_File_Number__c}</td>
+                                                                
+                                                                    <td>
+                                                                        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                                            <apex:param value="{!invoice.Pay_Period_Ending__c}" />
+                                                                        </apex:outputText>
+                                                                    </td>
+                                                                </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+                                                    </table>
+                                                </apex:outputPanel>
+                                                </apex:outputPanel>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.container-fluid -->
+                    <!-- End of Main Content -->
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+                </div>
+            </div>
+            <!-- End of Content Wrapper -->
+            <!-- End of Page Wrapper -->
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            <c:DHSFooter ></c:DHSFooter>
+
+        </apex:form>
+        <script>
+            function searchinvoices() {
+                searchinvoicesaction();
+            }
+
+            function getInvoicePpeValue() {
+                return $.trim($('.invoice-cycle-date').val());
+            }
+
+            function applyInvoicePpeValue() {
+                $('.invoice-ppe-value').text(getInvoicePpeValue());
+            }
+
+            $(document).ready(function () {
+                $('.invoice-cycle-date').on('change', function () {
+                    applyInvoicePpeValue();
+                });
+                loadinvoicetable();
+            });
+            var invoicetable;
+            function loadinvoicetable(){
+                if ($('#invoicetable').length === 0) {
+                    return;
+                }
+                if ($.fn.DataTable.isDataTable('#invoicetable')) {
+                    $('#invoicetable').DataTable().destroy();
+                }
+                invoicetable =  $('#invoicetable').DataTable({"searching":false,
+                      "bLengthChange": false,
+                      "bFilter": true,
+                      "bInfo": true,
+                      "paging": false,
+                      "bAutoWidth": false,
+                      buttons: [] 
+                });
+                
+                const criteriaValue = $('.criteriaData input').val();
+
+                let enableExport = false;
+            
+                try {
+                    const criteria = JSON.parse(criteriaValue);
+                    enableExport = Array.isArray(criteria);
+                } catch (e) {
+                    enableExport = false;
+                }
+            
+                $('.export-button').prop('disabled', !enableExport);
+                applyInvoicePpeValue();
+                
+            }
+            $(document).ready(function() {
+            $('body').on('click','.export-button',function(e){
+            e.preventDefault();
+
+             const criteriaData = JSON.parse($('.criteriaData input').val());
+                const conditions = criteriaData.map(condition => {
+                    return {
+                        key: condition.FieldName,
+                        value: condition.FieldValue,
+                        operator: condition.Operator,
+                        type: condition.FieldType === 'Date' ? 'object' : null 
+                    };
+                });
+             
+              const ppeValue = getInvoicePpeValue();
+              exportCSV('DHS_Invoice__c', 'Id', conditions, "Name", "invoice", `Invoices_PPE_${formatInvoiceDateForFileName(ppeValue)}`, ppeValue);
+             return false;
+            });
+            });
+
+            function formatInvoiceDateForFileName(dateValue) {
+                if (!dateValue) {
+                    return '';
+                }
+                if (dateValue.indexOf('/') > -1) {
+                    var nums = dateValue.split('/');
+                    return `${nums[0].padStart(2, '0')}-${nums[1].padStart(2, '0')}-${nums[2]}`;
+                }
+                var parts = dateValue.split('-');
+                return `${parts[1]}-${parts[2]}-${parts[0]}`;
+            }
+
+            function exportCSV(sObjectName, fieldNames, conditions, orderBy = null, reportType, downloadFileName = null, ppeValue = null) {
+         
+         $Lightning.use("c:exportCSVWrapperApp", function() {
+         
+         $Lightning.createComponent("c:dhsExportCSV",
+         
+         {
+         
+           sObjectName   : sObjectName, // You can pass the value to @api attributes if you have inside JavaScript Class.
+         
+           fieldNames : fieldNames,
+         
+           conditions: conditions,
+         
+           orderBy: orderBy,
+           
+           reportType : reportType,
+
+           downloadFileName : downloadFileName,
+
+           downloadfilename : downloadFileName,
+
+           ppeValue : ppeValue,
+
+           ppevalue : ppeValue
+         
+         },
+         
+         "LwcId", // the Id of div tag where your component will be rendered
+         
+         function(cmp) {
+         
+           console.log('Calling the LWC Component');
+         
+         });
+         
+         });
+         
+         }
+        </script>
+    </body>
+</apex:page>

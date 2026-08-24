@@ -1,0 +1,7 @@
+You recently logged into and we need to validate using two step verification.
+
+User Name: {!DHS_OTP__c.00Ncp000007NQa4}
+
+To ensure your account security we need to verify your identity. Enter the following code where prompted by authy system
+
+Verification Code: {!DHS_OTP__c.00Ncp000007NQXB}

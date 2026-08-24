@@ -1,0 +1,297 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0" controller="DHSTimesheetsController">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>DHSTimesheet</title>
+        <style>
+            .dateformat {
+                font-weight: bold
+            }
+            .blueshadowbox {
+                box-shadow: 0 4px 8px rgba(0, 123, 255, 0.5);
+            }
+        </style>
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader />
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>DHSTimesheet and Resource Management</b></h4>
+                            </div>
+                            <!-- Sidebar Toggle (Topbar) -->
+                            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                                <i class="fa fa-bars"></i>
+                            </button>
+
+                            <c:DHSHeaderProfile />
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <section class="mb-3 pt-3" style="padding-left:19px;padding-right:19px;margin-top:20px;">
+                                            <h4 class="text-primary">DHSTimesheet - ISN PAPERPROOF ONLY</h4>
+
+                                            <!-- Instructions -->
+                                            <div class="mb-3" style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #00799B;">
+                                                <ul style="margin-bottom: 0; padding-left: 20px;">
+                                                    <li>Enter total hours worked for ISN on the PAPERPROOF contract each day listed below within this invoicing period, even if you are not receiving payment this period.</li>
+                                                    <li>Hours should be rounded to the nearest 15-minute increment (.25) and recorded in decimal form (Ex: 1 hour 15 minutes would be recorded as 1.25).</li>
+                                                    <li>If you did not work on any given day, enter 0 for that day.</li>
+                                                    <li>Mileage should only be reported for a day when you drive outside of a 50-mile radius from your home. <b>DO NOT</b> list total miles you drive each day. Example: If you drive 140 miles in a day, and 20 of those miles were outside of the 50 mile radius from your home, in any direction, you would enter 20 in the Mileage box below for that day.</li>
+                                                </ul>
+                                            </div>
+
+                                            <!-- Pay Period Calendar -->
+                                            <div class="mb-4">
+                                                <h5 class="text-primary">Pay Period Calendar</h5>
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-sm">
+                                                        <thead class="table-primary">
+                                                            <tr>
+                                                                <apex:repeat value="{!dateWrappers}" var="dn">
+                                                                	<th style="padding:5px;" class="text-center">{!dn.dayName}</th>
+                                                                </apex:repeat>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <!-- Week 1 -->
+                                                            <tr>
+                                                                <apex:repeat value="{!dateWrappers}" var="d">
+                                                                	<th style="padding:5px;" class="text-center">{!d.dateVal}</th>
+                                                                </apex:repeat>
+                                                                
+                                                                
+                                                            </tr>
+                                                            <!-- Week 2 -->
+                                                            
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-4 mt-4 d-flex">
+                                                <b style="color:#00799B">{!currentMonth} FROM&nbsp;
+                                                    {!periodStartDate} - TO&nbsp; {!periodEndDate}
+                                                    <!--<apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                        <apex:param value="{!periodStartDate}" />
+                                                    </apex:outputText> - TO&nbsp;
+                                                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                        <apex:param value="{!periodEndDate}" />
+                                                    </apex:outputText>-->
+                                                </b>
+                                            </div>
+
+                                            <apex:outputpanel id="timesheetspanel">
+                                                <table class="table table-bordered table-responsive table-sm text-center">
+                                                    <thead>
+                                                        <tr>
+                                                            <td></td>
+                                                            <apex:repeat value="{!timesheets}" var="timesheet">
+                                                                <td>
+                                                                    <span class="text-primary"><b>{!timesheet.Day_Name__c}</b></span><br />
+                                                                    <apex:outputText value="{0,date,MM'/'dd'/'yy}" styleClass="dateformat text-primary">
+                                                                        <apex:param value="{!timesheet.Date__c}" />
+                                                                    </apex:outputText>
+                                                                </td>
+                                                            </apex:repeat>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <strong class="text-primary" style="white-space: nowrap;margin-bottom: 15px;display: block;">Mileage outside 50-mile home radius</strong>
+                                                                <strong class="text-primary">Hours</strong>
+                                                            </td>
+                                                            <apex:repeat value="{!timesheets}" var="timesheet">
+                                                                <td class="total-minutes {!If(timesheet.Day_Name__c == 'Saturday' || timesheet.Day_Name__c == 'Sunday','table-primary','')} " title="Mileage outside 50-mile home radius">
+                                                                    <apex:inputfield rendered="{!If((timesheet.Day_Name__c != 'Saturday' && timesheet.Day_Name__c != 'Sunday' && !timesheet.Submitted__c),true,false)}"
+                                                                        value="{!timesheet.Miles_Driven__c}" 
+                                                                        styleclass="form-control mb-2 blueshadowbox mileage-input" 
+                                                                        onkeypress="return validateMileage(event);" />
+                                                                    <apex:outputfield rendered="{!If(timesheet.Submitted__c,true,false)}"
+                                                                        value="{!timesheet.Miles_Driven__c}"
+                                                                        styleclass="form-control" />
+                                                                    <apex:inputfield rendered="{!If((timesheet.Day_Name__c != 'Saturday' && timesheet.Day_Name__c != 'Sunday' && !timesheet.Submitted__c),true,false)}"
+                                                                        value="{!timesheet.Number_of_Hours__c}"
+                                                                        styleclass="form-control blueshadowbox hours-input"
+                                                                        onkeypress="return validateHours(event);" 
+                                                                        onblur="validateHoursIncrement(this);" />
+                                                                    <apex:outputfield rendered="{!If(timesheet.Submitted__c,true,false)}"
+                                                                        value="{!timesheet.Number_of_Hours__c}"
+                                                                        styleclass="form-control"/>
+                                                                </td>
+                                                            </apex:repeat>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </apex:outputpanel>
+
+                                            <div class="mt-3 col-12 row mx-1 justify-content-center">
+                                                <button class="btn btn-primary mb-2"
+                                                    onclick="updatetimesheets();return false;">Save</button>
+                                                <button class="btn btn-primary mb-2 ml-3"
+                                                    onclick="submittimesheets();return false;">Submit</button>
+                                            </div>
+                                        </section>
+
+                                        <apex:actionfunction name="updatetimesheetsaction"
+                                            action="{!updatetimesheetsaction}" rerender="timesheetspanel"
+                                            oncomplete="loaddatatables();return false;" status="loader">
+                                        </apex:actionfunction>
+
+                                        <apex:actionfunction name="submittimesheetsaction"
+                                            action="{!submittimesheetsaction}" rerender="timesheetspanel"
+                                            oncomplete="loaddatatables();return false;" status="loader">
+                                        </apex:actionfunction>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.container-fluid -->
+
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+            </div>
+            <!-- End of Content Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+
+        </apex:form>
+
+        <!-- End of Page Wrapper -->
+
+        <script>
+            $(document).ready(function () {
+                $('.total-minutes span').each(function() {
+                    var minutes = $(this).text().trim();
+                    if (!isNaN(minutes) && minutes !== '') {
+                        var hours = (minutes / 60).toFixed(2);
+                        $(this).text(hours + ' hours');
+                    }
+                });
+                $('.datepickerInput').datepicker({
+                    weekStart: 1,
+                    daysOfWeekHighlighted: "6,0",
+                    autoclose: true,
+                    todayHighlight: true,
+                });
+                loaddatatables();
+            });
+            
+            function loaddatatables() {
+                $('.dataTable').DataTable().destroy();
+                $('.dataTable').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": true,
+                    "bAutoWidth": false
+                });
+            }
+            
+            // Validation function for mileage (whole numbers only)
+            function validateMileage(event) {
+                var char = String.fromCharCode(event.which);
+                if (!/[0-9]/.test(char)) {
+                    event.preventDefault();
+                    return false;
+                }
+                return true;
+            }
+            
+            // Validation function for hours (numbers and decimal point only)
+            function validateHours(event) {
+                var char = String.fromCharCode(event.which);
+                if (!/[0-9.]/.test(char)) {
+                    event.preventDefault();
+                    return false;
+                }
+                return true;
+            }
+            
+            // Validate hours increment (.25 increments only)
+            function validateHoursIncrement(input) {
+                var value = parseFloat(input.value);
+                if (isNaN(value)) {
+                    input.value = '';
+                    return;
+                }
+                
+                // Round to nearest .25 increment
+                var rounded = Math.round(value * 4) / 4;
+                input.value = rounded.toFixed(2);
+                
+                // Show warning if not a valid increment
+                if (value !== rounded) {
+                    alert('Hours must be entered in .25 increments (15-minute increments). Value has been rounded to ' + rounded.toFixed(2));
+                }
+            }
+
+            function updatetimesheets() {
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, time sheets will be saved.',
+                    buttons: {
+                        confirm: function () {
+                            updatetimesheetsaction();
+                        },
+                        cancel: function () {}
+                    }
+                });
+            }
+        
+            function submittimesheets() {
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, time sheets will be submitted.',
+                    buttons: {
+                        confirm: function () {
+                            submittimesheetsaction();
+                        },
+                        cancel: function () {}
+                    }
+                });
+            }
+        </script>
+         
+    </body>
+</apex:page>

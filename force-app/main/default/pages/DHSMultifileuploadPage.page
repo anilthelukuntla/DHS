@@ -1,0 +1,471 @@
+﻿<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="DHSMultifileuploadPageController"
+    docType="html-5.0">
+
+
+    <head>
+    
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <apex:slds />  
+        <apex:includeScript value="https://code.jquery.com/jquery-2.2.4.js"></apex:includeScript> 
+        <title>Document Upload</title>
+
+      
+        <script>
+    $(function () {
+      var fileQueue = [];
+      var currentIndex = 0;
+      var ids = [];
+      var caseId = '{!caseId}';
+
+      $('#addr').change(function () {
+        var fileInput = document.getElementById('addr');
+        fileQueue = Array.from(fileInput.files);
+        var $tbody = $('#fileListBody');
+        $tbody.empty();
+
+        if (fileQueue.length === 0) {
+          $('#fileListContainer').hide();
+          return;
+        }
+        $('#fileListContainer').show();
+
+        fileQueue.forEach(function (file, index) {
+          var sizeKB = (file.size / 1024).toFixed(2);
+          var sizeDisplay = sizeKB > 1024 ? (sizeKB / 1024).toFixed(2) + ' MB' : sizeKB + ' KB';
+          var row = `
+            <tr id="fileRow_${index}">
+              <td><i class="slds-icon slds-icon-text-default slds-icon_x-small slds-m-right_x-small"></i>${file.name}</td>
+              <td>${sizeDisplay}</td>
+              <td id="fileStatus_${index}" class="slds-text-color_weak">Pending</td>
+            </tr>`;
+          $tbody.append(row);
+        });
+      });
+
+      $('#uploadBtn').click(function () {
+        if (fileQueue.length === 0) {
+          alert('Please select at least one file.');
+          return;
+        }
+
+        currentIndex = 0;
+        ids = [];
+        $('#records').html('');
+        uploadNextFile();
+      });
+
+      function uploadNextFile() {
+        if (currentIndex >= fileQueue.length) {
+          $('#records').append('<br/><b>All files uploaded successfully</b>');
+          document.getElementById("addr").value = "";
+            doUploadRedirect();
+          return;
+        }
+
+        var file = fileQueue[currentIndex];
+        $('#fileStatus_' + currentIndex).text('Uploading...').css('color', '#0176d3');
+
+        fileToBase64(file, function (err, content) {
+          if (err) {
+            $('#fileStatus_' + currentIndex).text('Error âŒ').css('color', 'red');
+            currentIndex++;
+            uploadNextFile();
+            return;
+          }
+
+          var attachObject = {
+            ParentId: '{!recordId}',
+            Name: file.name,
+            Body: content
+          };
+
+          Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.DHSMultifileuploadPageController.processUploadedFiles}',
+            caseId, attachObject.Name,
+            function (result, event) {
+              if (event.status) {
+                attachObject.ParentId = result;
+                uploadAttachmentToSalesforce(attachObject, function (success, responseId) {
+                  if (success) {
+                    ids.push(responseId);
+                    $('#records').append('<br/>' + attachObject.Name + ' uploaded (Id: ' + responseId + ')');
+                    $('#fileStatus_' + currentIndex).text('Uploaded').css('color', 'green');
+                  } else {
+                    $('#fileStatus_' + currentIndex).text('Failed âŒ').css('color', 'red');
+                  }
+                  currentIndex++;
+                  uploadNextFile();
+                });
+              } else {
+                $('#fileStatus_' + currentIndex).text('Apex Error âŒ').css('color', 'red');
+                currentIndex++;
+                uploadNextFile();
+              }
+            },
+            { escape: true }
+          );
+        });
+      }
+
+      function uploadAttachmentToSalesforce(attachObject, callback) {
+        $('#progress_bar_container').show();
+        $('.progress').css('width', '0%');
+        $('#percentText').html('Uploading ' + attachObject.Name + '... 0%');
+
+        $.ajax({
+          url: '/services/data/v39.0/sobjects/Attachment',
+          data: JSON.stringify(attachObject),
+          type: 'POST',
+          processData: false,
+          contentType: false,
+          headers: {
+            'Authorization': 'Bearer {!sessionId}',
+            'Content-Type': 'application/json'
+          },
+          xhr: function () {
+            var xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener("progress", function (evt) {
+              if (evt.lengthComputable) {
+                var percent = (evt.loaded / evt.total) * 100;
+                $('#percentText').html("Uploading " + attachObject.Name + "... " + Math.round(percent) + "%");
+                $('.progress').css('width', percent + "%");
+              }
+            }, false);
+            return xhr;
+          },
+          success: function (response) {
+              
+            $('#progress_bar_container').hide();
+            callback(true, response.id);
+          },
+          error: function (xhr, status, error) {
+                console.error('Attachment upload failed');
+                console.error('HTTP Status:', xhr.status);
+                console.error('Response:', xhr.responseText);
+                console.error('Error:', error);
+            
+                $('#records').append(
+                    '<br/><span style="color:red;">Attachment failed: ' +
+                    (xhr.responseText || error) +
+                    '</span>'
+                );
+            
+                $('#progress_bar_container').hide();
+                callback(false, null);
+            }
+        });
+      }
+
+      function fileToBase64(file, callback) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          var result = reader.result;
+          var base64Mark = 'base64,';
+          var dataStart = result.indexOf(base64Mark) + base64Mark.length;
+          var base64Content = result.substring(dataStart);
+          callback(null, base64Content);
+        };
+        reader.onerror = function (e) { callback(e, null); };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+
+  <script>
+    $(document).ready(function() {
+      var uploadArea = $('.upload-area');
+      
+      // Prevent default drag behaviors on the entire document
+      $(document).on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      
+      // Handle drag over event
+      uploadArea.on('dragover dragenter', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).addClass('drag-over');
+        $(this).css({
+          'background-color': '#e3f2fd',
+          'border-color': '#00799B',
+          'transform': 'scale(1.02)'
+        });
+      });
+      
+      // Handle drag leave event
+      uploadArea.on('dragleave dragend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).removeClass('drag-over');
+        $(this).css({
+          'background-color': '#f8f9fc',
+          'border-color': '#d9d9d9',
+          'transform': 'scale(1)'
+        });
+      });
+      
+      // Handle drop event
+      uploadArea.on('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        $(this).removeClass('drag-over');
+        $(this).css({
+          'background-color': '#f8f9fc',
+          'border-color': '#d9d9d9',
+          'transform': 'scale(1)'
+        });
+        
+        var files = e.originalEvent.dataTransfer.files;
+        
+        if (files.length > 0) {
+          // Set the files to the file input
+          var fileInput = document.getElementById('addr');
+          fileInput.files = files;
+          
+          // Trigger the change event to populate the file list
+          $(fileInput).trigger('change');
+        }
+      });
+    });
+  </script>
+ 
+        
+        
+        <style>
+      /* Custom Enhancements */
+      .bg-gradient-primary {
+        background: linear-gradient(135deg, #00799B, #00799B);
+      }
+  
+      .upload-area {
+        border: 2px dashed #d9d9d9;
+        transition: all 0.3s ease;
+        background-color: #f8f9fc;
+      }
+  
+      .upload-area:hover {
+        background-color: #f1f6ff;
+        border-color: #00799B;
+        transform: scale(1.01);
+      }
+      
+      .upload-area.drag-over {
+        background-color: #e3f2fd;
+        border-color: #00799B;
+        border-width: 3px;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+      }
+  
+      .custom-file-upload {
+        cursor: pointer;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background-color: white;
+        color: #000;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-top: 0.5rem;
+      }
+  
+      .custom-file-upload:hover {
+        background-color: #eaf1ff;
+        border-color: #00799B;
+        color: #00799B;
+      }
+  
+      .upload-btn {
+        background-color: #00799B;
+        color: white;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: bold;
+        transition: background 0.3s ease;
+      }
+  
+      .upload-btn:hover {
+        background-color: #0056b3;
+      }
+  
+      .table th,
+      .table td {
+        vertical-align: middle !important;
+        font-size: 14px;
+      }
+  
+      .table-hover tbody tr:hover {
+        background-color: #f6f9ff;
+      }
+      .navbar {
+    position: relative;
+    display: flex !important; }
+    </style>
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+           
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+             <c:DHSHeader ></c:DHSHeader>
+             <style>
+             sup {
+                    top: -0.1em;
+                    font-size: 15px;
+                    color: #dc3545;
+                }
+             </style>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Document Upload</b></h4>
+                            </div>
+                            <!-- Sidebar Toggle (Topbar) -->
+                            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                                <i class="fa fa-bars"></i>
+                            </button>
+
+
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile> 
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header py-3  ">
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-5">
+                                                
+                                                
+                                            </div>
+                                            
+                                            <div class="container-fluid">
+                                              <div class="row justify-content-center">
+                                                <div class="col-lg-8">
+                                                  <div class="card shadow-lg border-0 rounded-3 mb-5">
+                                                    <div class="card-header bg-gradient-primary text-white py-3">
+                                                      <h5 class="mb-0"><i class="fa fa-upload"></i> Upload Files</h5>
+                                                    </div>
+                                  
+                                                    <div class="card-body p-4">
+                                                      <!-- File Upload Section -->
+                                                      <div class="upload-area text-center p-5 mb-4 rounded-3 border border-dashed">
+                                                        <i class="fa fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                                        <p class="lead mb-2">Drag and Drop files here or</p>
+                                                        <label class="custom-file-upload slds-button slds-button_neutral">
+                                                          <input type="file" name="files[]" multiple="multiple" id="addr" style="display:none" />
+                                                          <i class="fa fa-folder-open"></i>&nbsp;&nbsp; Choose Files
+                                                        </label>
+                                                        <button type="button" id="uploadBtn" name="Address" class="slds-button slds-button_brand upload-btn mt-3">
+                                                          <i class="fa fa-arrow-up"></i> &nbsp;&nbsp; Upload
+                                                        </button>
+                                                      </div>
+                                  
+                                                      <!-- Progress Bar -->
+                                                      <div id="progress_bar_container" style="display:none; padding:10px;">
+                                                        <span id="percentText" class="font-weight-bold d-block text-center mb-2"></span>
+                                                        <div style="height: 15px; border-radius: 10px;">
+                                                          <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary progress"
+                                                               role="progressbar"
+                                                               style="width: 0%;">
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                  
+                                                      <!-- Uploaded Records -->
+                                                      
+                                  
+                                                      <!-- File List Table -->
+                                                      <div id="fileListContainer" class="mt-4" style="display:none;">
+                                                        <table id="fileListTable"
+                                                               class="table table-hover table-bordered text-center align-middle shadow-sm"
+                                                               style="border-radius: 10px; overflow: hidden;">
+                                                          <thead class="bg-primary text-white">
+                                                            <tr>
+                                                              <th style="width: 60%">File Name</th>
+                                                              <th style="width: 20%">Size</th>
+                                                              <th style="width: 20%">Status</th>
+                                                            </tr>
+                                                          </thead>
+                                                          <tbody id="fileListBody"></tbody>
+                                                        </table>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                        <!-- /.container-fluid -->
+
+                    </div>
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            
+            <div class="toast " role="alert" aria-live="assertive" data-delay="5000"  aria-atomic="true" style="position: absolute;top: 5rem;right: 0;left: 0;z-index: 99;margin: 0 auto;min-width: 500px;">
+                <div class="toast-header bg-danger">
+                  <strong class="mr-auto text-white"></strong>
+                  <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+            </div>
+            <apex:actionFunction name="doUploadRedirect" action="{!uploadAndRedirect}" rerender="none"/>
+           
+        </apex:form>
+
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.8/jquery.mask.min.js"></script>
+        <script>
+            
+        </script>
+    </body>
+</apex:page>

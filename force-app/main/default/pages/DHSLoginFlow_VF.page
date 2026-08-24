@@ -1,0 +1,60 @@
+﻿<apex:page showHeader="false" sidebar="false" controller="DHSLoginFlow_Controller" action="{!createOTPrecord}" lightningStylesheets="false">
+<link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" />
+    <style>
+.container{text-align:center; margin-top:50px}
+.text-justify{text-align:left}
+.slds-card{max-width:400px; padding-bottom:10px}
+img{width:320px}
+.slds-button{background:#00799B !important; color:#fff !important; padding:5px 15px !important; margin-bottom:15px !important}
+.inputotp input{width:200px !important;}
+    .foreSite {
+    color: #00799B;
+    font-family: segoesc;
+    font-weight: bolder;
+    font-size: 45px;
+    position: relative;
+    top: 7px;
+    left:10px;
+    display: inline-block;
+    
+    -webkit-text-stroke: 1px #00799B;
+}
+             @font-face {
+            font-family: segoesc;
+            src: url({!URLFOR($Resource.segoesc)
+        }
+
+        );
+        }
+</style>
+<apex:slds />
+    <apex:form >
+        <div class="container slds-grid slds-wrap slds-grid_align-center  slds-text-heading_medium">
+               <div class="slds-size_1-of-1"> <img src="https://www.isncorp.com/wp-content/uploads/2020/06/logo-150.png" style="width: 125px;padding-bottom: 10px;"/>
+            <span class="foreSite">foreSite</span></div>
+            <div class=" slds-grid  slds-wrap slds-card slds-p-horizontal_large slds-p-vertical_small">
+                <div class="slds-size_1-of-1 slds-p-horizontal_large slds-p-vertical_small">
+                <div class="text-justify">
+                   <div class="slds-p-vertical_x-small slds-text-heading_medium"> Welcome, <b>{!userData.Name}</b></div>
+                    <p class="slds-p-vertical_x-small">To ensure your account security we need to verify your identity.</p>
+                    <p class="slds-p-vertical_x-small">Please enter the one time password code sent to your email.</p>
+                    <p class="slds-p-vertical_x-small">We have sent the code to the email: <span class="slds-text-link">{!userData.Email}</span></p>
+                    <div class="slds-p-vertical_x-small slds-text-color_destructive"><apex:outputText value="{!errorMessage}"></apex:outputText></div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-1 slds-align_absolute-center slds-grid slds-wrap">
+                   <div class="slds-size_1-of-1 slds-p-bottom_medium slds-p-top_none inputotp">
+                    <apex:inputText styleClass="slds-input" value="{!enteredOTPfromUser}" html-placeholder="OTP" required="true" label="OTP" title="OTP" />
+                    </div>
+                    <p class="slds-p-horizontal_large text-justify slds-size_1-of-1 slds-text-heading_medium slds-text-color_destructive slds-p-bottom_small">{!message}</p>
+                    <div class="slds-size_1-of-1 ">
+                    <apex:commandButton styleClass="slds-button slds-button_neutral"  action="{!verifyOTP}" value="Verify" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </apex:form>
+</apex:page>

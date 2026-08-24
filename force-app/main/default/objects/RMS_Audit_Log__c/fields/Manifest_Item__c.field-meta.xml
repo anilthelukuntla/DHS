@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Manifest_Item__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Manifest Item</label>
+    <referenceTo>RMS_Manifest_Item__c</referenceTo>
+    <relationshipLabel>RMS Audit Logs</relationshipLabel>
+    <relationshipName>RMS_Audit_Logs</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

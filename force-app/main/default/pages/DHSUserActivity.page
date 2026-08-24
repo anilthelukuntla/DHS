@@ -1,0 +1,62 @@
+﻿<apex:page >
+    <script>
+        let activeSeconds = 0;
+        let idleSeconds = 0;
+        let lastActiveTime = Date.now();
+        let isActive = false;
+        let activityTimer;
+
+        function startUserActivityTracking() {
+            const events = ['mousemove', 'mousedown', 'mouseup', 'click', 'dblclick', 'wheel',
+    						'keydown', 'keypress', 'keyup',
+    						'touchstart', 'touchmove', 'touchend',
+    						'focus', 'blur', 'visibilitychange', 'scroll'];
+            events.forEach(event => {
+                document.addEventListener(event, startActiveTimer);
+            });
+            startIdleTimer();
+            startMinuteLogger();
+        }
+        
+        function startActiveTimer() {
+            if (!isActive) {
+                isActive = true;
+                lastActiveTime = Date.now();
+            }
+            
+            // Reset the idle timer
+            if (activityTimer) clearTimeout(activityTimer);
+            activityTimer = setTimeout(stopActiveTimer, 1000);  // Check every second if still active
+        }
+        
+        function stopActiveTimer() {
+            const now = Date.now();
+            const activeTime = Math.floor((now - lastActiveTime) / 1000);
+            if (activeTime > 0) {
+                activeSeconds += activeTime;
+            }
+            isActive = false;
+            lastActiveTime = now;
+        }
+        
+        function startIdleTimer() {
+            setInterval(() => {
+                if (!isActive) {
+                    idleSeconds += 1;
+                }
+            }, 1000);  // Count idle time every second
+        }
+        
+        function startMinuteLogger() {
+            setInterval(() => {
+                console.log(`Active Seconds: ${activeSeconds}, Idle Seconds: ${idleSeconds}`);
+                activeSeconds = 0;
+                idleSeconds = 0;
+            }, 60000);  // Log every minute
+        }
+
+        window.onload = startUserActivityTracking;
+    </script>
+    <h2>User Activity Tracker</h2>
+    <p>Your activity is being tracked. Stay active!</p>
+</apex:page>

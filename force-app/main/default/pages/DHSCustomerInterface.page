@@ -1,0 +1,288 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" Controller="DHSCustomerInterfaceController"
+    docType="html-5.0">
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Customer Interface</title>
+<style>.accordion-toggle[aria-expanded="true"] td .fa-angle-right:before{    content: "\f107";}</style>
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Customer Interface</b></h4>
+                            </div>
+
+                            <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile> 
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+                            <div class="row">
+
+                                <!-- Area Chart -->
+                                <div class="col">
+                                    <div class="card shadow mb-4">
+                                        <!-- Card Header - Dropdown -->
+                                        <div
+                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <ul class="nav nav-tabs">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" data-toggle="tab"
+                                                        href="#customer-documents">Orders </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link " data-toggle="tab"
+                                                        href="#Deliverables">Deliverables </a>
+                                                </li>
+
+
+                                            </ul>
+
+                                        </div>
+                                        <!-- Card Body -->
+                                        <div class="card-body tab-content">
+                                            <div role="tabpanel" class="tab-pane fade in" id="Deliverables">
+                                                <div class="card-body ">
+                                                    <table class="table table-hover" style="border-collapse:collapse;">
+                                                        <thead>
+                                                            <tr>
+                                                            <th></th>
+                                                                <th>OrderNumber</th>
+                                                                <th>Created Date</th>
+                                                                <th>Created By</th>
+                                                                <th>Status</th>
+                                                                <th>View</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <apex:repeat value="{!executedcustomerorders}" var="co">
+                                                                <tr colspan="6" data-toggle="collapse"
+                                                                    data-target="#demo{!co.order.id}"
+                                                                    class="accordion-toggle">
+                                                                     <td><i class="fa-solid fa-angle-right"></i></td>
+                                                                    <td>{!co.order.Name}</td>
+                                                                    <td>
+                                                                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                            <apex:param value="{!co.order.createddate}" />
+                                                                        </apex:outputText>
+                                                                    </td>
+                                                                    <td>{!co.order.owner.name}</td>
+                                                                    <td>{!co.order.Status__c}</td>
+                                                                    <td>
+                                                                        <a
+                                                                            href="{!URLFOR($Action.Attachment.Download, co.attachmentId)}"><span
+                                                                                class="glyphicon glyphicon-save-file"></span>
+                                                                            View </a>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr class="p">
+                                                                    <td colspan="100" class="hiddenRow">
+                                                                        <div class="accordian-body collapse p-3"
+                                                                            id="demo{!co.order.id}">
+                                                                            <table class="table table-sm">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Case Number</th>
+                                                                                        <th>Subject Name</th>
+                                                                                        <th>Status</th>
+                                                                                        <th>Date submitted </th>
+                                                                                        <th>Case Type</th>
+                                                                                        <th>Service Days</th>
+                                                                                        <th>Due Date</th>
+                                                                                    </tr>
+                                                                                </thead>
+
+                                                                                <tbody>
+                                                                                    <apex:repeat var="case"
+                                                                                        value="{!executedCustomerOrdersandCasesMap[co.order.id]}">
+
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <a class="nav-link font-weight-bold"
+                                                                                                    href="{!$Site.Prefix}/DHSCasedetail?id={!case.id}">{!case.Case_Number__c}</a>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                {!case.Subject_Name__c}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                {!case.Case_Queue_Status__c}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                                                    <apex:param value="{!case.Submission_Date__c}" />
+                                                                                                </apex:outputText>
+
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                {!case.Case_Type__c}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                {!case.Service_Days__c}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                                                    <apex:param value="{!case.Case_Due_Date__c}" />
+                                                                                                </apex:outputText>
+
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </apex:repeat>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane active" id="customer-documents">
+                                                <div class="d-flex flex-row-reverse bd-highlight">
+                                                    <a class="btn btn-primary" data-toggle="collapse"
+                                                        href="#uploadDocument" role="button" aria-expanded="false"
+                                                        aria-controls="uploadDocument">
+                                                        Upload Order
+                                                    </a>
+                                                </div>
+                                                <div class="collapse mt-2 mb-2" id="uploadDocument">
+                                                    <div class="card card-body">
+                                                        <div class="frame">
+                                                            <div class="center">
+                                                                <c:DHSOrderFileUpload fId="f2">
+                                                                </c:DHSOrderFileUpload>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="card-body pt-0">
+                                                    <h4 class="text-primary mb-4">List of Orders</h4>
+                                                    <table class="table dataTable" width="100%" cellspacing="0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>OrderNumber</th>
+                                                                <th>Created Date</th>
+                                                                <th>Created By</th>
+                                                                <th>Status</th>
+                                                                <th>View</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <apex:repeat value="{!uploadedcustomerorders}" var="co">
+                                                                <tr>
+                                                                    <td>{!co.order.Name}</td>
+                                                                    <td>
+                                                                        <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                                            <apex:param value="{!co.order.createddate}" />
+                                                                        </apex:outputText>
+                                                                    </td>
+                                                                    <td>{!co.order.owner.name}</td>
+                                                                    <td>{!co.order.Status__c}</td>
+                                                                    <td>
+                                                                        <a
+                                                                            href="{!URLFOR($Action.Attachment.Download, co.attachmentId)}"><span
+                                                                                class="glyphicon glyphicon-save-file"></span>
+                                                                            View </a>
+                                                                    </td>
+                                                                </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+
+                            </div>
+
+                        </div>
+
+                        <!-- /.container-fluid -->
+
+                    </div>
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; ISN</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+
+            <c:DHSInsiteFooter ></c:DHSInsiteFooter>
+
+        </apex:form>
+
+        <style>
+            .dataTables_empty {
+                text-align: center !important;
+                font-size: 14px !important;
+                font-weight: bold !important;
+                color: #093b87 !important;
+            }
+        </style>
+
+        <Script>
+            $(document).ready(function () {
+                $('.dataTable').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": true,
+                    "bAutoWidth": false
+                });
+            });
+        </script>
+
+
+
+    </body>
+
+</apex:page>
