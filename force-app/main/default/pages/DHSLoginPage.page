@@ -1,0 +1,394 @@
+<apex:page id="page" cache="false" controller="DHSLoginPageController" docType="html-5.0" sidebar="false"
+    showHeader="false" applyBodyTag="false" standardStylesheets="false" title="DHS Login Page">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" />
+    <body class="login">
+    <Apex:form >
+    <style>
+    .login{overflow:hidden}
+    .close.btn:hover {
+    color: var(--bs-btn-hover-color);
+    background-color: #fff;
+    border-color: #fff;
+}
+    @font-face {
+            font-family: segoesc;
+            src: url({!URLFOR($Resource.segoesc)
+        }
+
+        );
+        }
+
+     
+   .foreSite {
+    color: #003774;
+    font-family: segoesc;
+    font-weight: bolder;
+    font-size: 45px;
+    position: relative;
+    top: 7px;
+    left:10px;
+    display: inline-block;
+    
+    -webkit-text-stroke: 1px #003774;
+}
+.align-centert{
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.align-centert .form-group input{
+  
+    width: 100%;
+}
+.loginpages{
+align-items:center;
+height:100vh;
+}
+.welcome{
+text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+.firstColumn{
+display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: rgb(130 187 235 / 80%);
+    height: 100%;
+    align-items:center;
+}
+.secondColumn{
+  display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: #fff;
+      height: 100%;
+      padding:0;
+  }
+ .secondColumn img{width:100%;}
+
+</style>
+  
+    <div class="row loginpages d-flex">
+      
+        <div class="col-6 firstColumn" style="display: flex;flex-wrap: wrap;justify-content: center;">
+            <div>
+             <img src="{!URLFOR($Resource.biimages,'biimages/logo-150.png')}" style="width: 125px;padding-bottom:6px"/>
+             <span class="foreSite">foreSite</span>
+       </div>
+          
+            
+            
+            <apex:outputpanel id="loginpanel">
+             <apex:outputpanel rendered="{!showloginpanel}">
+                 <div class="welcome"><strong style="font-size:28px;color:#003774">Sign in </strong></div>
+            <form class="form-horizontal login-form">
+            <div style="
+    display: flex;
+    align-items: center;
+    justify-content: center;
+">
+            <div class="align-centert row col-6">
+            
+                <div class="form-group relative mb-4">
+                    <apex:inputtext value="{!username}" id="login_username" styleclass="form-control input-lg" html-placeholder="username"/>
+                  
+                </div>
+                <div class="form-group relative password mb-4">
+                <apex:inputSecret value="{!password}" redisplay="true" id="login_password" styleclass="form-control input-lg" html-placeholder="password"/>
+                </div>
+               
+              <div class="form-group mb-4">
+               <apex:commandbutton style="background:#08306bdb;" oncomplete="displayToast()" rerender="ErrorMessagePanel" value="Login" action="{!doLogin}" styleclass="btn btn-success btn-primary btn-block"/>
+              
+              </div>
+               
+              <div class="checkbox pull-right mb-4">
+                <label> 
+                <apex:commandlink oncomplete="setforgotClass()" style="color:#08306b;" styleClass="forgotPasswordLink form-group" action="{!forgotPasswordClickAction}" rerender="forgotpasswordpanel,loginpanel,ErrorMessagePanel">Forgot your password</apex:commandlink> </label>
+               <!-- <a class="forget" href="" style="color:#08306b;" title="forget">Forgot your password</a> </label>-->
+              </div>
+              </div>
+              </div>
+               </form>
+               </apex:outputpanel> 
+             </apex:outputpanel> 
+              <apex:outputpanel id="forgotpasswordpanel">
+             <apex:outputpanel rendered="{!!showloginpanel}">
+                 <div class="welcome text-danger" style="text-align:justify">
+                 <div class="col-7">An OTP is required to complete the password reset process. Please enter the OTP on the next screen to proceed.</div></div>
+             <form class="form-horizontal login-form">
+             <div style="
+    display: flex;
+    align-items: center;
+    justify-content: center;
+">
+            <div class="align-centert row col-6">
+                <div class="form-group relative mb-4">
+                    <apex:inputtext value="{!username}" id="login_username1" styleclass="form-control " html-placeholder="username"/>
+                </div>
+                    <apex:outputpanel rendered="{!sendOTPTo}">
+                <div class="form-group relative mb-4">
+                    <apex:commandbutton rerender="forgotpasswordpanel,loginpanel,ErrorMessagePanel" style="background:#08306bdb;" oncomplete="displayToast()" value="Submit" action="{!sendOTP}" styleclass="btn btn-success btn-primary btn-block"/>
+                </div>
+                    </apex:outputpanel> 
+                    
+                    <apex:outputpanel rendered="{!!verifyEmail}">
+                        <apex:outputpanel rendered="{!!sendOTPTo}">
+                     <div class="form-group relative mb-4">
+                        <apex:inputSecret value="{!newPassword}" id="login_password1" styleclass="form-control" html-placeholder="New password"/>
+                     </div>
+                     <div class="form-group mb-4">
+                       <apex:commandbutton rerender="forgotpasswordpanel,loginpanel,ErrorMessagePanel" style="background:#08306bdb;" oncomplete="displayToast()" value="Reset password" action="{!resetpassword}" styleclass="btn btn-success btn-primary btn-block"/>
+                      </div>
+                       </apex:outputpanel> 
+                </apex:outputpanel> 
+                       
+                        <apex:outputpanel rendered="{!verifyEmail}">
+                             <div class="form-group relative mb-4">
+                                <apex:inputtext value="{!enteredOTP}" id="otp" styleclass="form-control" html-placeholder="OTP"/>
+                             </div>
+                             <div class="form-group mb-4">
+                               <apex:commandbutton rerender="forgotpasswordpanel,loginpanel,ErrorMessagePanel" style="background:#08306bdb;" oncomplete="displayToast()" value="Verify OTP" action="{!VerifyOTP}" styleclass="btn btn-success btn-primary btn-block"/>
+                              </div>
+                        </apex:outputpanel> 
+                        </div>
+                      </div> 
+                </form>
+               </apex:outputpanel> 
+             </apex:outputpanel> 
+              
+         <div class="col-8" style="margin-bottom:30px;font-size: 20px;text-align:center">
+         <div style="margin-bottom:30px;">
+        <span id="liveDate" style="padding-right:10px"></span >
+        <span id="liveTime" style=" color: #007bff;"></span>
+    </div>
+           <div style="margin-bottom:10px;"><strong>System Availability</strong></div>
+ <p style="font-size: 18px;">
+The ForeSite Case Management System is available year-round, 365 days a year, from 6:00 AM to 1:00 AM ET.
+</p>
+
+         </div>
+        </div>
+        <div class="col-6 secondColumn">
+
+        <div><img src="{!URLFOR($Resource.biimages,'biimages/ISN-Badge.jpg')}"/></div>
+        <div class="row px-5" style="color:#08306b;font-size: 20px;">
+            <center>
+               <b> Unauthorized Access Warning </b>
+            </center>
+            <div class="row" style="color:#08306b;">
+              <center class="py-3" style="font-size: 18px; ">
+                  Legal Notice: ISN Corporation<br/>
+                    </center>
+                  <p style="font-size: 18px;text-align:justify">This system may be used by authorized
+                  personnel only. Unauthorized access or use of
+                  this system may subject you to administrative,
+                  civil, or criminal actions, as well as fines or
+                  other penalties. Employees should protect
+                  sensitive information and shall not use the
+                  information, or allow its use, for other
+                  purposes. Use of this computer system,
+                  constitutes consent to monitoring and
+                  implies understanding of these terms and
+                  conditions.</p>
+          </div>
+        </div>
+        
+    <apex:outputPanel id="ErrorMessagePanel">
+                <apex:outputPanel rendered="{!errorMessage != Null}">
+                    
+                   <div aria-live="polite" aria-atomic="true" style="">
+                      <div class="toast" style="position: absolute;top: 20px;margin: 0 auto;left: 0;right: 0;">
+                        <div class="toast-header">
+                          
+                          <strong class="mr-auto">{!errorMessage}</strong>
+                          <button type="button" class="ml-2 mb-1 close btn" style="font-size: 24px;font-weight: bold;color: #08306bdb;" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        
+                      </div>
+                    </div>
+                </apex:outputPanel>
+                
+            </apex:outputPanel>
+
+            </div>
+    </div>
+</Apex:form>
+  </body>
+  <script>
+  function displayToast(){
+  $('.toast').addClass('show');
+  }
+  $(document).ready(function(){
+    $('body').on('click','.toast .close ',function(){
+     $('.toast').removeClass('show');
+    });
+    
+     function updateDateTime() {
+                const now = new Date();
+                const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = now.toLocaleDateString('en-US', optionsDate);
+                const formattedTime = now.toLocaleTimeString('en-US', { hour12: true });
+
+                $('#liveDate').text(`${formattedDate}`);
+                $('#liveTime').text(`${formattedTime}`);
+            }
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+    
+  })
+  function setforgotClass(){
+    debugger;
+    $('.login-container-wrapper').addClass('forgotPassword');
+    }
+  </script>
+  <style>
+      @import url(https://fonts.googleapis.com/css?family=Varela);
+
+html {
+  height: 100%;
+}
+
+body {
+  background: #f2f2f2;
+  font-family: 'Varela', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  min-height: 100%;
+  position: relative;
+}
+
+label {
+  margin-top: 6px;
+  line-height: 17px;
+}
+
+a {
+  color: #fff;
+}
+
+a:focus,
+a:hover {
+  color: #008080;
+}
+
+.checkbox-inline+.checkbox-inline,
+.radio-inline+.radio-inline {
+  margin-top: 6px;
+}
+
+/******* Login Page *******/
+
+body.login {
+  background: rgba(241, 242, 181, 1);
+  background: -moz-radial-gradient(center, ellipse cover, rgba(255, 255, 255, 1) 0%, rgba(19, 80, 88, 1) 100%);
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(100%, rgba(19, 80, 88, 1)));
+  background: -webkit-radial-gradient(center, ellipse cover, rgba(255, 255, 255, 1) 0%, rgba(19, 80, 88, 1) 100%);
+  background: -o-radial-gradient(center, ellipse cover, rgba(255, 255, 255, 1) 0%, rgba(19, 80, 88, 1) 100%);
+  background: -ms-radial-gradient(center, ellipse cover, rgba(255, 255, 255, 1) 0%, rgba(19, 80, 88, 1) 100%);
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 1) 0%, rgb(236 240 241) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#f1f2b5', endColorstr='#135058', GradientType=1);
+}
+
+.relative {
+  position: relative;
+}
+
+.login-container-wrapper .logo,
+.login-container-wrapper .welcome {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color:#08306b;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.login-container-wrapper .logo {
+  text-align: center;
+  position: absolute;
+  top: -42px;
+  margin: 0 auto;
+  width: 25%;
+  left: 37.5%;
+  border-radius: 50%;
+  background-color: #344455;
+  padding: 25px;
+  box-shadow: 0px 0px 9px 2px #344454;
+}
+
+.login-container-wrapper {
+  max-width: 400px;
+  margin: 10% auto 2%;
+  padding: 40px;
+  box-sizing: border-box;
+  background: rgb(130 187 235 / 80%);
+  box-shadow: 1px 1px 10px 1px #000000, 8px 8px 0px 0px #344454, 12px 12px 10px 0px #000000;
+  position: relative;
+  padding-top: 80px;
+}
+
+.logo .fa {
+  font-size: 50px;
+}
+.login input:focus + .fa{
+  color:#fff;
+}
+.login-form .form-group {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+
+.login .checkbox label,
+.login .checkbox a {
+  color: #ddd;
+}
+
+.btn-success {
+  background-color: transparent;
+  background-image: none;
+  padding: 8px 50px;
+  border-radius: 0;
+  border: 2px solid #93a5ab;
+  box-shadow: inset 0 0 0 0 #7692A7;
+  -webkit-transition: all ease 0.8s;
+  -moz-transition: all ease 0.8s;
+  transition: all ease 0.8s;
+}
+
+.btn-success:focus,
+.btn-success:hover,
+.btn-success.active,
+.btn-success:active {
+  background-color: transparent;
+  border-color: #fff;
+  box-shadow: inset 0 0 100px 0 #7692A7;
+  color: #FFF;
+}
+#particles-js {
+/*   background: cornflowerblue; */
+  width:100%;
+  height:100%;
+  position:absolute;
+  z-index:-1;
+}
+.form-control:focus {
+    color: #212529;
+    background-color: #fff;
+    border-color: darkgrey;
+    outline: 0;
+    box-shadow: none;
+}
+  </style>
+
+</apex:page>

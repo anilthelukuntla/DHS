@@ -1,0 +1,14 @@
+<template>
+    <lightning-card title="Manifest" icon-name="standard:document_preview">
+        <div class="slds-align_absolute-center">
+            <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-1">
+                    <div class="manifestname">{manifestName}</div>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-button variant="brand-outline" label="Download Manifest" title="Download Manifest" onclick={handleDownload}></lightning-button>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>

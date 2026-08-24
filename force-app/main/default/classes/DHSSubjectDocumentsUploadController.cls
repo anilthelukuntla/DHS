@@ -1,0 +1,60 @@
+/** Controls subject-facing DHS document-request uploads. */
+@SuppressWarnings('PMD.ApexDoc')
+public without sharing class DHSSubjectDocumentsUploadController{
+    public string documentRequestId {get;set;}
+    public DHS_Document_Request__c documentRequest {get;set;}
+    public boolean showUploadPanel {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    public boolean showAfterUploadPanel {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    public boolean showExpiryPanel {get;set;} // NOPMD - Boolean is required by the existing Visualforce or Apex contract.
+    public list<attachment> attachmentsList {get;set;}
+    
+    public DHSSubjectDocumentsUploadController(){
+        documentRequestId = ApexPages.currentPage().getParameters().get('id').escapeHtml4();
+        documentRequestId = String.valueOf(Id.valueOf(decodeURLParams(documentRequestId)));
+        
+        fetchDocumentRequest();
+    }
+    
+    public void fetchDocumentRequest(){
+        showUploadPanel = false;
+        showAfterUploadPanel = false;
+        showExpiryPanel = false;
+        documentRequest = [Select Id, DHS_Lead__c, DHS_Lead__r.Assigned_To_Name__c,DHS_Lead__r.DHS_Case__r.Case_Number__c, Expiration_Date__c, CreatedDate, Status__c, Subject_Comments__c, Request_Expired__c from DHS_Document_Request__c WHERE ID=: documentRequestId WITH USER_MODE ];
+        if(documentRequest.Status__c == 'Documents Requested' && !documentRequest.Request_Expired__c){
+            showUploadPanel = true;    
+        }
+        if(documentRequest.Status__c == 'Documents Received' && !documentRequest.Request_Expired__c){
+            showAfterUploadPanel = true;    
+        }
+        if(documentRequest.Request_Expired__c){
+            showExpiryPanel = true;    
+        }
+        attachmentsList = new list<attachment>();
+        attachmentsList = [Select Id, parentId, Name, CreatedDate, Description from Attachment where parentId =:documentRequestId WITH USER_MODE ];
+    
+    }
+    
+    public void submitaction(){
+        documentRequest.Status__c='Documents Received';
+        Database.update(documentRequest, AccessLevel.USER_MODE);
+        fetchDocumentRequest();
+    }
+    public string deleteAttachmentId{get;set;}
+    public void deleteAttachment(){
+        Database.delete([select Id from Attachment where id=:deleteAttachmentId WITH USER_MODE ], AccessLevel.USER_MODE);
+        fetchDocumentRequest();
+    }
+    
+    public void autosaveaction(){
+        Database.update(documentRequest, AccessLevel.USER_MODE);
+    }
+    
+    private String decodeURLParams(String encodedString){
+         // take the base64 encoded parameter and create base64 decoded Blob from it   
+         Blob afterblob = EncodingUtil.base64Decode(encodedString);
+         // Convert the blob back to a string and print it in the debug log
+         return afterblob.toString();
+        
+    }
+
+}

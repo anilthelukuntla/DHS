@@ -1,0 +1,179 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+    Controller="DHSContractSettingsController">
+
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Contract Settings</title>
+
+
+
+
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>App Management</b></h4>
+                            </div>
+                           <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile> 
+                           
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-4">
+
+                                        <div
+                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h4 class="m-0 font-weight-bold text-primary">Contract Settings </h4>
+
+                                        </div>
+                                        <div class="card-body">
+                                            <div class=" mt-2 mb-2 row col-6">
+                                                <div class="form-group mb-2 col-6">
+                                                    <label>Contract Name</label>
+                                                    <apex:inputfield styleclass="form-control"
+                                                        value="{!contractSetting.Contract_Name__c}" />
+                                                </div>
+                                                <div class="form-group mb-2 col-6">
+                                                    <label>Contract Clearence Level</label>
+                                                    <apex:inputfield styleclass="form-control"
+                                                        value="{!contractSetting.Contract_clearance_level__c}" />
+                                                </div>
+                                                <div class="form-group mb-2 col-6">
+                                                    <label>Contract Type</label>
+                                                    <apex:inputfield styleclass="form-control"
+                                                        value="{!contractSetting.Contract_Type__c}" />
+                                                </div>
+                                                <div class="form-group mb-2 col-6">
+                                                    <label>Coverage Type</label>
+                                                    <apex:inputfield styleclass="form-control"
+                                                        value="{!contractSetting.Coverage_type__c}" />
+                                                </div>
+                                                <div class="form-group mb-2 col-6">
+                                                    <label>Program Director</label>
+                                                    <apex:inputfield styleclass="form-control"
+                                                        value="{!contractSetting.Program_Director__c}" />
+                                                </div>
+                                                <div class="form-group mb-2 col-6">
+                                                    <label>Program Manager</label>
+                                                    <apex:inputfield styleclass="form-control"
+                                                        value="{!contractSetting.Program_Manager__c}" />
+                                                </div>
+
+                                                <div class="form-group mt-2 mb-2 col-12">
+                                                    <button onclick="updatecontractsettings();return false;"
+                                                        class="btn btn-primary px-4">Update</button>
+                                                </div>
+
+                                                <apex:actionfunction name="updatecontractsettingsaction"
+                                                    action="{!UpdateContractSettings}" rerender="contractsettingspanel"
+                                                    oncomplete="loaddatatables();return false;" status="loader">
+                                                </apex:actionfunction>
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.container-fluid -->
+
+
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+                </div>
+            </div>
+            <!-- End of Content Wrapper -->
+
+
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            <c:DHSFooter ></c:DHSFooter>
+
+
+        </apex:form>
+
+        <script>
+            $(document).ready(function () {
+                $('.datepickerInput').datepicker({
+                    weekStart: 1,
+                    daysOfWeekHighlighted: "6,0",
+                    autoclose: true,
+                    todayHighlight: true,
+                });
+            });
+
+            function updatecontractsettings() {
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, contract settings will be updated.',
+                    buttons: {
+                        confirm: function () {
+                            updatecontractsettingsaction();
+                        },
+                        cancel: function () {}
+                    }
+                });
+            }
+
+
+
+
+            $(document).ready(function () {
+                $('.dataTable').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": true,
+                    "bAutoWidth": false
+                });
+            });
+        </script>
+    </body>
+</apex:page>

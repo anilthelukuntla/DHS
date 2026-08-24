@@ -1,0 +1,281 @@
+<template>
+    <section class={designerClass}>
+        <header class="topbar">
+            <div>
+                <h1>DHS ROI Designer</h1>
+                <p>Design the report directly on the page.</p>
+            </div>
+            <div class="top-actions">
+                <lightning-combobox label="Lead Type" variant="label-hidden" placeholder="Lead Type" value={selectedLeadType} options={leadTypeOptions} onchange={handleTemplateLeadType}></lightning-combobox>
+                <lightning-combobox label="Coverage Type" variant="label-hidden" placeholder="Coverage Type" value={selectedCoverageType} options={coverageTypeOptions} onchange={handleTemplateCoverageType}></lightning-combobox>
+                <button class="ghost-button" onclick={loadBuilder}>Reload</button>
+                <button class="ghost-button" onclick={previewBuilder}>Preview</button>
+                <button class="primary-button" onclick={saveBuilder}>Save</button>
+            </div>
+        </header>
+
+        <div class="layout">
+            <aside class="left-panel">
+                <button class="panel-toggle left-toggle" title="Toggle left panel" onclick={toggleLeftPanel}>{leftPanelToggleLabel}</button>
+                <div class="panel-content">
+                    <div class="panel-section">
+                        <h2>Insert</h2>
+                        <div class="block-grid">
+                            <button class="block-tile" draggable="true" data-type="text" ondragstart={handlePaletteDrag} onclick={addElementFromButton}>
+                                <span>Text</span>
+                                <small>Narrative box</small>
+                            </button>
+                            <template if:false={isTextOnlyTemplate}>
+                                <button class="block-tile" draggable="true" data-type="section" ondragstart={handlePaletteDrag} onclick={addElementFromButton}>
+                                    <span>Title</span>
+                                    <small>Heading text</small>
+                                </button>
+                                <button class="block-tile" draggable="true" data-type="field" ondragstart={handlePaletteDrag} onclick={addElementFromButton}>
+                                    <span>Field</span>
+                                    <small>Single value</small>
+                                </button>
+                                <button class="block-tile" draggable="true" data-type="table" ondragstart={handlePaletteDrag} onclick={addElementFromButton}>
+                                    <span>Table</span>
+                                    <small>Field list</small>
+                                </button>
+                                <button class="block-tile" draggable="true" data-type="divider" ondragstart={handlePaletteDrag} onclick={addElementFromButton}>
+                                    <span>Line</span>
+                                    <small>Divider</small>
+                                </button>
+                                <button class="block-tile" draggable="true" data-type="signature" ondragstart={handlePaletteDrag} onclick={addElementFromButton}>
+                                    <span>Signature</span>
+                                    <small>Sign off</small>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="panel-section merge-section">
+                        <h2>Merge Fields</h2>
+                        <div class="merge-search">
+                            <input type="search" placeholder="Filter fields" value={fieldFilter} oninput={handleFieldFilter} />
+                        </div>
+                        <div class="merge-list">
+                            <template for:each={filteredMergeFields} for:item="field">
+                                <button key={field.value} class="merge-token" data-value={field.value} onclick={insertMergeField}>
+                                    {field.label}
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="workspace">
+                <div class="workspace-toolbar">
+                    <div class="tool-cluster">
+                        <button class="ghost-button compact" onclick={toggleLeftPanel}>{leftPanelActionLabel}</button>
+                        <button class={selectToolClass} data-tool="select" onclick={setTool}>Select</button>
+                        <button class={panToolClass} data-tool="pan" onclick={setTool}>Pan</button>
+                        <button class={snapButtonClass} onclick={toggleSnap}>Snap</button>
+                    </div>
+                    <div class="tool-cluster">
+                        <button class="ghost-button compact" onclick={addPage}>Add Page</button>
+                        <button class="ghost-button compact" onclick={duplicateSelection} disabled={hasNoSelection}>Duplicate</button>
+                        <button class="ghost-button compact" onclick={deleteSelection} disabled={hasNoSelection}>Delete</button>
+                        <button class="ghost-button compact" onclick={toggleRightPanel}>{rightPanelActionLabel}</button>
+                    </div>
+                    <span class="status">{statusMessage}</span>
+                </div>
+
+                <div class="page-strip" style={pageScaleStyle} onmousedown={startPan} onmousemove={handlePointerMove} onmouseup={handlePointerUp} onmouseleave={handlePointerUp}>
+                    <template for:each={pages} for:item="page">
+                        <section key={page.number} class="page-wrap">
+                            <div class="page-label">Page {page.number}</div>
+                            <div class="page-shell">
+                                <div class="corner-ruler"></div>
+                                <div class="ruler ruler-x">
+                                    <template for:each={rulerX} for:item="tick">
+                                        <span key={tick.key} class={tick.className} style={tick.style}>{tick.label}</span>
+                                    </template>
+                                </div>
+                                <div class="ruler ruler-y">
+                                    <template for:each={rulerY} for:item="tick">
+                                        <span key={tick.key} class={tick.className} style={tick.style}>{tick.label}</span>
+                                    </template>
+                                </div>
+                                <div class="page"
+                                    data-page={page.number}
+                                    ondragover={allowDrop}
+                                    ondrop={handlePageDrop}
+                                    onclick={clearSelection}
+                                >
+                                    <div class="margin-guide"></div>
+                                    <template for:each={page.elements} for:item="element">
+                                        <article
+                                            key={element.id}
+                                            class={element.canvasClass}
+                                            style={element.canvasStyle}
+                                            data-id={element.id}
+                                            onclick={selectElement}
+                                            onmousedown={startElementDrag}
+                                        >
+                                            <div class={element.contentClass} lwc:dom="manual" data-render-id={element.id}></div>
+                                            <span class="resize-handle" data-id={element.id} onmousedown={startResize}></span>
+                                        </article>
+                                    </template>
+                                </div>
+                            </div>
+                        </section>
+                    </template>
+                </div>
+            </main>
+
+            <aside class="right-panel">
+                <button class="panel-toggle right-toggle" title="Toggle right panel" onclick={toggleRightPanel}>{rightPanelToggleLabel}</button>
+                <div class="panel-content">
+                <template if:true={selectedElement}>
+                    <div class="panel-section">
+                        <h2>Inspector</h2>
+                        <lightning-input label="Label" value={selectedElement.label} data-field="label" onchange={updateSelected}></lightning-input>
+                        <div class="two-col">
+                            <lightning-input type="number" label="X" value={selectedElement.x} data-field="x" onchange={updateSelectedNumber}></lightning-input>
+                            <lightning-input type="number" label="Y" value={selectedElement.y} data-field="y" onchange={updateSelectedNumber}></lightning-input>
+                            <lightning-input type="number" label="Width" value={selectedElement.width} data-field="width" onchange={updateSelectedNumber}></lightning-input>
+                            <lightning-input type="number" label="Height" value={selectedElement.height} data-field="height" onchange={updateSelectedNumber}></lightning-input>
+                        </div>
+                        <lightning-combobox label="Scope" value={selectedElement.scope} options={scopeOptions} data-field="scope" onchange={updateSelected}></lightning-combobox>
+                    </div>
+
+                    <div class="panel-section">
+                        <div class="section-title-row">
+                            <h2>Content</h2>
+                            <template if:true={selectedElement.hasText}>
+                                <lightning-button-icon icon-name="utility:code" alternative-text="Edit HTML" title="Edit HTML" variant="border-filled" onclick={openHtmlModal}></lightning-button-icon>
+                            </template>
+                        </div>
+                        <template if:true={selectedElement.hasText}>
+                            <lightning-input-rich-text label="Text" value={selectedElement.text} data-field="text" onchange={updateSelected}></lightning-input-rich-text>
+                        </template>
+                        <template if:true={selectedElement.isField}>
+                            <lightning-combobox label="Field" value={selectedElement.fieldPath} options={mergeFieldOptions} data-field="fieldPath" onchange={updateSelected}></lightning-combobox>
+                        </template>
+                        <template if:true={selectedElement.isTable}>
+                            <lightning-dual-listbox label="Table Fields" source-label="Available" selected-label="Selected" options={mergeFieldOptions} value={selectedElement.fields} onchange={updateTableFields}></lightning-dual-listbox>
+                            <button class="ghost-button full table-edit-button" onclick={openTableModal}>Edit Row Conditions</button>
+                        </template>
+                    </div>
+
+                    <template if:true={selectedElement.isTable}>
+                        <div class="panel-section">
+                            <h2>Table Borders</h2>
+                            <div class="two-col">
+                                <lightning-combobox label="Style" value={selectedElement.tableBorderStyle} options={tableBorderStyleOptions} data-field="tableBorderStyle" onchange={updateSelected}></lightning-combobox>
+                                <lightning-input type="number" label="Width" value={selectedElement.tableBorderWidth} min="0" max="12" data-field="tableBorderWidth" onchange={updateSelectedNumber}></lightning-input>
+                                <lightning-input type="color" label="Color" value={selectedElement.tableBorderColor} data-field="tableBorderColor" onchange={updateSelectedValue}></lightning-input>
+                                <lightning-input type="number" label="Cell Padding" value={selectedElement.tableCellPadding} min="0" max="40" data-field="tableCellPadding" onchange={updateSelectedNumber}></lightning-input>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template if:false={selectedElement.isTable}>
+                        <div class="panel-section">
+                            <h2>Border</h2>
+                            <div class="two-col">
+                                <lightning-combobox label="Style" value={selectedElement.borderStyle} options={tableBorderStyleOptions} data-field="borderStyle" onchange={updateSelected}></lightning-combobox>
+                                <lightning-input type="number" label="Width" value={selectedElement.borderWidth} min="0" max="12" data-field="borderWidth" onchange={updateSelectedNumber}></lightning-input>
+                                <lightning-input type="color" label="Color" value={selectedElement.borderColor} data-field="borderColor" onchange={updateSelectedValue}></lightning-input>
+                                <lightning-input type="number" label="Padding" value={selectedElement.padding} min="0" max="40" data-field="padding" onchange={updateSelectedNumber}></lightning-input>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div class="panel-section">
+                        <h2>Style</h2>
+                        <div class="two-col">
+                            <lightning-combobox label="Align" value={selectedElement.alignment} options={alignmentOptions} data-field="alignment" onchange={updateSelected}></lightning-combobox>
+                            <lightning-input type="number" label="Font" value={selectedElement.fontSize} min="8" max="72" data-field="fontSize" onchange={updateSelectedNumber}></lightning-input>
+                        </div>
+                        <div class="toggles">
+                            <lightning-input type="checkbox" label="Bold" checked={selectedElement.bold} data-field="bold" onchange={updateSelectedChecked}></lightning-input>
+                            <lightning-input type="checkbox" label="Italic" checked={selectedElement.italic} data-field="italic" onchange={updateSelectedChecked}></lightning-input>
+                            <lightning-input type="checkbox" label="Uppercase" checked={selectedElement.uppercase} data-field="uppercase" onchange={updateSelectedChecked}></lightning-input>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h2>Conditions</h2>
+                        <lightning-combobox label="Logic" value={selectedElement.conditionLogic} options={conditionLogicOptions} data-field="conditionLogic" onchange={updateSelected}></lightning-combobox>
+                        <lightning-combobox label="Field" value={conditionDraft.fieldPath} options={conditionFieldOptions} data-field="fieldPath" onchange={updateConditionDraft}></lightning-combobox>
+                        <lightning-combobox label="Operator" value={conditionDraft.operator} options={conditionOptions} data-field="operator" onchange={updateConditionDraft}></lightning-combobox>
+                        <lightning-input label="Value" value={conditionDraft.value} data-field="value" onchange={updateConditionDraft}></lightning-input>
+                        <button class="ghost-button full" onclick={addCondition}>{conditionActionLabel}</button>
+                        <template if:true={isEditingCondition}>
+                            <button class="ghost-button full" onclick={cancelConditionEdit}>Cancel Edit</button>
+                        </template>
+                        <template for:each={selectedElement.conditionRows} for:item="condition" for:index="index">
+                            <div key={condition.key} class="condition-row">
+                                <span>{condition.display}</span>
+                                <button data-index={index} onclick={editCondition}>Edit</button>
+                                <button data-index={index} onclick={removeCondition}>Remove</button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template if:false={selectedElement}>
+                    <div class="empty-inspector">
+                        <h2>No block selected</h2>
+                        <p>Drag a block onto a page, then click it to edit size, text, fields, and conditions.</p>
+                    </div>
+                </template>
+                </div>
+            </aside>
+        </div>
+
+        <div class="preview-frame" lwc:dom="manual"></div>
+
+        <template if:true={tableModalOpen}>
+            <section class="modal-backdrop">
+                <div class="modal-panel">
+                    <header class="modal-header">
+                        <h2>Table Row Conditions</h2>
+                        <button class="modal-close" onclick={closeTableModal}>Close</button>
+                    </header>
+                    <div class="modal-body">
+                        <template for:each={selectedElement.tableRowViews} for:item="row">
+                            <div key={row.key} class="table-row-config">
+                                <h3>{row.label}</h3>
+                                <template for:each={row.conditionRows} for:item="condition" for:index="conditionIndex">
+                                    <div key={condition.key} class="condition-row">
+                                        <span>{condition.display}</span>
+                                        <button data-row-index={row.index} data-condition-index={conditionIndex} onclick={removeTableRowCondition}>Remove</button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                        <div class="modal-form">
+                            <lightning-combobox label="Row" value={tableConditionDraft.rowIndex} options={tableRowOptions} data-field="rowIndex" onchange={updateTableConditionDraft}></lightning-combobox>
+                            <lightning-combobox label="Condition Field" value={tableConditionDraft.fieldPath} options={conditionFieldOptions} data-field="fieldPath" onchange={updateTableConditionDraft}></lightning-combobox>
+                            <lightning-combobox label="Operator" value={tableConditionDraft.operator} options={conditionOptions} data-field="operator" onchange={updateTableConditionDraft}></lightning-combobox>
+                            <lightning-input label="Value" value={tableConditionDraft.value} data-field="value" onchange={updateTableConditionDraft}></lightning-input>
+                            <button class="primary-button" onclick={addTableRowCondition}>Add Row Condition</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </template>
+
+        <template if:true={htmlModalOpen}>
+            <section class="modal-backdrop">
+                <div class="modal-panel html-modal">
+                    <header class="modal-header">
+                        <h2>Edit HTML</h2>
+                        <button class="modal-close" onclick={closeHtmlModal}>Close</button>
+                    </header>
+                    <div class="modal-body">
+                        <textarea class="html-editor" value={htmlDraft} oninput={updateHtmlDraft}></textarea>
+                        <div class="modal-actions">
+                            <button class="ghost-button" onclick={closeHtmlModal}>Cancel</button>
+                            <button class="primary-button" onclick={saveHtmlDraft}>Apply HTML</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </template>
+    </section>
+</template>

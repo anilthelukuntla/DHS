@@ -1,0 +1,2621 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" controller="DHSCaseDetailController"
+   docType="html-5.0">
+   <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+      <meta name="description" content="" />
+      <meta name="author" content="" />
+      <title>Case Details</title>
+   </head>
+   <body id="page-top">
+      <apex:includeLightning />
+         <div id="LwcId"></div>
+    <script src="https://unpkg.com/pdf-lib@1.4.0"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7"></script>
+    
+      <apex:form >
+         <!-- Modal for Edit/Delete Message -->
+         <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+               <div class="modal-content">
+
+                  <div class="modal-header">
+                     <apex:outputPanel id="messageModalHeader">
+                        <h5 class="modal-title" style="font-size: x-large;">
+                           <apex:outputPanel rendered="{!modalAction == 'edit'}">
+                              Edit Message
+                           </apex:outputPanel>
+                           <apex:outputPanel rendered="{!modalAction == 'delete'}">
+                              Delete Message
+                           </apex:outputPanel>
+                        </h5>
+                     </apex:outputPanel>
+
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+
+
+                  <div class="modal-body">
+                     <apex:outputPanel id="messageModalBody">
+                        <!-- Edit form fields -->
+                        <apex:outputPanel rendered="{!modalAction == 'edit'}">
+                           <div class="form-group">
+                              <label>Subject</label>
+                              <apex:inputText value="{!selectedMessage.Subject__c}" styleClass="form-control"/>
+                           </div>
+                           <div class="form-group">
+                              <label>Body</label>
+                              <apex:inputTextarea value="{!selectedMessage.Message_Body__c}" styleClass="form-control editor"/>
+                           </div>
+                        </apex:outputPanel>
+
+                        <!-- Delete confirmation -->
+                        <apex:outputPanel rendered="{!modalAction == 'delete'}">
+                           <p>Are you sure you want to delete this message?</p>
+                        </apex:outputPanel>
+                     </apex:outputPanel>
+                  </div>
+
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                     <apex:outputPanel id="messageModalFooter">
+                        <!-- Edit save -->
+                        <apex:commandButton value="Save Changes" 
+                           action="{!updateMessage}" 
+                           rendered="{!modalAction == 'edit'}"
+                           styleClass="btn btn-primary"
+                           rerender="casemessagespanel,messageModalBody,messageModalFooter" 
+                           oncomplete="$('#messageModal').modal('hide'); $('.successtoast strong').text('Message Saved'); $('.successtoast').toast('show');fetchCaseMessages();"/>
+
+                        <!-- Delete confirm -->
+                        <apex:commandButton value="Delete Message" 
+                           action="{!deleteMessage}" 
+                           rendered="{!modalAction == 'delete'}"
+                           styleClass="btn btn-danger"
+                           rerender="casemessagespanel,messageModalBody,messageModalFooter" 
+                           oncomplete="$('#messageModal').modal('hide');$('.successtoast strong').text('Message Deleted'); $('.successtoast').toast('show');fetchCaseMessages()"/>
+                     </apex:outputPanel>
+                  </div>
+
+               </div>
+            </div>
+         </div>
+        
+          
+          <div class="modal fade" id="LeadEditModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+               <div class="modal-content">
+
+                  <div class="modal-header">
+                     <apex:outputPanel id="LeadEditModalHeader">
+                        <h5 class="modal-title" style="font-size: x-large;">
+                           <apex:outputPanel >
+                              Edit Lead
+                           </apex:outputPanel>
+                        </h5>
+                     </apex:outputPanel>
+
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+
+
+                  <div class="modal-body">
+                     <apex:outputPanel id="LeadEditModalBody">
+                        <!-- Edit form fields -->
+                        <apex:outputPanel >
+                           <div class="form-group">
+                               <label>Lead Type</label>
+                              <apex:inputField value="{!selectedLead.LeadType__c}" styleClass="form-control"/>
+                           </div>
+                           <div class="form-group">
+                              <label>Coverage Type</label>
+                              <apex:inputField value="{!selectedLead.Coverage_Type__c}" styleClass="form-control"/>
+                           </div>
+                            <div class="form-group">
+                                <label>Item Number</label><br/>
+                                {!selectedLead.Item_number__c}
+                           </div>
+                        </apex:outputPanel>
+
+                     </apex:outputPanel>
+                  </div>
+
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                     <apex:outputPanel id="LeadEditModalFooter">
+                        <apex:commandButton value="Save Changes" 
+                           action="{!updateLeadAction}"
+                           styleClass="btn btn-primary"
+                           rerender="casemessagespanel,LeadEditModalBody,LeadEditModalFooter" 
+                           oncomplete="$('#LeadEditModal').modal('hide'); $('.successtoast strong').text('Lead Saved'); $('.successtoast').toast('show');refreshleads();"/>
+
+                     </apex:outputPanel>
+                  </div>
+
+               </div>
+            </div>
+         </div>
+          
+
+         <!-- Page Wrapper -->
+         <div id="wrapper">
+            <c:DHSHeader ></c:DHSHeader>
+            <style>
+            .headertext1{text-transform:uppercase}
+            table td .table{width:auto !important}
+            .PPFCustomerContactAddress {height:74px !important}
+            .casedetailautosave{left:20px;top:-1px}
+            .overflowContent{overflow: auto;width: 100%;padding: 10px;}
+          #case-leads .card-body{padding:0}
+            .messagebodyContainer .trumbowyg-editor, .messagebodyContainer .trumbowyg-textarea , .messagebodyContainer .trumbowyg-box{min-height:150px}
+            sup {
+               top: -0.1em;
+               font-size: 15px;
+               color: #dc3545;
+               }
+               .ItemNumber div.active.error em{display:block;font-size: 12px;padding-top: 4px;color: #e74a3b;}
+               .ItemNumber div.active{font-size:initial;width: auto;}
+               .ItemNumber div input.error{border:1px solid red}
+               .ItemNumber div span, .ItemNumber div.active i{cursor:pointer}
+               .ItemNumber div input , .ItemNumber div i,  .ItemNumber div em{display:none}
+               .ItemNumber div.active input , .ItemNumber div.active i{display:inline-block}
+               .ItemNumber div input{width:55px}
+               .ItemNumber div.active span{display:none}
+               .form-control.error{font-size:initial}
+            </style>
+            <!-- Content Wrapper -->
+            <div id="content-wrapper" class="d-flex flex-column">
+               <!-- Main Content -->
+               <div id="content">
+                  <!-- Topbar -->
+                  <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                     <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                        <apex:outputpanel id="casedetailpageheader">
+                           <h4 class=" mb-0 text-gray-800">
+                              <b>Case Details </b><b
+                                 class="{!If(caseRecord.Case_Number__c != Null && caseRecord.Case_Type__c != Null, '','d-none')}">:
+                              {!caseRecord.Case_Number__c} -
+                              {!caseRecord.Case_Type__c}</b>
+                              
+                           </h4>
+                           <h4 class=" mb-0 text-gray-800">
+                               <b>&nbsp;&nbsp;Case Name : </b><span class="text-primary">{!UPPER(caseRecord.DHS_Contact__r.Last_Name__c)} {!caseRecord.DHS_Contact__r.First_Name__c}</span>
+                           </h4>
+                        </apex:outputpanel>
+                     </div>
+                     <!-- Sidebar Toggle (Topbar) -->
+                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                     <i class="fa fa-bars"></i>
+                     </button>
+                     <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+                  </nav>
+                  <!-- End of Topbar -->
+                  <!-- Begin Page Content -->
+                  <div class="container-fluid">
+                     <div class="row">
+                        <!-- Area Chart -->
+                        <div class="col-9">
+                           <div class="card shadow mb-4 {!If(currentuser.user_type__c == 'INV','investigatorRecord','')} {!If(landingTab != "",'','tabbed')} ">
+                              <!-- Card Header - Dropdown -->
+                              <div
+                                 class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                 <ul class="nav nav-tabs">
+                                    <li class="nav-item {!If(currentuser.user_type__c == 'INV','d-none','')}" >
+                                       <a class="nav-link {!If(landingTab == 'Leads' || landingTab == 'Documents' || landingTab == 'Messages', '','active')}"
+                                          data-toggle="tab" href="#case-info" id="case-info-tab">Case
+                                       Info</a>
+                                    </li>
+                                    <li class="nav-item">
+                                       <a id="case-documents-tab" class="nav-link {!If(landingTab == 'Documents', 'active','')}" data-toggle="tab"
+                                          href="#case-documents">
+                                       Documents </a>
+                                    </li>
+                                    <li class="nav-item">
+                                       <a id="case-leads-tab"
+                                          class="nav-link {!If(landingTab == 'Leads', 'active','')}"
+                                          data-toggle="tab" href="#case-leads">
+                                       Leads </a>
+                                    </li>
+                                    <li class="nav-item">
+                                       <a class="nav-link" data-toggle="tab" href="#case-history">
+                                       History</a>
+                                    </li>
+                                    <li class="nav-item" style="display:{!IF(hasWaiver,'','none')}">
+                                       <a class="nav-link" data-toggle="tab" href="#waiver-information">
+                                       Waiver Information</a>
+                                    </li>
+                                    <li class="nav-item">
+                                       <a class="nav-link {!If(landingTab == 'Messages', 'active','')}" data-toggle="tab" href="#case-messages">
+                                       Messages</a>
+                                    </li>
+                                    <li class="nav-item">
+                                       <a class="nav-link {!If(currentuser.user_type__c == 'PMO' || currentuser.user_type__c == 'CMO','','d-none')}" data-toggle="tab" href="#case-notes">
+                                       Review</a>
+                                    </li>
+                                 </ul>
+                                 <div>
+                                  <a class="btn btn-primary"
+                                    onClick="window.location.reload()">Refresh</a>
+                                 <a class="btn btn-primary"
+                                    href="{!$site.prefix}/DHSCasedashboard?{!urlparametersString}">Back </a>
+                                 </div>
+                              </div>
+                              <!-- Card Body -->
+                              <div class="card-body tab-content">
+                                 <div role="tabpanel"
+                                    class="tab-pane {!If(landingTab == 'Leads'||landingTab == 'Documents' ||landingTab == 'Messages', 'fade in','active')}"
+                                    id="case-info">
+                                    <apex:outputPanel id="caseinformationpanel">
+                                       <div class="row">
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label for="inputEmail4"><sup>*</sup>Case Number:</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:inputField value="{!caseRecord.Case_Number__c}"
+                                                   styleclass="form-control casenumber mandatory casedetailautosave" />
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label for="inputEmail4"><sup>*</sup>Customer Case Number:</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:inputField value="{!caseRecord.Customer_Case_Number__c}"
+                                                   styleclass="form-control mandatory casedetailautosave" />
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Case Status: </label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                
+                                                   <apex:inputField value="{!caseRecord.Status__c}"
+                                                      styleclass="form-select form-control  casedetailautosave" />
+                                             </div>
+                                          </div>
+                                           <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                 <label>Case Discontinued</label>
+                                             </div>
+                                             <div class=" col-md-6 ">
+                                                   <apex:inputField value="{!caseRecord.Case_Discontinued__c}"
+                                                      styleclass="mt-1 casedetailautosave" />
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label><sup>*</sup>Ingestion Date:</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:inputField value="{!caseRecord.Manifest__c}"
+                                                   styleclass="form-control manifest mandatory datepickerInput casedetailautosave" />
+                                                <div class="input-group-append"><i
+                                                   class="fa-solid fa-calendar"></i></div>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label for="inputState"><sup>*</sup>Case Type:</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:inputField value="{!caseRecord.Case_Type__c}"
+                                                   styleclass="form-control casetype mandatory casedetailautosave">
+                                                   <apex:actionSupport event="onchange"
+                                                      rerender="servicedayspanel1,servicedayspanel2" />
+                                                </apex:inputField>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <apex:outputPanel id="servicedayspanel1">
+                                                   <apex:outputPanel rendered="{!caseRecord.Case_Type__c != Null}">
+                                                      <label for="inputState"><sup>*</sup>Service Days:</label>
+                                                   </apex:outputPanel>
+                                                </apex:outputPanel>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:outputPanel id="servicedayspanel2">
+                                                   <apex:outputPanel rendered="{!caseRecord.Case_Type__c != Null}">
+                                                      <apex:inputField value="{!caseRecord.Service_Days__c}"
+                                                         styleclass="form-control servicedays mandatory casedetailautosave" onchange="updateDueDate();" />
+                                                   </apex:outputPanel>
+                                                </apex:outputPanel>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row"
+                                             style="display:{!If(caseRecord.Assigned_To_Name__c != Null,'','none')}">
+                                             <div class="col-md-6">
+                                                <label for="inputState">Assignee :</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:outputfield value="{!caseRecord.Assigned_To_Name__c}"
+                                                   styleclass="form-control" />
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row"
+                                             style="display:{!If(caseRecord.Assigned_To_Name__c != Null,'','none')}">
+                                             <div class="col-md-6">
+                                                <label for="inputState">Assignee Date:</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:outputfield value="{!caseRecord.Assignee_Date__c}"
+                                                   styleclass="form-control" />
+                                             </div>
+                                          </div>
+                                     
+                                      
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label for="inputCity">First Name :</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <Apex:outputPanel rendered="{!IF(currentuser.User_Type__c == 'PMO'||currentuser.User_Type__c == 'CMO' || currentuser.User_Type__c == 'QA',true,false)}">
+                                                   <apex:inputfield value="{!caseRecord.DHS_Contact__r.First_Name__c}"
+                                                      styleclass="form-control casedetailautosave" />
+                                                </Apex:outputPanel>
+                                                <Apex:outputPanel rendered="{!IF(currentuser.User_Type__c != 'PMO' && currentuser.User_Type__c != 'CMO' && currentuser.User_Type__c != 'QA',true,false)}">
+                                                   <apex:outputfield value="{!caseRecord.DHS_Contact__r.First_Name__c}"
+                                                      styleclass="form-control casedetailautosave" />
+                                                </Apex:outputPanel>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Last Name :</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <Apex:outputPanel rendered="{!IF(currentuser.User_Type__c == 'PMO'||currentuser.User_Type__c == 'CMO' || currentuser.User_Type__c == 'QA',true,false)}">
+                                                   <apex:inputfield value="{!caseRecord.DHS_Contact__r.Last_Name__c}"
+                                                      styleclass="form-control casedetailautosave" />
+                                                </Apex:outputPanel>
+                                                <Apex:outputPanel rendered="{!IF(currentuser.User_Type__c != 'PMO' && currentuser.User_Type__c != 'CMO' && currentuser.User_Type__c != 'QA',true,false)}">
+                                                   <apex:outputfield value="{!caseRecord.DHS_Contact__r.Last_Name__c}"
+                                                      styleclass="form-control casedetailautosave" />
+                                                </Apex:outputPanel>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row" style="display:{!If(currentuser.User_Type__c == 'PMO','','none')}">
+                                             <div class="col-md-6">
+                                                <label for="inputCity">SSN :</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <Apex:outputPanel >
+                                                   <apex:inputfield value="{!caseRecord.DHS_Contact__r.SSN__c}"
+                                                      styleclass="form-control casedetailautosave" />
+                                                </Apex:outputPanel>
+                                                <!--<Apex:outputPanel rendered="{!IF(currentuser.User_Type__c != 'PMO',true,false)}">
+                                                   <apex:outputfield value="{!caseRecord.DHS_Contact__r.SSN__c}"
+                                                      styleclass="form-control casedetailautosave" />
+                                                </Apex:outputPanel>-->
+                                             </div>
+                                          </div>
+                                           
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Email :</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <Apex:outputPanel rendered="{!IF(currentuser.User_Type__c == 'PMO'||currentuser.User_Type__c == 'CMO' || currentuser.User_Type__c == 'QA',true,false)}">
+                                                   <apex:inputfield value="{!caseRecord.DHS_Contact__r.Email__c}"
+                                                      styleclass="form-control casedetailautosave" />
+                                                </Apex:outputPanel>
+                                                <Apex:outputPanel rendered="{!IF(currentuser.User_Type__c != 'PMO' && currentuser.User_Type__c != 'CMO' && currentuser.User_Type__c != 'QA',true,false)}">
+                                                   <apex:outputfield value="{!caseRecord.DHS_Contact__r.Email__c}"
+                                                      styleclass="form-control" />
+                                                </Apex:outputPanel>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6 ">
+                                                <label for="inputCity">Coverage Period Begin Date:</label>
+                                             </div>
+                                             <div
+                                                class="col-md-6 input-group position-relative  d-block">
+                                                <apex:inputField value="{!caseRecord.Coverage_Period_Begin_Date__c}"
+                                                   styleclass="form-control datepickerInput coverageperiodbegindate casedetailautosave" />
+                                                <div class="input-group-append"><i
+                                                   class="fa-solid fa-calendar"></i></div>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Scheduled Date:</label>
+                                             </div>
+                                             <div
+                                                class="col-md-6 input-group position-relative  d-block">
+                                                <apex:inputField value="{!caseRecord.Scheduled_Date__c}"
+                                                   styleclass="form-control datepickerInput scheduleddate casedetailautosave" />
+                                                <div class="input-group-append"><i
+                                                   class="fa-solid fa-calendar"></i></div>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label><sup>*</sup>Case Due Date:</label>
+                                             </div>
+                                             <div
+                                                class="col-md-6 input-group position-relative  d-block">
+                                                <apex:inputField value="{!caseRecord.Case_Due_Date__c}"
+                                                   styleclass="form-control datepickerInput caseduedate mandatory casedetailautosave" />
+                                                <div class="input-group-append"><i
+                                                   class="fa-solid fa-calendar"></i></div>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label for="inputCity">Customer Delivery Date:</label>
+                                             </div>
+                                             <div
+                                                class="col-md-6 input-group position-relative  d-block">
+                                                <apex:inputField value="{!caseRecord.Customer_Delivery_Date__c}"
+                                                   styleclass="form-control customerDD datepickerInput casedetailautosave" />
+                                                <div class="input-group-append"><i
+                                                   class="fa-solid fa-calendar"></i></div>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Waiver Due Date:</label>
+                                             </div>
+                                             <div
+                                                class="col-md-6 input-group position-relative  d-block">
+                                                <apex:inputField value="{!caseRecord.Waiver_Due_Date__c}"
+                                                   styleclass="form-control datepickerInput casedetailautosave" />
+                                                <div class="input-group-append"><i
+                                                   class="fa-solid fa-calendar"></i></div>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label for="inputCity">Start Purge Date:</label>
+                                             </div>
+                                             <div
+                                                class="col-md-6  position-relative  d-block">
+                                                <apex:outputText styleclass="endPurgeDate" value="{0,date,MM/dd/yyyy}">
+                                                   <apex:param value="{!caseRecord.Purge_Date__c}" />
+                                                </apex:outputText>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row  d-none">
+                                             <div class="col-md-6">
+                                                <label for="inputCity">End Purge Date:</label>
+                                             </div>
+                                             <div
+                                                class="col-md-6  position-relative  d-none">
+                                                <apex:outputText styleclass="endPurgeDate" value="{0,date,MM/dd/yyyy}">
+                                                   <apex:param value="{!caseRecord.End_Purge_Date__c}" />
+                                                </apex:outputText>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Supplement Date Submitted:</label>
+                                             </div>
+                                             <div
+                                                class="col-md-6 input-group position-relative  d-block">
+                                                <apex:inputField value="{!caseRecord.Supplemental_Date_requested__c}"
+                                                   styleclass="form-control datepickerInput casedetailautosave" />
+                                                <div class="input-group-append"><i
+                                                   class="fa-solid fa-calendar"></i></div>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Ontime/Late/Cancelled:</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:inputField value="{!caseRecord.OntimeLateCancelled__c}"
+                                                   styleclass="form-control casedetailautosave" />
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Delivered with Pending Lead: </label>
+                                             </div>
+                                             <div class="col-md-6 text-left">
+                                                <div class="form-check">
+                                                   <apex:inputField value="{!caseRecord.Delivered_with_pending_lead__c}"
+                                                      styleclass="form-check-input casedetailautosave" />
+                                                </div>
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label><sup>*</sup>Subject Type: </label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:inputField value="{!caseRecord.Subject_Type__c}"
+                                                   styleclass="form-control mandatory  casedetailautosave" onchange="setppfcontactinfo();return false;"/>
+                                             </div>
+                                          </div>
+                                          <apex:actionfunction name="setppfcontactinfo" status="loader" action="{!setPPFContactInfo}" reRender="ppfcontactname,ppfcontactaddress,ppfcontactemail"/>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label for="inputEmail4"><sup>*</sup>PPF Customer Contact Name:</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:outputPanel id="ppfcontactname">
+                                                   <apex:inputField value="{!caseRecord.PPF_Customer_Contact_Name__c}"
+                                                      styleclass="form-control PPFCustomerContactName mandatory casedetailautosave" />
+                                                </apex:outputPanel>
+                                             </div>
+                                          </div>
+                                          <!--<div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label><sup>*</sup>PPF Customer Contact Email:
+                                                </label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:outputPanel id="ppfcontactemail">
+                                                   <apex:inputField value="{!caseRecord.PPF_Customer_Contact_Email__c}"
+                                                      styleclass="form-control PPFCustomerContactEmail mandatory EmailField casedetailautosave" />
+                                                   <div class="invalid-feedback ">Invalid email address</div>
+                                                </apex:outputPanel>
+                                             </div>
+                                          </div>-->
+                                          <div class="form-group col-md-6 row ">
+                                             <div class="col-md-6">
+                                                <label><sup></sup>PPF Customer Contact Phone Number: </label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:inputField value="{!caseRecord.PPF_Customer_Contact_Phone_Number__c}"
+                                                   styleclass="form-control PPFCustomerContactPhone PhoneNumber casedetailautosave" />
+                                             </div>
+                                          </div>
+                                          <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label><sup>*</sup>PPF Customer Contact Address: </label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <apex:outputPanel id="ppfcontactaddress">
+                                                   <apex:inputField value="{!caseRecord.PPF_Customer_Contact_Address__c}"
+                                                      styleclass="form-control PPFCustomerContactAddress mandatory casedetailautosave" />
+                                                </apex:outputPanel>
+                                             </div>
+                                          </div>
+                                          <div
+                                             class="form-group col-md-6 row {!If(currentuser.user_type__c == 'PMO','','d-none')}">
+                                             <div class="col-md-6">
+                                                <label><b>Assign to:</b></label>
+                                             </div>
+                                             <div class="col-md-6 text-left">
+                                                <apex:selectlist styleclass="form-select form-select-sm form-control selectedUserIdForAssignment casedetailautosave"
+                                                   size="1" value="{!selectedUserIdForAssignment}">
+                                                   <apex:selectOptions value="{!assignUserList}" />
+                                                </apex:selectlist>
+                                             </div>
+                                          </div>
+                                          <!-- <div class="form-group col-md-6 row">
+                                             <div class="col-md-6">
+                                                <label>Cancelled: </label>
+                                             </div>
+                                             <div class="col-md-6 text-left">
+                                                <div class="form-check">
+                                                   <apex:inputField value="{!caseRecord.Case_Cancelled__c}"
+                                                      styleclass="form-check-input" />
+                                                </div>
+                                             </div>
+                                          </div>-->
+                                         
+                                          
+                                          
+                                       </div>
+                                    </apex:outputPanel>
+                                    <button onclick="updatecase();return false"
+                                       class="updatecasebutton btn btn-primary px-4 {!If(currentuser.user_type__c == 'QA' || currentuser.user_type__c == 'INV','d-none','')}">Update</button>
+                                    <apex:actionFunction name="updatecaseaction"
+                                       action="{!updatecaseaction}"
+                                       rerender="caseinformationpanel,casedetailpageheader,tasklistpanel,casehistorypanel,leadspanel,casenotespanel"
+                                       status="loader" />
+                                 </div>
+                                 <div role="tabpanel"
+                                    class="tab-pane {!If(landingTab == 'Leads', 'active','fade in')}"
+                                    id="case-leads">
+                                    <apex:outputpanel id="leadspanel">
+                                       <div class="card-body mt-0">
+                                          <div class="d-flex justify-content-end mb-5">
+                                             <button
+                                                class="btn btn-primary {!If((currentuser.user_type__c == 'CMO' || currentuser.user_type__c == 'PMO')&& caserecord.Investigations_Date__c == null && leads.size >0,'','d-none')}"
+                                                type="button"
+                                                onclick="markleadcreationcomplete();return false">Mark
+                                             Lead
+                                             creation as complete
+                                             </button>
+                                             <button
+                                                style="display:{!If(caseRecord.Validate_Transmission_Date__c != Null, '','none')}"
+                                                class="btn btn-primary ml-2 {!If(currentuser.user_type__c == 'QA','d-none','')}"
+                                                type="button" data-toggle="collapse"
+                                                data-target="#leadCreate" aria-expanded="false"
+                                                aria-controls="leadCreate">Create Lead
+                                             </button>
+                                             <a class="ml-4 btn btn-primary"
+                                                onclick="refreshleads();return false;"><i
+                                                class="fa fa-refresh pr-2"
+                                                aria-hidden="true"></i>Refresh</a>
+                                             <!-- <a href="{!$site.prefix}/DHSROIReport?id={!caseRecord.id}"
+                                                target="_blank"
+                                                class="btn btn-primary ml-2 {!If((currentuser.user_type__c == 'QA' || currentuser.user_type__c == 'CMO' || currentuser.user_type__c == 'PMO') && showQAReviewCompleteButton && caseRecord.Current_Task__c = 'QA and Review','','d-none')}"
+                                                type="button"> Preview ROI Report
+                                             </a> -->
+                                             <a href="{!$site.prefix}/DHSOrderROIReport?id={!caseRecord.id}&type=preview"
+                                                target="_blank"
+                                                class="btn btn-primary ml-2 {!If((currentuser.user_type__c == 'QA' || currentuser.user_type__c == 'CMO' || currentuser.user_type__c == 'PMO') && leads.size>0 ,'','d-none')}"
+                                                type="button"> Preview ROI Report
+                                             </a>
+                                             
+                                             <apex:commandLink action="{!previewROI}"
+                                                target="_blank"
+                                                styleClass="btn btn-primary ml-2 {!IF(showSubheader && leads.size>0,'','d-none')}">
+                                                Preview ROI Report(Sub-Headers)
+                                            </apex:commandLink>
+                                              
+                                              
+                                             <button
+                                                class="btn btn-primary ml-2 {!If((currentuser.user_type__c == 'QA' || currentuser.user_type__c == 'CMO' || currentuser.user_type__c == 'PMO') && showQAReviewCompleteButton && caseRecord.Current_Task__c = 'QA and Review','','d-none')}"
+                                                type="button"
+                                                onclick="qareviewcomplete();return false">QA Review
+                                             Complete
+                                             </button>
+                                             <button
+                                                class="btn btn-primary ml-2 {!If((currentuser.user_type__c == 'QA' || currentuser.user_type__c == 'CMO' || currentuser.user_type__c == 'PMO') && caseRecord.Current_Task__c = 'QA Review Completed','','d-none')}"
+                                                type="button"
+                                                onclick="regenerateroireportbutton();return false">Regenerate ROI Report
+                                             </button>
+                                             <!--<button
+                                                class="btn btn-primary ml-2 {!If((currentuser.user_type__c == 'QA' || currentuser.user_type__c == 'CMO' || currentuser.user_type__c == 'PMO') && caseRecord.Current_Task__c = 'QA Review Completed','','d-none')}"
+                                                type="button"
+                                                onclick="regenerateroireportbutton();return false">Regenerate ROI Report(Sub-Headers)
+                                             </button>-->
+                                             <!--
+                                             <button
+                                                class="btn btn-primary ml-2 {!If((currentuser.user_type__c == 'QA' || currentuser.user_type__c == 'CMO' || currentuser.user_type__c == 'PMO') && caseRecord.Current_Task__c = 'QA Review Completed','','d-none')}"
+                                                type="button"
+                                                onclick="downloadmanifestaction();return false">Download Manifest
+                                             </button>
+                                             -->
+                                             
+                                          </div>
+                                          <div class="collapse" id="leadCreate">
+                                             <div class="card card-body p-3">
+                                                <apex:outputPanel id="newleadpanel">
+                                                   <div class="row">
+                                                      <div class="col-4">
+                                                         <label
+                                                            class="font-weight-bold text-primary">Lead
+                                                         Type</label>
+                                                         <apex:inputField value="{!newLead.LeadType__c}"
+                                                            styleclass="form-control newLeadtypes" >
+                                                            <apex:actionSupport event="onchange"
+                                                               action="{!onChangeLeadType}"
+                                                               rerender="newleadpanel" oncomplete="leadTypechange()"/>
+                                                         </apex:inputField>
+                                                      </div>
+                                                      <!-- <div class="col-6">
+                                                         <label class="font-weight-bold text-primary"
+                                                             style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                             Method</label>
+                                                         <apex:inputField value="{!newLead.Method__c}"
+                                                             styleclass="form-control"
+                                                             rendered="{!newLead.LeadType__c != Null}" />
+                                                         </div>
+                                                         -->
+                                                      <div class="col-4">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Coverage Type</label>
+                                                         <apex:inputField value="{!newLead.Coverage_Type__c}"
+                                                            styleclass="form-control CoverageType"
+                                                            rendered="{!newLead.LeadType__c != Null}" onchange="leadcoverageChange();return false;" />
+                                                         <div class="invalid-feedback">
+                                                            Please choose a coverage type.
+                                                         </div>
+                                                      </div>
+                                                      <div class="col-4 ">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Item Number</label>
+                                                         <apex:inputField value="{!newLead.Item_number__c}"
+                                                            styleclass="form-control itemNumberVal"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                      <div class="col-4 mt-2" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Lead Contact Name</label>
+                                                         <apex:inputField value="{!newLead.Lead_Contact_Name__c}"
+                                                            styleclass="form-control"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                      <div class="col-4 mt-2" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Lead Contact Address</label>
+                                                         <apex:inputField value="{!newLead.Lead_Contact_Address__c}"
+                                                            styleclass="form-control"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                       <div class="col-4 mt-2" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Lead Contact City</label>
+                                                         <apex:inputField value="{!newLead.Lead_Contact_City__c}"
+                                                            styleclass="form-control"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                      <div class="col-4 mt-2" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Lead Contact State</label>
+                                                         <apex:inputField value="{!newLead.Lead_Contact_State__c}"
+                                                            styleclass="form-control"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                     
+                                                      <div class="col-4 mt-2" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Lead Contact Zip</label>
+                                                         <apex:inputField value="{!newLead.Lead_Contact_Zip__c}"
+                                                            styleclass="form-control"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                      <div class="col-4 mt-2 leaddates  {!If(currentuser.user_type__c == 'PMO' || currentuser.user_type__c == 'CMO','','leaddatesdisable')}" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Dates</label>
+                                                         <apex:inputField value="{!newLead.Lead_Dates__c}"
+                                                            styleclass="form-control "
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                      <div class="col-12 mt-2" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Additional Lead Details</label>
+                                                         <apex:inputField value="{!newLead.Lead_Contact_Other_Information__c}"
+                                                            styleclass="form-control"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                      
+                                                       
+                                                       <div class="col-12 mt-2" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Message Subject</label>
+                                                         <apex:inputText value="{!messageSubjectDuringLeadCreation}"
+                                                            styleclass="form-control leadCreateSubjectBody"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div>
+                                                      <div class="col-12 mt-2 messagebodyContainer" style="display:{!If(newLead.LeadType__c !='Header','','none')}">
+                                                         <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Message Body</label>
+                                                         <apex:inputtextarea value="{!messageBodyDuringLeadCreation}"
+                                                            styleclass="form-control editorMessagebody"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div> 
+                                                      
+                                                      <div class="col-3 mt-2" style="display:{!If(newLead.LeadType__c =='Header','','none')}">
+                                                     <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Header Title</label>
+                                                         <apex:InputField value="{!newlead.Header_Text1__c}"
+                                                            styleclass="form-control headertext1"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div> 
+                                                      
+                                                      <div class="col-9 mt-2" style="display:{!If(newLead.LeadType__c =='Header','','none')}">
+                                                      <label class="font-weight-bold text-primary"
+                                                            style="display:{!If(newLead.LeadType__c != Null,'','none')}">
+                                                         Header Description</label>
+                                                         <apex:InputField value="{!newlead.Header_Text2__c}"
+                                                            styleclass="form-control"
+                                                            rendered="{!newLead.LeadType__c != Null}" />
+                                                      </div> 
+                                                      
+                                                       
+                                                      
+                                                   </div>
+                                                   <apex:outputpanel rendered="{!newLead.LeadType__c != Null}">
+                                                      <button class="btn btn-primary mt-3 mb-2"
+                                                         onclick="createlead();return false;">Save</button>
+                                                      <apex:actionFunction status="loader"
+                                                         name="createleadaction"
+                                                         action="{!createLeadAction}"
+                                                         rerender="leadstablepanel,newleadpanel,tasklistpanel,leadspanel,casemessagespanel,errormessagepanel"
+                                                         oncomplete="createleadoncompleteaction();return false;"
+                                                          />
+                                                   </apex:outputpanel>
+                                                </apex:outputPanel>
+                                             </div>
+                                          </div>
+                                          <apex:outputPanel id="leadstablepanel">
+                                             <apex:variable value="{!0}" var="cnt" />
+                                             <div class="overflowContent">
+                                             <table class="table leadstableDetails" width="100%" cellspacing="0">
+                                                <thead>
+                                                   <tr>
+                                                      <th>View  Del Edit</th>
+                                                      <th>Item Number</th>
+                                                      <th>Lead Type</th>
+                                                      <th>Coverage Type</th>
+                                                      <th>Lead Contact</th>
+                                                      <th>Assigned To</th>
+                                                      <th>Created</th>
+                                                      <th>ACD</th>
+                                                      <th>Status</th>
+                                                   </tr>
+                                                </thead>
+                                                <tbody>
+                                                   <apex:repeat value="{!leads}" var="lead">
+                                                      <tr>
+                                                         <td>
+                                                            <div class="d-flex">
+                                                               <a class="nav-link font-weight-bold"
+                                                                  href="{!$site.prefix}/DHSLeaddetail?id={!lead.id}&fromcase=true"><i
+                                                                  class="fa fa-eye"></i></a>
+                                                               <a id="{!lead.id}"
+                                                                  onclick="deletelead(this);"
+                                                                  class="p-2 {!IF(currentuser.user_type__c =='CMO' || currentuser.user_type__c =='PMO','','d-none')}"><i
+                                                                  class="fa fa-trash"></i></a>
+                                                                <a role="button"
+                                                                   class="p-2
+                                                                   {!IF(
+                                                                        AND(
+                                                                            OR(currentuser.User_Type__c = 'CMO', currentuser.User_Type__c = 'PMO'),
+                                                                            lead.LeadType__c != 'Subject Interview (ESI/TESI)'
+                                                                        ),
+                                                                        '',
+                                                                        'd-none'
+                                                                   )}"
+                                                                   onclick="openLeadActionClick('{!lead.Id}'); return false;">
+                                                                   <i class="fa fa-edit"></i>
+                                                                </a>
+
+                                                            </div>
+                                                         </td>
+                                                         <td class="ItemNumber" data-order="{!lead.Item_number__c}">
+                                                            <!--<apex:variable var="cnt"
+                                                               value="{!cnt+1}" />
+                                                               {!cnt}--> 
+                                                            <div data-leadid="{!lead.id}"><span>{!lead.Item_number__c}</span>
+                                                               <input type="text" class="form-control"/>&nbsp;<i class="fas fa-check"></i>
+                                                               <em>Duplicate Item Number!</em>
+                                                            </div>
+                                                         </td>
+                                                         <td>{!lead.LeadType__c}</td>
+                                                         <td>
+                                                            {!lead.Coverage_Type__c}
+                                                         </td>
+                                                         <td><div>{!lead.Lead_Contact_Name__c}</div> 
+                                                                            <div>{!lead.Lead_Contact_Address__c}</div> 
+                                                                        <div>{!lead.Lead_Contact_City__c}, {!lead.Lead_Contact_State__c} {!lead.Lead_Contact_Zip__c}</div>
+                                                                        </td>
+                                                         <td>{!lead.Assigned_To_Name__c}</td>
+                                                         <td>
+                                                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                               <apex:param value="{!lead.createddate}" />
+                                                            </apex:outputText>
+                                                         </td>
+                                                         <td>
+                                                            <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                               <apex:param value="{!lead.Anticipated_Completion_Date__c}" />
+                                                            </apex:outputText>
+                                                         </td>
+                                                         <td>
+                                                            <apex:outputfield value="{!lead.Status__c}" />
+                                                         </td>
+                                                      </tr>
+                                                   </apex:repeat>
+                                                </tbody>
+                                             </table>
+                                             </div>
+                                          </apex:outputPanel>
+                                       </div>
+                                    </apex:outputpanel>
+                                 </div>
+                                 
+                                 
+                                 <div role="tabpanel" class="tab-pane fade in" id="case-notes">
+                                     <apex:outputPanel id="casenotespanel">
+                                         <div class="row">
+                                             <div class="form-group col-md-6 row">
+                                             <div class="col-auto">
+                                                <label>Review:</label>
+                                             </div>
+                                             <div class="col-md-6">
+                                                
+                                                   <apex:inputField value="{!caseRecord.Internal_Notes__c}"
+                                                      styleclass="form-select form-control casedetailautosave" />
+                                             </div>
+                                          </div>
+                                         </div>
+                                     </apex:outputpanel>
+                                     <button onclick="updatecase();return false"
+                                       class="updatecasebutton btn btn-primary px-4">Update</button>
+                                    
+                                 </div>
+                                 <div role="tabpanel" class="tab-pane fade in" id="case-history">
+                                    <apex:outputPanel id="casehistorypanel">
+                                       <div class="card-body main-card">
+                                          <div class="row d-flex  ">
+                                             <div class="p-3">
+                                                <div
+                                                   class="vertical-timeline vertical-timeline--animate vertical-timeline--one-column">
+                                                   <apex:repeat value="{!caseHistory}" var="ch">
+                                                      <div
+                                                         class="vertical-timeline-item vertical-timeline-element">
+                                                         <div>
+                                                            <span
+                                                               class="vertical-timeline-element-icon bounce-in">
+                                                            <i
+                                                               class="badge badge-dot badge-dot-xl badge-success"></i>
+                                                            </span>
+                                                            <div
+                                                               class="vertical-timeline-element-content bounce-in">
+                                                               <h4 class="timeline-title"
+                                                                  style="text-transform: none; font-size: 0.9rem;">
+                                                                  {!ch.Value__c}
+                                                               </h4>
+                                                               <!--  <a href="javascript:void(0);" data-abc="true">12:00
+                                                                  PM</a>-->
+                                                               <p
+                                                                  class="{!IF(ch.Type__c !='Comment','','d-none')}">
+                                                                  Added by: {!ch.Added_By_Name__c}
+                                                               </p>
+                                                               <p
+                                                                  class="{!IF(ch.Type__c =='Comment','','d-none')}">
+                                                                  Comment added by:
+                                                                  {!ch.Added_By_Name__c}
+                                                               </p>
+                                                               <apex:outputText value="{0,date,MM/dd/yyyy}"
+                                                                  styleClass="vertical-timeline-element-date">
+                                                                  <apex:param value="{!ch.Createddate}" />
+                                                               </apex:outputText>
+                                                            </div>
+                                                         </div>
+                                                      </div>
+                                                   </apex:repeat>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </apex:outputPanel>
+                                 </div>
+                                 <div role="tabpanel" class="tab-pane {!If(landingTab == 'Messages', 'active','fade in')}" id="case-messages">
+                                    <div class="">
+                                       <apex:outputPanel id="casemessagespanel">
+                                          <div class="row mb-3">
+                                             <div class="col-12 d-flex justify-content-end mb-3">
+                                                <button onclick="$('.editor').trumbowyg();return false"
+                                                   class="btn btn-primary" type="button"
+                                                   data-toggle="collapse"
+                                                   data-target="#createNewMessage"
+                                                   aria-expanded="false"
+                                                   aria-controls="createNewMessage">
+                                                <i class="fa-solid fa-pen-to-square "></i>&nbsp; New
+                                                Message
+                                                </button>
+                                             </div>
+                                             <div class="col-12 ">
+                                                <div class="collapse" id="createNewMessage">
+                                                   <h4 class="text-primary mb-2">New Message</h4>
+                                                   <div class="card card-body">
+                                                      <div class="newMessage ">
+                                                         <div class="form-group">
+                                                         </div>
+                                                         <div class="form-group">
+                                                            <label class="col-form-label"
+                                                               for="recipient-subject">Subject:</label>
+                                                            <apex:input type="text"
+                                                               styleclass="form-control recipient-subject"
+                                                               id="recipient-subject"
+                                                               value="{!messageSubject}" />
+                                                         </div>
+                                                         <div class="form-group">
+                                                            <label class="col-form-label mb-0"
+                                                               for="message-text">Body:</label>
+                                                            <apex:inputtextarea styleclass="form-control mb-0 editor recipient-body"
+                                                               value="{!messageBody}">
+                                                            </apex:inputtextarea>
+                                                         </div>
+                                                      </div>
+                                                      <div>
+                                                         <button type="button"
+                                                            class="btn btn-primary"
+                                                            onclick="sendmessage();"> <i
+                                                            class="fas fa-paper-plane"></i>&nbsp;Send
+                                                         message</button>
+                                                         <apex:actionFunction name="fetchCaseMessages"
+                                                            action="{!fetchCaseMessages}"
+                                                            rerender="casemessagespanel"
+                                                            status="loader">
+                                                         </apex:actionFunction>
+                                                         <apex:actionFunction name="sendmessageaction"
+                                                            action="{!sendMessage}"
+                                                            rerender="dummy"
+                                                            status="loader" oncomplete="fetchCaseMessages();return false;">
+                                                         </apex:actionFunction>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                          <div style="overflow-x:scroll;">
+                                              
+                                              <div>
+                                                        Total number of records: <b>{!totalRecordCount}</b>
+                                                    </div>
+                                                    <div align="right" style="margin-bottom:10px;">
+                                                        <apex:outputPanel style="margin-right:15px;">
+                                                                <b>Page {!pageNumber} of {!totalPages}</b>
+                                                        </apex:outputPanel>
+                                                            <apex:commandButton style="margin-right:10px;" value="Previous" styleClass="btn btn-primary px-4" rendered="{!disablePrev == true}" disabled="true"/>
+                                                            
+                                                            <apex:outputPanel rendered="{!disablePrev == false}">
+                                                                <button style="margin-right:10px;" onclick="handlePrev();return false" class="btn btn-primary px-4">Previous</button>
+                                                            </apex:outputPanel>
+                                                            <apex:actionFunction name="handlePrev" action="{!handlePrev}" rerender="casemessagespanel,leadstable,leadspaginationpanel,leadsdatapane,caseslistpanell,leadsdatapanel" status="loader"/>
+                                                        <apex:commandButton value="Next" styleClass="btn btn-primary px-4" rendered="{!disableNext == true}" disabled="true"/>
+                                                            <apex:outputPanel rendered="{!disableNext == false}">
+                                                                <button  onclick="handleNext();return false" class="btn btn-primary px-4">Next</button>
+                                                            </apex:outputPanel>
+                                                            <apex:actionFunction name="handleNext" action="{!handleNext}"  rerender="casemessagespanel,leadstable,leadspaginationpanel,leadsdatapane,caseslistpanell,leadsdatapanel" status="loader"/>
+                                                        </div>
+                                              <apex:outputPanel id="leadsdatapanel">
+                                          <table id="messagestable" class="table messagestable">
+                                             <thead>
+                                                <tr>
+                                                   <th scope="col">Message#</th>
+                                                   <th scope="col">From User</th>
+                                                   <th scope="col">Subject</th>
+                                                   <th scope="col">Body</th>
+                                                   <th scope="col">Message Date</th>
+                                                   <th scope="col">Actions</th>
+                                                </tr>
+                                             </thead>
+                                             <tbody>
+                                                <apex:repeat value="{!messages}" var="message">
+                                                   <tr>
+                                                     <td>{!message.Case_Message__c}</td>
+                                                      <td>{!message.DHS_From_User__r.FirstName}
+                                                         {!message.DHS_From_User__r.LastName}
+                                                      </td>
+                                                      <td>{!message.DHS_Lead__r.Item_number__c}<span style="display:{!If(message.DHS_Lead__r.Item_number__c != Null,'','none')}"> - </span>{!message.Subject__c}</td>
+                                                      <td>
+                                                         <apex:outputtext value="{!message.Message_Body__c}" 
+                                                            escape="false" 
+                                                            style="white-space: pre-wrap; word-wrap: break-word;" />
+                                                      </td>
+                                                     
+                                                      <td>
+                                                         {!message.Message_Date__c}
+                                                         <!-- <apex:outputText value="{0,date,MM/dd/yy hh:mm:ss a}">
+                                                            <apex:param value="{!message.Message_Date__c}" />
+                                                            </apex:outputText> -->
+                                                      </td>
+                                                      <td>
+                                                         <div class="d-flex">
+                                                            <!-- Edit for CMO/PMO, or INV editing own message -->
+                                                            <a role="button" class="p-2
+                                                               {!IF(
+                                                                  OR(
+                                                                     currentuser.User_Type__c = 'CMO',
+                                                                     currentuser.User_Type__c = 'PMO',
+                                                                     AND(currentuser.User_Type__c = 'INV', message.DHS_From_User__c = currentuser.Id)
+                                                                  ),
+                                                                  '',
+                                                                  'd-none'
+                                                               )}"
+                                                               onclick="openMessageModal('edit','{!message.Id}');return false;">
+                                                               <i class="fa fa-edit"></i>
+                                                            </a>
+
+                                                            <!-- Delete only for CMO / PMO -->
+                                                            <a role="button" class="p-2
+                                                               {!IF(OR(currentuser.User_Type__c = 'CMO', currentuser.User_Type__c = 'PMO'),'','d-none')}"
+                                                               onclick="openMessageModal('delete','{!message.Id}');return false;">
+                                                               <i class="fa fa-trash"></i>
+                                                            </a>
+                                                         </div>
+                                                      </td>
+                                                   </tr>
+                                                </apex:repeat>
+                                             </tbody>
+                                          </table>
+                                              </apex:outputPanel>
+                                          </div>
+                                             
+                                       </apex:outputPanel>
+                                           
+                                    </div>
+                                 </div>
+                                 <div role="tabpanel" class="tab-pane fade in" id="waiver-information">
+                                    <div class="">
+                                       <apex:outputPanel id="waiverinformationpanel">
+                                          <table class="table dataTable" width="100%" cellspacing="0">
+                                             <thead>
+                                                <tr>
+                                                   <th>Lead</th>
+                                                   <th>Requested By</th>
+                                                   <th>Waiver Flagged Date</th>
+                                                   <th>Waiver Initiated Date</th>
+                                                   <th>Waiver Approved Date</th>
+                                                   <th>Waiver Denied Date</th>
+                                                   <th>Waiver Reason</th>
+                                                </tr>
+                                             </thead>
+                                             <tbody>
+                                                <apex:repeat var="waiverinfo"
+                                                   value="{!waiverinformation}">
+                                                   <tr>
+                                                      <td>
+                                                         <a
+                                                            href="{!$site.prefix}/DHSLeaddetail?id={!waiverinfo.DHS_Lead__c}">{!waiverinfo.DHS_Lead__r.Name}</a>
+                                                      </td>
+                                                      <td>
+                                                         <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                            <apex:param value="{!waiverinfo.Createddate}" />
+                                                         </apex:outputText>
+                                                      </td>
+                                                      <td>
+                                                         <apex:outputText value="{0,date,MM/dd/yyyy}">
+                                                            <apex:param value="{!waiverinfo.Waiver_Flagged_Date__c}" />
+                                                         </apex:outputText>
+                                                      </td>
+                                                      <td>
+                                                         <apex:inputfield value="{!waiverinfo.Waiver_Initiated_Date__c}"
+                                                            styleclass="datepickerInput form-control autosave{!waiverinfo.id}" />
+                                                      </td>
+                                                      <td>
+                                                         <apex:inputfield value="{!waiverinfo.Waiver_Approved_Date__c}"
+                                                            styleclass="datepickerInput form-control autosave{!waiverinfo.id}" />
+                                                      </td>
+                                                      <td>
+                                                         <apex:inputfield value="{!waiverinfo.Waiver_Denied_Date__c}"
+                                                            styleclass="datepickerInput form-control autosave{!waiverinfo.id}" />
+                                                      </td>
+                                                      <td>
+                                                         {!waiverinfo.Waiver_Reason__c}
+                                                      </td>
+                                                   </tr>
+                                                </apex:repeat>
+                                             </tbody>
+                                          </table>
+                                       </apex:outputPanel>
+                                       <button onclick="updatewaiverinformation();return false"
+                                          class="updatewaiverinformationbutton btn btn-primary px-4">Update
+                                       Waiver Information</button>
+                                       <apex:actionFunction name="updatewaiverinformation"
+                                          action="{!updatewaiverinformation}"
+                                          rerender="waiverinformationpanel" status="loader" />
+                                    </div>
+                                 </div>
+                                 <div role="tabpanel" class="tab-pane {!If(landingTab == 'Documents', 'active','fade in')}" id="case-documents">
+                                    <div class="d-flex flex-row-reverse bd-highlight">
+                                       <!--<a class="btn btn-primary mb-3 {!If(currentuser.user_type__c != 'INV','','d-none')}"
+                                          data-toggle="collapse" href="#uploadDocument" role="button"
+                                          aria-expanded="false" aria-controls="uploadDocument">
+                                          Upload Documents
+                                          </a>-->
+                                        
+                                       <a style="display:{!If(showMultiUploadDocuments == false,'','none')}" class="btn btn-primary mb-3 {!If(currentuser.user_type__c != 'INV','','d-none')}"
+                                          href="{!$site.prefix}/DHSMultifileuploadPage?caseid={!caseRecord.id}" role="button"
+                                          >
+                                       Upload Documents
+                                       </a>
+                                        
+                                        <a style="display:{!If(showMultiUploadDocuments == true,'','none')}" class="btn btn-primary mb-3 {!If(currentuser.user_type__c != 'INV','','d-none')}"
+                                          href="{!$site.prefix}/DHSMultifileuploadPage?caseid={!caseRecord.id}" role="button"
+                                          >
+                                       Upload Documents
+                                       </a>
+                                        
+                                        
+                                        
+                                       <button class="btn btn-primary mb-3 ml-2 mr-2 mergeDocuments" onclick="mergeCaseDocuments();return false;">
+                                          Merge Documents
+                                       </button>
+                                    </div>
+                                    <div class="collapse mt-2" id="uploadDocument">
+                                       <div class="card card-body">
+                                          <div class="frame">
+                                             <div class="center">
+                                                <c:DHSFileUpload fId="f2" parentId="{!caseId}">
+                                                </c:DHSFileUpload>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div class="">
+                                       <div id="caseDocumentMergerContainer" style="display:none;"></div>
+                                       <div id="loadingOverlay" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9999;">
+                                          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                                             <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                                                <span class="sr-only">Loading...</span>
+                                             </div>
+                                             <div style="margin-top: 20px; font-size: 18px; font-weight: bold; color: #000;">
+                                                Processing PDF Documents...
+                                             </div>
+                                             <div style="margin-top: 10px; color: #000; font-size: 14px;">
+                                                Please wait while we merge and prepare your documents for download.
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <apex:outputpanel id="documentspanel">
+                                          <table class="table uploadDocument" width="100%" cellspacing="0">
+                                             <thead>
+                                                <tr>
+                                                   <th>Name</th>
+                                                   <th>Added By</th>
+                                                   <th>Notes</th>
+                                                   <th>Sequence</th>
+                                                   <th>View/Del</th>
+                                                </tr>
+                                             </thead>
+                                             <tbody>
+                                                <apex:repeat var="doc" value="{!documents}">
+                                                   <tr>
+                                                      <td>
+                                                         {!doc.document.Name__c}
+                                                      </td>
+                                                      <td>
+                                                         {!doc.document.Added_By__c}
+                                                      </td>
+                                                      <td>
+                                                         {!doc.document.Notes__c}
+                                                      </td>
+                                                      <td>
+                                                         <select class="form-control sequence-picklist" data-doc-id="{!doc.document.Id}" data-attachment-id="{!doc.attachmentId}" onchange="updateSequenceOptions();">
+                                                            <option value="">Select Sequence</option>
+                                                         </select>
+                                                      </td>
+                                                      <td>
+                                                      <div class="d-flex">
+                                                         <a role="button" class="p-2" target="_blank"
+                                                            href="{!URLFOR($Action.Attachment.Download, doc.attachmentId)}">
+                                                         <i class="fa fa-eye"></i> </a>
+                                                         <a role="button" class="p-2 {!If((currentuser.user_type__c == 'PMO' || currentuser.user_type__c == 'CMO'),'','d-none')}" onclick="deletedocument('{!doc.document.Id}');return false">
+                                                             <i class="fa fa-trash"></i>
+                                                         </a>
+                                                         </div>
+                                                      </td>
+                                                   </tr>
+                                                </apex:repeat>
+                                             </tbody>
+                                          </table>
+                                       </apex:outputpanel>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-3">
+                           <div class="card shadow mb-4">
+                              <!-- Card Header - Dropdown -->
+                              <div
+                                 class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                 <h4 class="m-0 font-weight-bold text-primary">Task List</h4>
+                              </div>
+                              <!-- Card Body -->
+                              <div class="card-body main-card">
+                                 <apex:outputPanel id="tasklistpanel">
+                                    <ul class="taskEvent pl-3">
+                                       <li><span
+                                          class="{!If(caseRecord.Initiated_State_Date__c != null,'completed','')}">Initiated
+                                          state</span>
+                                       </li>
+                                       <li><span
+                                          class="{!If(caseRecord.Validate_Transmission_Date__c != null,'completed','')}">Validate
+                                          transmission</span>
+                                       </li>
+                                       <li><span
+                                          class="{!If(caseRecord.Scoping_Date__c != null,'completed','')}">Scoping</span>
+                                       </li>
+                                       <li><span
+                                          class="{!If(caseRecord.Investigations_Date__c != null,'completed','')}">Investigations</span>
+                                       </li>
+                                       <li><span
+                                          class="{!If(caseRecord.Investigations_Review_Date__c != null,'completed','')}">Investigations
+                                          review</span>
+                                       </li>
+                                       <li><span
+                                          class="{!If(caseRecord.QA_and_Review_Date__c != null,'completed','')}">QA
+                                          and review</span>
+                                       </li>
+                                    </ul>
+                                 </apex:outputPanel>
+                              </div>
+                           </div>
+                           <div class="card shadow mb-4">
+                              <div class="card-body main-card">
+                                 <apex:outputpanel id="addcommentspanel">
+                                    <h4 class="text-primary">New Comment</h4>
+                                    <apex:inputField value="{!newCaseHistory.Value__c}"
+                                       styleClass="form-control" />
+                                 </apex:outputpanel>
+                                 <div class="text-danger font-weight-normal">(PMO, CMO, QA, FSO use only - DO NOT use to send case messages)</div>
+                                 <button onclick="addcomment();return false"
+                                    class="btn btn-primary px-4 mt-3">Submit
+                                 </button>
+                                 <apex:actionfunction status="loader" name="addcommentaction"
+                                    action="{!addCommentsAction}"
+                                    rerender="addcommentspanel,casehistorypanel" />
+                                 <apex:actionfunction status="loader" name="markleadcreationcompleteaction"
+                                    action="{!markleadcreationcompleteaction}"
+                                    rerender="casehistorypanel,tasklistpanel,leadspanel" />
+                                 <apex:actionfunction status="loader" name="qareviewcompleteaction"
+                                    action="{!qareviewcompleteaction}"
+                                    rerender="casehistorypanel,tasklistpanel,leadspanel,documentspanel"
+                                    oncomplete="showdocumentstab();return false;" />
+                                 <apex:actionfunction status="loader" name="regenerateroireportbuttonaction"
+                                    action="{!regenerateroireportbuttonaction}"
+                                    rerender="casehistorypanel,tasklistpanel,leadspanel,documentspanel"
+                                    oncomplete="showdocumentstab();return false;" />
+                                 <apex:actionfunction status="loader" name="autosavewaiverinformationaction"
+                                    action="{!autosavewaiverinformationaction}"
+                                    rerender="waiverinformationpanel">
+                                    <apex:param assignTo="{!waiverinformationidtoupdate}"
+                                       name="waiverinformationidtoupdate" value="" />
+                                 </apex:actionfunction>
+                                 <apex:actionFunction name="deleteleadaction" action="{!deleteLeadAction}"
+                                    rerender="leadstablepanel,leadspanel" status="loader"
+                                    oncomplete="loaddatatables();return false;">
+                                    <apex:param name="deleteLeadId" value="" assignTo="{!deleteLeadId}" />
+                                 </apex:actionfunction>
+                                 <apex:actionFunction name="refreshleads" action="{!fetchLeadInformation}"
+                                    rerender="leadstablepanel" status="loader"
+                                    oncomplete="loaddatatables();return false;">
+                                 </apex:actionfunction>
+                                  <apex:actionFunction name="deletedocumentaction" action="{!deleteDocumentAction}"
+                                      rerender="casehistorypanel,tasklistpanel,leadspanel,documentspanel" status="loader" oncomplete="renderTable()">
+                                      <apex:param name="deleteDocumentID" value="" assignTo="{!deleteDocumentID}" />
+                                  </apex:actionfunction>
+                                 <!-- <apex:actionfunction status="loader" name="downloadmanifestapexaction"
+                                    action="{!downloadmanifestaction}"
+                                    rerender="casehistorypanel,tasklistpanel,leadspanel,documentspanel"
+                                    oncomplete="showdocumentstab();return false;" /> -->
+                                 
+                                
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Content Row -->
+                  </div>
+                  <!-- /.container-fluid -->
+               </div>
+               <!-- End of Main Content -->
+               <!-- Footer -->
+               <footer class="sticky-footer bg-white">
+                  <div class="container my-auto">
+                     <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Your Website 2021</span>
+                     </div>
+                  </div>
+               </footer>
+               <!-- End of Footer -->
+            </div>
+            <!-- End of Content Wrapper -->
+         </div>
+         <!-- End of Page Wrapper -->
+         <!-- Scroll to Top Button-->
+         <a class="scroll-to-top rounded" href="#page-top">
+         <i class="fas fa-angle-up"></i>
+         </a>
+         <apex:outputpanel id="errormessagepanel">
+            <script>
+               var errormessage = '{!errorMessage}';
+            </script>
+         </apex:outputpanel>
+         <apex:actionFunction name="updateleadaction" action="{!updateLead}" status="loader" oncomplete="updateleadoncompleteaction();return false;" rerender="errormessagepanel">
+            <apex:param name="itemnumbertoupdate" assignTo="{!itemnumbertoupdate}" value=""/>
+            <apex:param name="leadIdtoupdate" assignTo="{!leadIdtoupdate}" value=""/>
+         </apex:actionFunction>
+          <apex:actionFunction name="ApexAutoSaveAction" action="{!autoSaveCaseAction}" rerender="blank"/>
+
+          <apex:actionFunction name="openMessageAction"
+         action="{!openModal}"
+         rerender="messageModalBody,messageModalFooter,messageModalHeader"
+         oncomplete="$('#messageModal').modal('show');$('.editor').trumbowyg();">
+         <apex:param name="actionType" assignTo="{!modalAction}" value=""/>
+         <apex:param name="msgId" assignTo="{!selectedMessageId}" value=""/>
+      </apex:actionFunction>
+          
+          <apex:actionFunction name="openLeadAction"
+             action="{!selectLeadAction}" status="loader"
+             rerender="LeadEditModalBody,LeadEditModalFooter,LeadEditModalHeader"
+             oncomplete="$('#LeadEditModal').modal('show');$('.editor').trumbowyg();">
+             <apex:param name="selectedLeadId" assignTo="{!selectedLeadId}" value=""/>
+          </apex:actionFunction>
+          
+
+      <script>
+         function openMessageModal(action, messageId) {
+            openMessageAction(action, messageId);
+         }
+      </script>
+      
+      <script>
+         function openLeadActionClick(leadId) {
+            openLeadAction(leadId);
+         }
+      </script>
+
+      </apex:form>
+      <div class="toast " role="alert" aria-live="assertive" data-delay="5000"  aria-atomic="true" style="position: absolute;top: 5rem;right: 0;left: 0;z-index: 99;margin: 0 auto;min-width: 500px;">
+         <div class="toast-header bg-danger">
+            <strong class="mr-auto text-white"></strong>
+            <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+      </div>
+      <div class="toast successtoast" role="alert" aria-live="assertive" data-delay="5000"  aria-atomic="true" style="position: absolute;top: 5rem;right: 0;left: 0;z-index: 99;margin: 0 auto;min-width: 500px;">
+         <div class="toast-header bg-success">
+            <strong class="mr-auto text-white"></strong>
+            <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+      </div>
+
+     
+      <script>
+
+         function updateDueDate() {
+             var ingestionDate = $(".manifest").datepicker("getDate");
+             var serviceDays = parseInt($(".servicedays").val(), 10);
+
+             if (!ingestionDate) {
+                 var ingestionValue = $(".manifest").val();
+                 ingestionDate = ingestionValue ? new Date(ingestionValue) : null;
+             }
+
+             if (ingestionDate && !isNaN(serviceDays)) {
+                 var dueDate = new Date(ingestionDate.getTime());
+                 dueDate.setDate(dueDate.getDate() + serviceDays);
+                 $(".caseduedate").datepicker("setDate", dueDate);
+             } else if (!serviceDays) {
+                 $(".caseduedate").val("");
+             }
+         }
+         $('.customerDD ').on('change',function(){
+         
+         var date2 = $('.customerDD').datepicker('getDate', '+1d');
+         date2.setDate(date2.getDate()+90); 
+         startdateF  =date2.toLocaleDateString();
+         var date3 = $('.customerDD').datepicker('getDate', '+1d');
+         date3.setDate(date3.getDate()+180); 
+         enddateF = date3.toLocaleDateString();
+         $('.startPurgeDate').text(startdateF);
+         $('.endPurgeDate').text(enddateF );
+         
+         });
+         
+         function deletelead(elem) {
+             
+             var leadid = elem.id;
+             
+         
+             Visualforce.remoting.Manager.invokeAction(
+                 '{!$RemoteAction.DHSCaseDetailController.checkIfLeadIsAssigned}', leadid,
+         
+                 function (result, event) {
+                     if (event.status) {
+                         
+                         $.confirm({
+                             title: 'Please Confirm!',
+                             content: 'On click of confirm, Lead will be deleted.',
+                             buttons: {
+                                 confirm: function () {
+                                     deleteleadaction(leadid);
+                                 },
+                                 cancel: function () {}
+                             }
+                         });
+                     }
+                 }, {
+                     escape: true
+                 }
+             );
+         }
+         
+         
+        function deletedocument(documentId){
+                
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, document will be deleted.',
+                    buttons: {
+                        confirm: function () {
+                            deletedocumentaction(documentId);
+                        },
+                        cancel: function () {}
+                    }
+                });
+            
+            }
+         
+         
+         function regenerateroireportbutton(){
+             $.confirm({
+                 title: 'Please Confirm!',
+                 content: 'On click of confirm, ROI Report will be regenerated.',
+                 buttons: {
+                     confirm: function () {
+                         regenerateroireportbuttonaction();
+                     },
+                     cancel: function () {}
+                 }
+             });
+         }
+         
+         function qareviewcomplete() {
+             $.confirm({
+                 title: 'Please Confirm!',
+                 content: 'On click of confirm, QA Review will be Completed.',
+                 buttons: {
+                     confirm: function () {
+                         qareviewcompleteaction();
+                     },
+                     cancel: function () {}
+                 }
+             });
+         }
+         
+         function downloadmanifestaction() {
+             $.confirm({
+                 title: 'Please Confirm!',
+                 content: 'On click of confirm, Manifest will be created.',
+                 buttons: {
+                     confirm: function () {
+                         downloadmanifestapexaction();
+                     },
+                     cancel: function () {}
+                 }
+             });
+         }
+         
+        
+         
+         function showdocumentstab() {
+             $('#case-leads').removeClass('active');
+             $('#case-leads').addClass('fade in');
+             $('#case-documents').addClass('active');
+             $('#case-documents').removeClass('fade in');
+             $('#case-documents-tab').addClass('active');
+             $('#case-leads-tab').removeClass('active');
+         }
+         
+         function markleadcreationcomplete() {
+             markleadcreationcompleteaction();
+         }
+         
+         function createlead() {
+         debugger;
+             if($('.CoverageType').val() != "" && $(".itemNumberVal").val() != ""){
+                 $('.CoverageType').removeClass('is-invalid');
+                 $('.itemNumberVal').removeClass('is-invalid');
+                 $('#leadCreate').removeClass('show');
+                 createleadaction();
+             }
+             else{
+             if($(".itemNumberVal").val() != ""){ 
+               $('.CoverageType').addClass('is-invalid');
+               $('.itemNumberVal').removeClass('is-invalid');
+               }
+               else if($('.CoverageType').val() != ""){
+               $('.itemNumberVal').addClass('is-invalid');
+                $('.CoverageType').removeClass('is-invalid');
+               }
+               else{
+               $('.itemNumberVal').addClass('is-invalid');
+               $('.CoverageType').addClass('is-invalid');
+               }
+                
+             }
+          
+         }
+         
+         function createleadoncompleteaction(){
+             
+             if(errormessage != ''){
+                 $('#leadCreate').addClass('show');
+                 $('.toast strong').text(errormessage)
+                 $('.toast').toast('show');
+             }
+         }
+         
+         
+         function sendmessage() {
+         
+             $.confirm({
+                 title: 'Please Confirm!',
+                 content: 'On click of confirm, message will be sent.',
+                 buttons: {
+                     confirm: function () {
+                         sendmessageaction();
+         
+                     },
+                     cancel: function () {}
+                 }
+             });
+         }
+         
+         function updatecase() {
+             var manifest = $('.manifest').val();
+             var casetype = $('.casetype').val();
+             var servicedays = $('.servicedays').val();
+             var casenumber = $('.casenumber').val();
+             var caseduedate = $('.caseduedate').val();
+             var scheduleddate = $('.scheduleddate').val();
+             var coverageperiodbegindate = $('.coverageperiodbegindate').val();
+             var selectedUserIdForAssignment = $('.selectedUserIdForAssignment').val();
+             var isvalid = true;
+             if (selectedUserIdForAssignment != '') {
+                 $(".mandatory").each(function () {
+                     var fieldvalue = $(this).val();
+                     if (fieldvalue == '') {
+                         $(this).addClass('highlightrequiredfield');
+                         isvalid = false;
+                     }
+                     else if( $(this).hasClass('EmailField')){
+                  
+                    var email = $(this).val();
+                         var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                         if(!regex.test(email)) {
+                           $(this).addClass('highlightrequiredfield is-invalid'); 
+                            isvalid = false;
+                         }
+                         
+                    }
+                      else {
+                         $(this).removeClass('highlightrequiredfield');
+                     }
+                 });
+         
+                 if (isvalid) {
+                     $.confirm({
+                         title: 'Please Confirm!',
+                         content: 'Would you like to update the case',
+                         buttons: {
+                             confirm: function () {
+                                 updatecaseaction();
+         
+          
+                             },
+                             cancel: function () {}
+                         }
+                     });
+                 } else {
+                     $('.invalid-feedback').html('');
+                     $(".selectedUserIdForAssignment").after(
+                         '<div class="invalid-feedback d-block">Case cannot be assigned without filling mandatory fields.</div>'
+                     );
+                 }
+         
+             } else {
+                 $.confirm({
+                     title: 'Please Confirm!',
+                     content: 'Would you like to update the case',
+                     buttons: {
+                         confirm: function () {
+                             updatecaseaction();
+                         },
+                         cancel: function () {}
+                     }
+                 });
+             }
+              
+         
+         
+         }
+         
+         function addcomment() {
+             addcommentaction();
+         }
+         
+         function initializeSequencePicklists() {
+             // Get the DataTable instance
+             var table = getUploadDocumentTable();
+             if (!table) return;
+             
+             var totalDocuments = table.rows().count();
+             
+             
+             
+             // Get ALL sequence picklists (not just visible ones)
+             var allPicklists = $('.sequence-picklist');
+             var allCount = allPicklists.length;
+             
+             
+             
+             // Always ensure all sequence options are available (1 to totalDocuments)
+             allPicklists.each(function(index) {
+                 var $select = $(this);
+                 var docId = $select.data('doc-id');
+                 
+                 // Always remove existing options and add fresh ones
+                 $select.find('option:not(:first)').remove(); // Remove existing options except first
+                 
+                 // Add options from 1 to totalDocuments
+                 for (var i = 1; i <= totalDocuments; i++) {
+                     $select.append('<option value="' + i + '">' + i + '</option>');
+                 }
+                 
+                 // Restore previously selected value if exists
+                 if (selectedSequencesMap[docId]) {
+                     $select.val(selectedSequencesMap[docId]);
+                     
+                 }
+                 
+                 
+             });
+             
+             // Update button state based on stored selections
+             updateButtonState();
+         }
+         
+         // Global variable to store selected sequences
+         var selectedSequencesMap = {};
+         
+         // Helper function to safely get DataTable instance
+         function getUploadDocumentTable() {
+             if ($.fn.DataTable.isDataTable('.uploadDocument')) {
+                 return $('.uploadDocument').DataTable();
+             } else {
+                 console.warn('DataTable not initialized yet');
+                 return null;
+             }
+         }
+         
+         function addDocumentNumbers() {
+             var table = getUploadDocumentTable();
+             if (!table) {
+                 console.warn('DataTable not available for addDocumentNumbers');
+                 return;
+             }
+             
+             var pageInfo = table.page.info();
+             var currentPage = pageInfo.page;
+             var pageLength = pageInfo.length;
+             var startIndex = currentPage * pageLength;
+             
+             
+             
+             // Add document numbers to visible rows
+             var visiblePicklists = $('.sequence-picklist:visible');
+             
+             
+             visiblePicklists.each(function(index) {
+                 var $select = $(this);
+                 var documentNumber = startIndex + index + 1;
+                 
+                 
+                 
+                 // Keep the original placeholder text
+                 var $firstOption = $select.find('option:first');
+                 if ($firstOption.length > 0) {
+                     $firstOption.text('Select Sequence');
+                     
+                 }
+                 
+                 // Remove any existing document number indicators
+                 var $row = $select.closest('tr');
+                 var $firstCell = $row.find('td:first');
+                 $firstCell.find('.doc-number-indicator').remove();
+             });
+             
+             
+         }
+         
+         function updateSequenceOptions() {
+             var selectedSequences = [];
+             var allCount = $('.sequence-picklist').length;
+             
+             
+             
+             // Get the DataTable instance
+             var table = getUploadDocumentTable();
+             if (!table) return;
+             
+             var totalDocuments = table.rows().count();
+             
+             
+             
+             // Process ALL picklists (not just visible ones)
+             $('.sequence-picklist').each(function(index) {
+                 var $select = $(this);
+                 var selectedValue = $select.val();
+                 var docId = $select.data('doc-id');
+                 var availableOptions = $select.find('option').length;
+                 
+                 
+                 
+                 if (selectedValue && selectedValue !== '' && selectedValue !== 'Select Sequence') {
+                     var parsedValue = parseInt(selectedValue);
+                     if (!isNaN(parsedValue) && parsedValue > 0) {
+                         selectedSequences.push(parsedValue);
+                         selectedSequencesMap[docId] = parsedValue; // Store in global map
+                         
+                     }
+                 } else {
+                     // Clear from map if no selection
+                     delete selectedSequencesMap[docId];
+                 }
+             });
+             
+             // Update ALL picklists to hide used sequences
+             $('.sequence-picklist').each(function() {
+                 var $select = $(this);
+                 var currentValue = $select.val();
+                 var currentDocId = $select.data('doc-id');
+                 
+                 // Show all options first
+                 $select.find('option').show();
+                 
+                 // Hide options that are already selected in other picklists
+                 Object.keys(selectedSequencesMap).forEach(function(docId) {
+                     var selectedSeq = selectedSequencesMap[docId];
+                     if (docId !== currentDocId) {
+                         // Hide this sequence from other picklists
+                         $select.find('option[value="' + selectedSeq + '"]').hide();
+                         
+                     }
+                 });
+             });
+             
+             // Update button state
+             updateButtonState();
+         }
+         
+         // Function to update button state based on stored selections
+         function updateButtonState() {
+             var selectedCount = Object.keys(selectedSequencesMap).length;
+             var hasSelections = selectedCount > 0;
+             
+             
+             
+             
+             $('.mergeDocuments').prop('disabled', !hasSelections);
+             
+             if (!hasSelections) {
+                 $('.mergeDocuments').attr('title', 'Please select at least one document sequence');
+                 $('.mergeDocuments').addClass('disabled');
+             } else {
+                 var tooltipText = 'Merge ' + selectedCount + ' document(s)';
+                 if (selectedCount > 1) {
+                     tooltipText += ' (across all pages)';
+                 }
+                 $('.mergeDocuments').attr('title', tooltipText);
+                 $('.mergeDocuments').removeClass('disabled');
+             }
+         }
+         
+         // Function to manually check and update button state
+         function checkButtonState() {
+             updateButtonState();
+         }
+         
+         // Function to get total selected documents across all pages
+         function getTotalSelectedDocuments() {
+             var totalSelected = [];
+             
+             // Get the DataTable instance
+             var table = getUploadDocumentTable();
+             if (!table) return totalSelected;
+             
+             // Use the global storage to get selected documents
+             table.rows().every(function() {
+                 var rowData = this.data();
+                 var $row = $(this.node());
+                 var $sequenceSelect = $row.find('.sequence-picklist');
+                 
+                 if ($sequenceSelect.length > 0) {
+                     var docId = $sequenceSelect.data('doc-id');
+                     
+                     // Check if this document has a selected sequence in our global map
+                     if (selectedSequencesMap[docId]) {
+                         var title = $row.find('td:first').text().trim();
+                         totalSelected.push({
+                             docId: docId,
+                             title: title,
+                             sequence: selectedSequencesMap[docId]
+                         });
+                     }
+                 }
+             });
+             
+             
+             return totalSelected;
+         }
+         
+         // Function to verify all picklists have correct options
+         function verifyPicklistOptions() {
+             var table = getUploadDocumentTable();
+             if (!table) return;
+             
+             var totalDocuments = table.rows().count();
+             var allPicklists = $('.sequence-picklist');
+             
+             
+             
+             allPicklists.each(function(index) {
+                 var $select = $(this);
+                 var optionCount = $select.find('option').length - 1; // Subtract 1 for "Select Sequence"
+                 
+                 if (optionCount !== totalDocuments) {
+                     console.warn('Picklist', index, 'has', optionCount, 'options but should have', totalDocuments);
+                     // Fix this picklist
+                     $select.find('option:not(:first)').remove();
+                     for (var i = 1; i <= totalDocuments; i++) {
+                         $select.append('<option value="' + i + '">' + i + '</option>');
+                     }
+                     
+                 } else {
+                     
+                 }
+             });
+         }
+         
+         // Function to apply sequence hiding logic
+         function applySequenceHiding() {
+             
+             
+             // Update ALL picklists to hide used sequences
+             $('.sequence-picklist').each(function() {
+                 var $select = $(this);
+                 var currentValue = $select.val();
+                 var currentDocId = $select.data('doc-id');
+                 
+                 // Show all options first
+                 $select.find('option').show();
+                 
+                 // Hide options that are already selected in other picklists
+                 Object.keys(selectedSequencesMap).forEach(function(docId) {
+                     var selectedSeq = selectedSequencesMap[docId];
+                     if (docId !== currentDocId) {
+                         // Hide this sequence from other picklists
+                         $select.find('option[value="' + selectedSeq + '"]').hide();
+                         
+                     }
+                 });
+             });
+         }
+         
+         function mergeCaseDocuments() {
+             // Show loading overlay
+             $('#loadingOverlay').show();
+             
+             var documentData = [];
+             
+             // Get the DataTable instance
+             var table = getUploadDocumentTable();
+             if (!table) {
+                 alert('DataTable not initialized. Please refresh the page.');
+                 $('#loadingOverlay').hide();
+                 return;
+             }
+             
+             // Use the global storage to get selected documents in correct order
+             var totalRows = table.rows().count();
+             var processedRows = 0;
+             var selectedCount = 0;
+             
+             // First, collect all selected documents from the global storage
+             table.rows().every(function() {
+                 processedRows++;
+                 var rowData = this.data();
+                 var $row = $(this.node());
+                 var $sequenceSelect = $row.find('.sequence-picklist');
+                 
+                 if ($sequenceSelect.length > 0) {
+                     var docId = $sequenceSelect.data('doc-id');
+                     
+                     // Check if this document has a selected sequence in our global map
+                     if (selectedSequencesMap[docId]) {
+                         selectedCount++;
+                         var attachmentId = $sequenceSelect.data('attachment-id');
+                         var title = $row.find('td:first').text().trim();
+                         var addedBy = $row.find('td:eq(1)').text().trim();
+                         var notes = $row.find('td:eq(2)').text().trim();
+                         var sequence = selectedSequencesMap[docId];
+                         
+                         documentData.push({
+                             docId: docId,
+                             attachmentId: attachmentId,
+                             title: title,
+                             addedBy: addedBy,
+                             notes: notes,
+                             sequence: sequence
+                         });
+                     }
+                 }
+             });
+             
+             if (documentData.length === 0) {
+                 alert('Please select sequence for at least one document.');
+                 $('#loadingOverlay').hide();
+                 return;
+             }
+             
+             // Sort by sequence number to ensure correct order
+             documentData.sort(function(a, b) {
+                 return a.sequence - b.sequence;
+             });
+             
+             // Log the order for debugging
+             console.log('Documents to merge in order:');
+             documentData.forEach(function(doc, index) {
+                 console.log(index + 1 + '. Document:', doc.title, 'Sequence:', doc.sequence);
+             });
+             
+             getBase64DataForAttachments(documentData);
+         }
+         
+         function getBase64DataForAttachments(documentData) {        
+             var documentsWithBase64 = [];
+             var processedCount = 0;
+             
+             console.log('=== STARTING BASE64 CONVERSION ===');
+             console.log('Processing', documentData.length, 'documents for base64 conversion');
+             
+             // Log all documents with their details
+             documentData.forEach(function(doc, index) {
+                 console.log(`Document ${index + 1}: "${doc.title}" - Sequence: ${doc.sequence} - AttachmentId: ${doc.attachmentId}`);
+             });
+             
+             documentData.forEach(function(doc, index) {
+                 console.log('Processing document', index + 1, 'of', documentData.length, '- Title:', doc.title, 'Sequence:', doc.sequence);
+                 var downloadUrl = '/servlet/servlet.FileDownload?file=' + doc.attachmentId;
+                 
+                 fetch(downloadUrl)
+                     .then(function(response) {
+                         if (response.ok) {
+                             return response.blob();
+                         }
+                         throw new Error('Failed to fetch attachment');
+                     })
+                     .then(function(blob) {
+                         var reader = new FileReader();
+                         reader.onload = function() {
+                             var base64Data = reader.result.split(',')[1]; 
+                             
+                             console.log(`✓ Successfully converted "${doc.title}" (Sequence: ${doc.sequence}) to base64. Length: ${base64Data.length} characters`);
+                             
+                             documentsWithBase64.push({
+                                 docId: doc.docId,
+                                 attachmentId: doc.attachmentId,
+                                 title: doc.title,
+                                 addedBy: doc.addedBy,
+                                 notes: doc.notes,
+                                 sequence: doc.sequence,
+                                 base64Data: base64Data
+                             });
+                             
+                             processedCount++;
+                             
+                             if (processedCount === documentData.length) {
+                                 // Filter to only include documents with sequence selected
+                                 var documentsWithSequence = documentsWithBase64.filter(function(doc) {
+                                     return doc.sequence && doc.sequence > 0;
+                                 });
+                                 
+                                 if (documentsWithSequence.length === 0) {
+                                     alert('No valid PDF documents with sequence selected found to merge.');
+                                     $('#loadingOverlay').hide();
+                                     return;
+                                 }
+                                 
+                                 // Sort again to ensure correct order
+                                 documentsWithSequence.sort(function(a, b) {
+                                     return a.sequence - b.sequence;
+                                 });
+                                 
+                                 console.log('=== FINAL DOCUMENTS TO MERGE ===');
+                                 console.log('Total documents with sequence:', documentsWithSequence.length);
+                                 documentsWithSequence.forEach(function(doc, index) {
+                                     console.log(`${index + 1}. "${doc.title}" - Sequence: ${doc.sequence} - Base64 Length: ${doc.base64Data ? doc.base64Data.length : 'N/A'}`);
+                                 });
+                                 console.log('=== SENDING TO LIGHTNING COMPONENT ===');
+                                 
+                                 
+                                 $Lightning.use("c:caseDocumentMergerApp", function() {
+                                     $Lightning.createComponent("c:caseDocumentPdfMerger",
+                                     {
+                                         recordId: '{!caseRecord.id}',
+                                         documentData: documentsWithSequence,
+                                         subjectType: '{!caseRecord.Subject_Type__c}',
+                                         socialSecurityNumber: '{!caseRecord.DHS_Contact__r.SSN__c}'
+                                     },
+                                     "caseDocumentMergerContainer",
+                                     function(cmp) {
+                                         setTimeout(function() {
+                                             $('#loadingOverlay').hide();
+                                         }, 6000); 
+                                     });
+                                 });
+                             }
+                         };
+                         reader.readAsDataURL(blob);
+                     })
+                     .catch(function(error) {
+                         console.error('Error fetching attachment:', error);
+                         processedCount++;
+                        
+                         if (processedCount === documentData.length) {
+                             // Filter to only include documents with sequence selected
+                             var documentsWithSequence = documentsWithBase64.filter(function(doc) {
+                                 return doc.sequence && doc.sequence > 0;
+                             });
+                             
+                             if (documentsWithSequence.length === 0) {
+                                 alert('No valid PDF documents with sequence selected found to merge.');
+                                 $('#loadingOverlay').hide();
+                                 return;
+                             }
+                             
+                             // Sort again to ensure correct order
+                             documentsWithSequence.sort(function(a, b) {
+                                 return a.sequence - b.sequence;
+                             });
+                             
+                             console.log('Final documents to merge in order (error path):');
+                             documentsWithSequence.forEach(function(doc, index) {
+                                 console.log(index + 1 + '. Document:', doc.title, 'Sequence:', doc.sequence);
+                             });
+                             
+                             
+                             $Lightning.use("c:caseDocumentMergerApp", function() {
+                                 $Lightning.createComponent("c:caseDocumentPdfMerger",
+                                 {
+                                     recordId: '{!caseRecord.id}',
+                                     documentData: documentsWithSequence,
+                                     subjectType: '{!caseRecord.Subject_Type__c}',
+                                     socialSecurityNumber: '{!caseRecord.DHS_Contact__r.SSN__c}'
+                                 },
+                                 "caseDocumentMergerContainer",
+                                 function(cmp) {
+                                     
+                                     // Hide loading overlay after component is loaded
+                                     setTimeout(function() {
+                                         $('#loadingOverlay').hide();
+                                     }, 1000);
+                                 });
+                             });
+                         }
+                     });
+             });
+         }
+         $('.upload-input').change(function () {
+             var InputValue = $(this).val().replace(/C:\\fakepath\\/i, '');
+             $(".fileUploadValue").text(InputValue);
+         });
+         
+       
+         function loadLeaddatatables() {
+          $('.leadstableDetails').DataTable({
+                 "searching": false,
+                 "paging": false,
+                 "bLengthChange": false,
+                 "bFilter": true,
+                 "bInfo": false,
+                 "bAutoWidth": false
+             });
+         }
+         
+         function updateleadoncompleteaction(){
+            
+             var newItemVal = $(".ItemNumber div.active input").val();
+             if(errormessage != ''){
+                // $('.toast strong').text(errormessage)
+                 //$('.toast').toast('show');
+                 $(".ItemNumber div.active").addClass('active error');
+                  $(".ItemNumber div.active input").addClass("is-invalid");
+               //  $(".ItemNumber div.active span").text(newItemVal);
+             }else{
+                 $(".ItemNumber div.active span").text(newItemVal);
+                 $(".ItemNumber div.active").removeClass('active error'); 
+                       $(".ItemNumber div.active input").removeClass("is-invalid");
+             }
+         }
+         function leadTypechange(){
+             $('.editorMessagebody').trumbowyg();
+         }
+         
+         function leadcoverageChange() {
+          // Use more specific selector to find the select element
+          var coverageTypeValue = $('.CoverageType select').val() || $('.CoverageType').val();
+          if(coverageTypeValue == "General Record"){
+              //$('.leaddates').removeClass('d-none');
+              $('.leaddates.leaddatesdisable input').attr('disabled', true)
+          }
+         
+         }
+         $(document).ready(function () {
+        
+               // Initialize sequence picklists
+               initializeSequencePicklists();
+               
+                                // Add event listener for sequence picklist changes
+                 $(document).on('change', '.sequence-picklist', function() {
+                     
+                     
+                     // Immediately update the global storage
+                     var $select = $(this);
+                     var docId = $select.data('doc-id');
+                     var selectedValue = $select.val();
+                     
+                     if (selectedValue && selectedValue !== '' && selectedValue !== 'Select Sequence') {
+                         var parsedValue = parseInt(selectedValue);
+                         if (!isNaN(parsedValue) && parsedValue > 0) {
+                             selectedSequencesMap[docId] = parsedValue;
+                             
+                         }
+                     } else {
+                         delete selectedSequencesMap[docId];
+                         
+                     }
+                     
+                     // Update all picklists to hide used sequences
+                     updateSequenceOptions();
+                 });
+               
+               $('.headertext1').keyup(function(){
+                    $(this).val($(this).val().toUpperCase());
+                    $(this).css('text-decoration', 'underline');
+                    $(this).css('font-weight', 'bold');
+                });
+          
+               $('.messagestable').DataTable({
+        
+                 "searching": false,
+                 "bLengthChange": false,
+                 "bPaginate": false,
+                 "bFilter": true,
+                 "bInfo": false,
+                 "bAutoWidth": false,
+                 columnDefs: [
+                    { targets: 4, type: 'date' }
+                    ]
+             });
+              // Check if DataTable is already initialized to prevent reinitialization
+              var uploadDocumentTable;
+              if ($.fn.DataTable.isDataTable('.uploadDocument')) {
+                 uploadDocumentTable = $('.uploadDocument').DataTable();
+                 
+             } else {
+                 uploadDocumentTable = $('.uploadDocument').DataTable({
+                     "searching": false,
+                     "bLengthChange": false,
+                     "bFilter": true,
+                     "bInfo": true,
+                     "bAutoWidth": false
+                 });
+                 
+             }
+             
+             // Only add event listeners if DataTable was newly initialized
+             if (uploadDocumentTable) {
+                 // Handle pagination changes for sequence picklists
+                 uploadDocumentTable.on('page.dt', function() {
+                     
+                     setTimeout(function() {
+                         initializeSequencePicklists();
+                         
+                         // Add a small delay to ensure picklists are ready
+                         setTimeout(function() {
+                             updateSequenceOptions();
+                         }, 50);
+                     }, 100); // Small delay to ensure DOM is updated
+                 });
+                 
+                 // Handle length changes (if any)
+                 uploadDocumentTable.on('length.dt', function() {
+                     
+                     setTimeout(function() {
+                         initializeSequencePicklists();
+                         updateSequenceOptions();
+                     }, 100);
+                 });
+                 
+                 // Handle search/filter changes
+                 uploadDocumentTable.on('search.dt', function() {
+                     
+                     setTimeout(function() {
+                         initializeSequencePicklists();
+                         updateSequenceOptions();
+                     }, 100);
+                 });
+                 
+                 // Handle draw events (when table is redrawn)
+                 uploadDocumentTable.on('draw.dt', function() {
+                     
+                     setTimeout(function() {
+                         addDocumentNumbers();
+                     }, 50);
+                 });
+                 
+                 // Initialize sequence picklists and document numbers for the first page
+                 setTimeout(function() {
+                     
+                     initializeSequencePicklists();
+                     
+                     // Add a small delay to ensure picklists are fully rendered
+                     setTimeout(function() {
+                         addDocumentNumbers();
+                         
+                         // Verify all picklists have correct options
+                         setTimeout(function() {
+                             verifyPicklistOptions();
+                             
+                             // Apply hiding logic to all picklists
+                             applySequenceHiding();
+                         }, 100);
+                     }, 100);
+                 }, 200); // Slightly longer delay to ensure everything is ready
+             }
+                $('.leadstableDetails').DataTable({
+                   
+                "searching": false,
+                "paging": false,
+                "bLengthChange": false,
+                "bFilter": true,
+                "bInfo": false,
+                "bAutoWidth": false,
+                
+             });
+            
+        
+         $('td table').removeClass('dataTable');
+         $(document).on("change", ".casedetailautosave", function(){
+                    if($(this).hasClass("manifest") || $(this).hasClass("servicedays")){
+                       updateDueDate();
+                    }
+                    ApexAutoSaveAction();
+          });
+         
+         
+         
+         $(" .card.investigatorRecord #case-documents").addClass('active show');
+         $(".card.investigatorRecord #case-info").removeClass('active show');
+         
+        
+        
+         
+          $("body").on('focus','.itemNumberVal',function(){
+                $(this).inputmask('Regex', {regex: "^[0-9]{1,6}?$"});
+                });
+                 $("body").on('focus','.ItemNumber input',function(){
+                $(this).inputmask('Regex', {regex: "^[0-9]{1,6}?$"});
+                });
+             $("body").on( 'dblclick','.ItemNumber div',function(){
+             $(".ItemNumber div").removeClass('active error');
+              $(".ItemNumber input").removeClass('is-invalid').val("");
+                 $(this).addClass('active');
+                 $(this).find('input').focus();
+             });
+              $("body").on( 'click','.ItemNumber div i' ,function(){
+            var inputValue =  $(this).siblings("input").val();
+             if(inputValue==""){
+            
+             $(this).siblings("input").addClass('is-invalid');
+             }
+             else{
+            
+              $(this).siblings("input").removeClass('is-invalid');
+                var newItemVal = $(this).siblings('input').val();
+                 var leadId = $(this).closest('div').attr('data-leadid');
+                 
+                 updateleadaction(newItemVal,leadId);
+                 
+             }
+               
+                 
+             });
+               
+               
+             $('.editor').trumbowyg();
+             $('.datepickerInput').datepicker({
+                 weekStart: 1,
+                 daysOfWeekHighlighted: "6,0",
+                 autoclose: true,
+                 todayHighlight: true
+             });
+         
+            
+         
+             var userType = '{!currentuser.User_Type__c}';
+             if (userType == 'INV' || userType == 'QA') {
+                 $("#case-info input").prop("disabled", true);
+                 $("#case-info select").prop("disabled", true);
+                 $("#case-info textarea").prop("disabled", true);
+         
+             }
+         
+         });
+      </script>
+      <style>
+         .highlightrequiredfield {
+         border: 1px solid red !important;
+         }
+         .vertical-timeline-element-content {
+         margin-left: 100px;
+         top:-13px;
+         }
+         .vertical-timeline-element-content .vertical-timeline-element-date {
+         left: -120px;
+         top:12px;
+         }
+         .badge:empty {
+         display: block
+         }
+         .badge-success {
+         background-color: #00799B
+         }
+         .dataTables_info {
+         padding: 0 15px
+         }
+         .vertical-timeline-element-content .vertical-timeline-element-date {
+         color: #000
+         }
+         .frame {
+         width: 100%;
+         height: 400px;
+         border-radius: 2px;
+         box-shadow: 4px 8px 16px 0 rgba(0, 0, 0, 0.1);
+         overflow: hidden;
+         color: #000;
+         }
+         .frame .center {
+         width: 100%;
+         height: 100%;
+         border-radius: 3px;
+         box-shadow: 8px 10px 15px 0 rgba(0, 0, 0, 0.2);
+         background: #fff;
+         display: flex;
+         align-items: center;
+         justify-content: space-evenly;
+         flex-direction: column;
+         }
+         .frame .title {
+         width: 100%;
+         height: 50px;
+         border-bottom: 1px solid #000;
+         text-align: center;
+         }
+         ..frame h1 {
+         font-size: 16px;
+         font-weight: 300;
+         color: #000;
+         }
+         .frame .dropzone {
+         position: relative;
+         border: 1px dashed #000;
+         border-radius: 3px;
+         text-align: center;
+         padding: 50px;
+         }
+         .frame .upload-icon {
+         margin: 25px 2px 2px 2px;
+         }
+         .frame .upload-input {
+         position: absolute;
+         top: 0px;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         opacity: 0;
+         }
+         .dateFormat {
+         display: none
+         }
+         .form-group span {
+         font-weight: bold
+         }
+         .input-group-append {
+         position: absolute;
+         top: 5px;
+         right: 22px;
+         }
+         .datepicker.dropdown-menu {
+         padding: 10px;
+         }
+         .taskEvent li {
+         display: flex;
+         color: #000;
+         }
+         .taskEvent span {
+         position: relative;
+         padding: 0 1.5em;
+         }
+         .sidebar #sidebarToggle::after {
+         font-weight: 900;
+         content: '\f104';
+         font-family: 'Font Awesome 6 Free';
+         margin-right: 0.1rem;
+         }
+         .taskEvent span::after {
+         content: "";
+         position: absolute;
+         z-index: 2;
+         left: -18px;
+         top: 4px;
+         transform: translateX(50%);
+         border-radius: 50%;
+         background: #fff;
+         border: 1px #ccc solid;
+         width: 1.2rem;
+         height: 1.2rem;
+         }
+         .taskEvent span.completed::after {
+         content: "";
+         position: absolute;
+         z-index: 2;
+         left: -18px;
+         top: 2px;
+         transform: translateX(50%);
+         border-radius: 50%;
+         background: #00799B;
+         border: 1px #00799B solid;
+         width: 1.2rem;
+         height: 1.2rem;
+         }
+         .taskEvent span.completed {
+         color: #00799B;
+         }
+         .taskEvent span {
+         padding: 0 1.5em 1.5em 1.5em;
+         position: relative;
+         font-size: 14px;
+         font-weight: bold
+         }
+         .taskEvent span.completed::before {
+         content: "";
+         position: absolute;
+         z-index: 1;
+         left: 0;
+         height: 100%;
+         border-left: 2px #00799B solid;
+         }
+         .table td.sorting_1{padding-left:0}
+         .taskEvent span::before {
+         content: "";
+         position: absolute;
+         z-index: 1;
+         left: 0;
+         height: 100%;
+         border-left: 2px #ccc solid;
+         }
+         .taskEvent strong {
+         display: block;
+         font-weight: bolder;
+         }
+                     .taskEvent,
+            .taskEvent *::before,
+            .taskEvent *::after {
+            box-sizing: border-box;
+            font-family: arial;
+            }
+            
+            .sequence-picklist {
+                width: 80px;
+                font-size: 12px;
+            }
+            
+            .mergeDocuments:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+      </style>
+   </body>
+</apex:page>

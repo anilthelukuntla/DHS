@@ -1,0 +1,118 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+        class="slds-modal slds-fade-in-open slds-modal_large">
+        <div class="slds-modal__container">
+            <button class="slds-button slds-button_icon slds-modal__close" onclick={handleClose}>
+                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                    <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
+                </svg>
+                <span class="slds-assistive-text">Cancel and close</span>
+            </button>
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">Modal header</h1>
+            </div>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_2-of-12">
+                        <div
+                            class="slds-align_absolute-center slds-m-around_x-small slds-text-heading_medium slds-text-font_monospace textwrap">
+                            {objectname}</div>
+                        <div class="boxstyle slds-scrollable">
+                            <div for:each={fieldData} for:item="field" key={field.apiname}>
+                                <button class="btn slds-button slds-button_neutral slds-button_stretch sty" if:false={field.isselected} data-isparent={field.isparent} data-apiname={field.apiname} data-label={field.label} onclick={fieldSelectHandler}>
+                            {field.label}
+                            <svg if:true={field.isparent} class="slds-button__icon icon-end" aria-hidden="true">
+                                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#chevronright"></use>
+                            </svg>
+                            </button>
+                                <button class="btn slds-button slds-button_neutral slds-button_stretch sty styleActive" if:true={field.isselected} data-isparent={field.isparent} data-apiname={field.apiname} data-label={field.label} onclick={fieldSelectHandler}>{field.label}
+                            <svg if:true={field.isparent} class="slds-button__icon icon-end" aria-hidden="true">
+                                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#chevronright"></use>
+                            </svg>
+                        </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_2-of-12" if:true={showParent}>
+                        <div
+                            class="slds-align_absolute-center slds-m-around_x-small slds-text-heading_medium slds-text-font_monospace textwrap">
+                            {parentName}</div>
+                        <div class="boxstyle slds-scrollable">
+                            <div for:each={parentfieldData} for:item="parentfield" key={parentfield.apiname}>
+                                <button class="btn slds-button slds-button_neutral slds-button_stretch sty" if:false={parentfield.isselected} data-isparent={parentfield.isparent} data-apiname={parentfield.apiname} data-label={parentfield.label} onclick={parentFieldSelectHandler}>{parentfield.label}
+                            <svg if:true={parentfield.isparent} class="slds-button__icon icon-end" aria-hidden="true">
+                                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#chevronright"></use>
+                            </svg>
+                        </button>
+                                <button class="btn slds-button slds-button_neutral slds-button_stretch sty styleActive" if:true={parentfield.isselected} data-isparent={parentfield.isparent} data-apiname={parentfield.apiname} data-label={parentfield.label} onclick={parentFieldSelectHandler}>{parentfield.label}
+                            <svg if:true={parentfield.isparent} class="slds-button__icon icon-end" aria-hidden="true">
+                                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#chevronright"></use>
+                            </svg>
+                        </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_2-of-12" if:true={showGParent}>
+                        <div
+                            class="slds-align_absolute-center slds-m-around_x-small slds-text-heading_medium slds-text-font_monospace textwrap">
+                            {gparentName}</div>
+                        <div class="boxstyle slds-scrollable">
+                            <div for:each={gparentfieldData} for:item="gparentfield" key={gparentfield.apiname}>
+                                <button class="btn slds-button slds-button_neutral slds-button_stretch sty" if:false={gparentfield.isselected} data-isparent={gparentfield.isparent} data-apiname={gparentfield.apiname} data-label={gparentfield.label} onclick={gparentFieldSelectHandler}>{gparentfield.label}
+                            <svg if:true={gparentfield.isparent} class="slds-button__icon icon-end" aria-hidden="true">
+                                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#chevronright"></use>
+                            </svg>
+                        </button>
+                                <button class="btn slds-button slds-button_neutral slds-button_stretch sty styleActive" if:true={gparentfield.isselected} data-isparent={gparentfield.isparent} data-apiname={gparentfield.apiname} data-label={gparentfield.label} onclick={gparentFieldSelectHandler}>{gparentfield.label}
+                            <svg if:true={gparentfield.isparent} class="slds-button__icon icon-end" aria-hidden="true">
+                                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#chevronright"></use>
+                            </svg>
+                        </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_2-of-12" if:true={showGGParent}>
+                        <div
+                            class="slds-align_absolute-center slds-m-around_x-small slds-text-heading_medium slds-text-font_monospace textwrap">
+                            {ggparentName}</div>
+                        <div class="boxstyle slds-scrollable">
+                            <div for:each={ggparentfieldData} for:item="ggparentfield" key={ggparentfield.apiname}>
+                                <button class="btn slds-button slds-button_neutral slds-button_stretch sty" if:false={ggparentfield.isselected} data-apiname={ggparentfield.apiname} data-label={ggparentfield.label} onclick={ggparentFieldSelectHandler}>{ggparentfield.label}</button>
+                                <button class="btn slds-button slds-button_neutral slds-button_stretch sty styleActive" if:true={ggparentfield.isselected} data-apiname={ggparentfield.apiname} data-label={ggparentfield.label} onclick={ggparentFieldSelectHandler}>{ggparentfield.label}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_2-of-12" if:true={showMergeField}>
+                        <div class="slds-m-top_x-large">
+                            <div class="boxstyle">
+                                <div class="slds-p-around_large">
+                                    <div
+                                        class="alignCenter alignCenter slds-text-heading_small slds-text-font_monospace">
+                                        You
+                                        have selected:</div>
+                                    <div
+                                        class="slds-m-top_small alignCenter slds-text-heading_small slds-text-font_monospace">
+                                        API Name: <b>{mergeText}</b></div>
+                                    <div
+                                        class="slds-m-top_large alignCenter slds-text-heading_small slds-text-font_monospace">
+                                        <button class="slds-button slds-button_neutral" onclick={sendEvent}>Insert</button>
+                                    </div>
+                                </div>
+                                <div class="slds-align_absolute-center slds-p-around_xx-large">
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</template>

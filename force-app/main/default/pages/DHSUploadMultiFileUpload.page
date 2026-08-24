@@ -1,0 +1,148 @@
+﻿<apex:page controller="DHSUploadMultiFileUpload">  
+   <html>  
+     <head>  
+       <apex:slds />  
+       <apex:includeScript value="https://code.jquery.com/jquery-2.2.4.js"></apex:includeScript> 
+       <script> 
+         
+         $(function(){  
+              var fileLength = 0;  
+              var FileUploading = 0;  
+              var FileUploaded = 0;  
+              var ids = [];
+            	var caseId = '{!caseId}';
+             console.log('caseId...'+caseId);
+              $('#uploadBtn').click(function() {  
+                var v = document.getElementById('addr');  
+                fileLength = v.files.length;  
+            
+                for (var i = 0; i < v.files.length; i++) {  
+                  uploadAttachmentFile(v.files[i], function(err, res){   
+                    FileUploading += 1;  
+                    if (FileUploading === FileUploaded) {  
+                      document.getElementById("addr").value = "";  
+                    }  
+                  });  
+                }  
+              });  
+            
+              // ðŸ”¹ Function to upload a file as Attachment
+              var uploadAttachmentFile = function(file, callback) {  
+                filetoBase64(file, function(err, content){  
+                  var attachObject = {  
+                    ParentId: '{!recordId}',  // <-- Replace this with your parent record Id or pass dynamically
+                    Name: file.name,  
+                    Body: content  
+                  };  
+            
+                  Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.DHSUploadMultiFileUpload.processUploadedFiles}',
+                    caseId,attachObject.Name, // passing the array of ContentVersion IDs
+                    function(result, event) {
+                        if (event.status) {
+                            console.log('result...'+result);
+                            attachObject.ParentId = result;
+                            console.log('attachObject.ParentId...'+attachObject.ParentId);
+                            $.ajax({  
+                    url: '/services/data/v39.0/sobjects/Attachment',  
+                    data: JSON.stringify(attachObject),  
+                    type: 'POST',  
+                    processData: false,  
+                    contentType: false,  
+                    headers: {
+                      'Authorization': 'Bearer {!$Api.Session_ID}', 
+                      'Content-Type': 'application/json'
+                    },  
+                    xhr: function(){  
+                      var xhr = new window.XMLHttpRequest();  
+                      xhr.upload.addEventListener("progress", function(evt){  
+                        if (evt.lengthComputable) {  
+                          $('#progress_bar_container').css('display', 'block');  
+                          var percentComplete = evt.loaded / evt.total;  
+                          var percentCompletex = percentComplete * 100;  
+                          $('#percentText').html("Uploading... " + Math.round(percentCompletex) + "%");  
+                          $('.progress').css('width', percentCompletex + "%");  
+                          if (percentCompletex == 100) {  
+                            $('#progress_bar_container').css('display', 'none');  
+                          }  
+                        }  
+                      }, false);  
+                      return xhr;  
+                    },  
+                    success: function(response) {  
+                      FileUploaded += 1;  
+                      console.log('Attachment Id:', response.id);  
+                      ids.push(response.id);  
+                      $('#records').html('Uploaded Attachment Ids: ' + ids.join(', '));  
+            
+                      // When all files are uploaded, call Apex Remote Action
+                      
+                    }  
+                  }); 
+
+                            console.log('Apex call successful: ' + result);
+                            $('#records').append('<br/>' + result);
+                        } else {
+                            console.error('Apex error:', event.message);
+                            alert('Error: ' + event.message);
+                        }
+                    },
+                    {escape: true}
+                );
+                     console.log('ids...'+ids); 
+                });  
+              };  
+            
+              // ðŸ”¹ Convert file to base64
+              var filetoBase64 = function(file, callback){  
+                var reader = new FileReader();  
+                reader.onload = function() {  
+                  var myFileContents = reader.result;  
+                  var base64Mark = 'base64,';  
+                  var dataStart = myFileContents.indexOf(base64Mark) + base64Mark.length;  
+                  myFileContents = myFileContents.substring(dataStart);  
+                  callback(null, myFileContents);  
+                };  
+                reader.readAsDataURL(file);  
+              };  
+            });
+         
+          
+       </script>  
+       <style>  
+         .slds-scope .slds-page-header{  
+         border-radius: 0px;  
+         box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0.1);  
+         }  
+         .bodyPart{  
+         padding:10px;  
+         }  
+       </style>  
+     </head>  
+     <body>  
+       <apex:form >  
+         <div class="slds" style="border:1px solid #D9D9D9;">  
+           <div class="slds-page-header">  
+             <span style=""> Upload Files</span>  
+           </div>  
+           <div id="progress_bar_container" style="display:none; padding:10px;">  
+             <span id="percentText"></span>  
+             <div class="slds-progress-bar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25" role="progressbar">  
+               <span class="slds-progress-bar__value progress" style=" width: 0%;">  
+                 <span class="slds-assistive-text">Progress: 25%</span>  
+               </span>  
+             </div>  
+           </div><br/>  
+           <div class="bodyPart">  
+             Select file: <input type="file" name="files[]" multiple="multiple" id="addr"/>  
+             <input type="button" id="uploadBtn" name="Address" value="Upload" class="slds-button slds-button--brand"></input>  
+         </div>  
+         <div id="uploadedrec" style="padding:10px;">  
+           <span id="records" style=" color:green; ">  
+           </span>  
+         </div>  
+       </div>  
+     </apex:form>  
+   </body>  
+ </html>  
+ </apex:page>

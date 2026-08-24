@@ -1,0 +1,538 @@
+<apex:page showHeader="false" sidebar="false" controller="DHSMyMessagesController" standardStylesheets="false"
+    docType="html-5.0" id="page">
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>My Messages</title>
+
+    </head>
+
+    <body id="page-top">
+        <apex:form id="form">
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+                <apex:outputPanel id="intelheaderpanel">
+                <c:DHSHeader MessageCount="{!unReadMessageCount}" SourcePage="MyMessages"></c:DHSHeader>
+                </apex:outputPanel>
+
+                <style>
+                    .bs-autocomplete-menu {
+                        display: block
+                    }
+
+                    ul.bs-autocomplete-menu a {
+                        background: none;
+                        border: none
+                    }
+
+                    .ui-menu-item {
+                        padding: 10px;
+                        display:
+                    }
+
+                    .email-wrapper {
+                        margin-top: -17px;
+                        height: 85vh;
+                        background: #fff;
+                    }
+
+                    .email-wrapper .tab-content {
+                        height: 80vh;
+                        overflow-y: auto;
+                    }
+
+                    .btn.toggle {
+                        height: 50px !important;
+                        margin-bottom: 15px;
+                        font-size: 15px;
+                    }
+
+                    .trumbowyg-editor {
+                        min-height: 180px;
+                    }
+
+                    .emailbody {
+                        max-width: 60%;
+                    }
+
+                    .email-wrapper .sidebar.open {
+                        left: 0;
+                    }
+
+                    /* Mail List Container */
+                    .email-wrapper .mail-list-container {
+                        border-left: 1px solid #e9e9e9;
+                        height: 100%;
+                        padding-left: 0;
+                        padding-right: 0;
+                    }
+
+                    .email-wrapper .mail-list-container a {
+                        text-decoration: none;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list {
+                        border-bottom: 1px solid #e9e9e9;
+                        display: flex;
+                        flex-direction: row;
+                        padding: 10px 15px;
+                        width: 100%;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list:last-child {
+                        border-bottom: none;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list .form-check {
+                        margin-top: -14px;
+                        width: 11%;
+                        min-width: 20px;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list .content {
+
+                        padding-left: 0;
+                        padding-right: 0;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list .content .sender-name {
+                        font-size: 0.8rem;
+                        font-weight: 500;
+                        max-width: 95%;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list .content .message_text {
+                        margin: 0;
+
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list .details {
+                        width: 5.5%;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list .details .date {
+                        text-align: right;
+                        margin: auto 15px auto 0;
+                        white-space: nowrap;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list .details i {
+                        margin: auto 0;
+                        color: #ddd;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list .details i.favorite {
+                        color: #fcd539;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list.new_mail {
+                        // background: #e6e9ed;
+                        //   border-bottom:1px solid rgba(0,0,0,0.1);
+                        //   margin-bottom:1px;
+                        color: #03397c;
+                        font-weight: 600;
+                    }
+
+                    .email-wrapper .mail-list-container .mail-list.new_mail .details .date {
+                        color: #000000;
+                    }
+
+                    /* Message Content */
+                    .email-wrapper .message-body .sender-details {
+                        padding: 20px 15px 0;
+                        border-bottom: 1px solid #e9e9e9;
+                        display: -webkit-flex;
+                        display: flex;
+                    }
+
+                    .email-wrapper .message-body .sender-details .details {
+                        padding-bottom: 0;
+                    }
+
+                    .email-wrapper .message-body .sender-details .details .msg-subject {
+                        font-weight: 600;
+                    }
+
+                    .email-wrapper .message-body .sender-details .details .sender-email {
+                        margin-bottom: 20px;
+                        font-weight: 400;
+                    }
+
+                    .email-wrapper .message-body .sender-details .details .sender-email i {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        margin: 0 1px 0 7px;
+                    }
+                    .pointerClass{cursor:pointer}
+
+                    .email-wrapper .message-body .message-content {
+                        padding: 15px;
+                    }
+
+                    .email-wrapper .message-body .attachments-sections ul {
+                        list-style: none;
+                        border-top: 1px solid #e9e9e9;
+                        padding: 30px 15px 20px;
+                    }
+
+                    .email-wrapper .message-body .attachments-sections ul li {
+                        padding: 10px;
+                        margin-right: 20px;
+                        border: 1px solid #e9e9e9;
+                        border-radius: 5px;
+                    }
+
+                    .email-wrapper .message-body .attachments-sections ul li .thumb {
+                        display: inline-block;
+                        margin-right: 10px;
+                    }
+
+                    .email-wrapper .message-body .attachments-sections ul li .thumb i {
+                        font-size: 30px;
+                        margin: 0;
+                        color: #2e383e;
+                    }
+
+                    .email-wrapper .message-body .attachments-sections ul li .details p.file-name {
+                        display: block;
+                        margin-bottom: 0;
+                        color: #2e383e;
+                    }
+
+                    .email-wrapper .message-body .attachments-sections ul li .details .buttons .file-size {
+                        margin-right: 10px;
+                        margin-bottom: 0;
+                        font-size: 13px;
+                    }
+
+                    .email-wrapper .message-body .attachments-sections ul li .details .buttons a {
+                        font-size: 13px;
+                        margin-right: 10px;
+                    }
+
+                    .email-wrapper .message-body .attachments-sections ul li .details .buttons a:last-child {
+                        margin-right: 0;
+                    }
+
+                    .trumbowyg-insertImage-button {
+                        display: none !important;
+                    }
+                </style>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Inbox</b>
+                                    <div class="mt-3 text-gray-700 font-weight-light pointerClass" style="font-size:12px"><a
+                                            onclick="refreshaction();return false;"><i class="fas fa-sync-alt"></i>
+                                            Send/Recieve all folders</a></div>
+                                </h4>
+                            </div>
+
+                            <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+
+                            <div class="email-wrapper wrapper">
+                                <div class="row align-items-stretch">
+                                    <div class="mail-list-container col-3 pt-4 pb-4 border-right bg-white">
+                                        <div class="border-bottom px-3 d-flex  justify-content-between">
+                                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" id="incomingTab" data-toggle="pill"
+                                                        href="#messages" role="tab" aria-controls="messages"
+                                                        aria-selected="true">Messages</a>
+                                                </li>
+                                            </ul>
+                                            <div class="form-group ">
+                                                <div class="btn-group ">
+
+                                                    <a href="#" class="mx-3 {!If((currentuser.user_type__c == 'PMO' || currentuser.user_type__c == 'CMO'),'','d-none' )}" data-toggle="modal"
+                                                        data-target="#emailModal"><i
+                                                            class="fa-solid fa-pen-to-square fa-2x"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <apex:actionFunction name="fetchcurrentmessageaction"
+                                            action="{!fetchCurrentMessageAction}"
+                                            rerender="currentmessagepanel,incomingmessagespanel,allmessagespanel,intelheaderpanel" status="loader">
+                                            <apex:param name="currentMessageId" assignTo="{!currentMessageId}"
+                                                value="" />
+                                        </apex:actionfunction>
+                                        <apex:outputPanel id="allmessagespanel">
+                                            <div class="tab-content" id="pills-tabContent">
+                                                <div class="tab-pane fade show active" id="messages" role="tabpanel"
+                                                    aria-labelledby="messagesTab">
+                                                    <Apex:outputPanel id="messagespanel">
+                                                        <apex:repeat value="{!messages}" var="mail">
+                                                            <div class="mail-list {!If(messageReadStatusMap[mail.message.id],'','new_mail')}" id="{!mail.message.id}"
+                                                                onClick="fetchcurrentmessage(this);return false;">
+
+                                                                <div class="content">
+                                                                    <h4 class="sender-name ">
+                                                                        {!mail.message.DHS_From_User__r.FirstName}&nbsp;{!mail.message.DHS_From_User__r.LastName}
+                                                                    </h4>
+                                                                    <span
+                                                                        class="message_text">{!mail.message.Subject__c}<br />
+                                                                        <apex:outputField value="{!mail.message.createddate}" />
+                                                                    </span>
+                                                                </div>
+                                                                <div class="details">
+                                                                    <i class="mdi mdi-star-outline"></i>
+                                                                </div>
+                                                            </div>
+                                                        </apex:repeat>
+                                                    </Apex:outputPanel>
+
+                                                </div>
+                                            </div>
+                                        </apex:outputPanel>
+                                    </div>
+
+                                    <div class="mail-view d-none d-md-block col-9 bg-white">
+                                        <apex:outputpanel id="currentmessagepanel">
+                                            <apex:outputpanel rendered="{!showCurrentMessagePanel}">
+                                                <div class="message-body">
+                                                    <div class="sender-details">
+                                                        <div class="details">
+                                                            <p class="msg-subject">
+                                                                <strong>Subject:</strong> {!currentMessage.Subject__c}
+                                                            </p>
+                                                            <p class="sender-email">
+                                                                <strong>From:</strong>
+                                                                {!currentMessage.DHS_From_User__r.FirstName}&nbsp;{!currentMessage.DHS_From_User__r.LastName}
+                                                                <a
+                                                                    href="#">&nbsp;({!currentMessage.DHS_From_User__r.Email})</a>
+                                                                &nbsp;<i class="mdi mdi-account-multiple-plus"></i>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="message-content">
+                                                        <apex:outputtext value="{!currentMessage.Message_Body__c}"
+                                                            escape="false" />
+                                                    </div>
+                                                    <div class="attachments-sections">
+                                                        <ul>
+                                                            <apex:repeat value="{!currentMessageAttachments}"
+                                                                var="attachment">
+                                                                <li>
+                                                                    <div class="thumb"><i class="mdi mdi-file-pdf"></i>
+                                                                    </div>
+                                                                    <div class="details">
+                                                                        <p class="file-name">{!attachment.name}</p>
+                                                                        <div class="buttons">
+                                                                            <p class="file-size">
+                                                                                {!attachment.BodyLength} bytes</p>
+                                                                            <a target="_blank"
+                                                                                href="{!URLFOR($Action.Attachment.Download, attachment.id)}"><span
+                                                                                    class="glyphicon glyphicon-save-file"></span>
+                                                                                View </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+
+                                                            </apex:repeat>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </apex:outputpanel>
+                                        </apex:outputpanel>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.container-fluid -->
+                    </div>
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; ISN</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+
+                </div>
+                <!-- End of Content Wrapper -->
+
+            </div>
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModelLabel"
+                aria-hidden="true">
+                <div class="modal-dialog emailbody" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="emailModelLabel">New message</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body ">
+                            <apex:outputPanel id="messageeditorpanel">
+                                <script>
+                                    $('.editor').trumbowyg();
+                                </script>
+                                <form>
+                                    <apex:outputPanel id="fromandtouserpanel">
+                                        <div class="form-group">
+                                            <label for="recipient-name" class="col-form-label">To:</label>
+                                            <apex:selectlist styleclass="form-select form-select-sm form-control selectedtouser"
+                                                size="1" value="{!selecteToAddressOption}">
+                                                <apex:selectOptions value="{!toAddressOptions}" />
+                                            </apex:selectlist>
+                                        </div>
+                                    </apex:outputPanel>
+                                    <div class="form-group">
+                                        <label for="recipient-subject" class="col-form-label">Subject:</label>
+                                        <apex:input type="text" styleclass="form-control recipient-subject"
+                                            id="recipient-subject" value="{!messageSubject}" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="message-text" class="col-form-label mb-0">Body:</label>
+                                        <apex:inputtextarea styleclass="form-control mb-0 editor recipient-body"
+                                            value="{!messageBody}"></apex:inputtextarea>
+                                    </div>
+                                </form>
+                            </apex:outputPanel>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="sendmessage();">Send message</button>
+                            <apex:actionFunction name="sendmessageaction" action="{!sendMessage}"
+                                rerender="currentmessagepanel,messagespanel,,messageeditorpanel,intelheaderpanel"
+                                status="loader" oncomplete="hidemessagecreatepanel();return false;">
+                                <apex:param name="selectedToUser" assignTo="{!selectedToUser}" value="" />
+                                <apex:param name="selectedCCUser" assignTo="{!selectedCCUser}" value="" />
+                            </apex:actionFunction>
+                            <apex:actionFunction name="refreshaction" action="{!refreshaction}"
+                                rerender="currentmessagepanel,messagespanel,messageeditorpanel,intelheaderpanel"
+                                status="loader">
+                            </apex:actionFunction>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </apex:form>
+        <script>
+
+            function onselectValidation() {
+                if ($('.selectedrelatedcase').val() !== '') {
+                    $('.selectedfromuser').attr("disabled", false);
+                }
+
+            }
+
+            function replymessage() {
+                replymessageaction();
+            }
+
+            function hidemessagecreatepanel() {
+                $("#emailModal").modal('hide');
+                $('.bs-autocomplete').val('');
+                $('.recipient-subject').val('');
+                $('.recipient-body').val('');
+                $('.trumbowyg-editor').text('');
+
+            }
+
+            function sendmessage() {
+                var touser = $('#to-address-id').val();
+                var ccuser = $('#cc-address-id').val();
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, message will be sent.',
+                    buttons: {
+                        confirm: function () {
+                            sendmessageaction(touser, ccuser);
+
+                        },
+                        cancel: function () {}
+                    }
+                });
+            }
+
+
+            function fetchcurrentoutgoingmessage(elm) {
+                fetchcurrentoutgoingmessageaction(elm.id);
+            }
+
+            function fetchcurrentmessage(elm) {
+
+                fetchcurrentmessageaction(elm.id);
+
+            }
+            $('.editor').trumbowyg();
+
+            function buttonFunction() {
+                $('#replayEmail').toggleClass("show")
+                $('#replayEmail .editor').trumbowyg();
+            }
+            $(document).ready(function () {
+                $('body').on('change', '.selectedfromuser', function () {
+                    if ($('.selectedfromuser option:selected').text() !== "DHS_All Case Members") {
+                        $('.selectedtouserGroup').removeClass('d-none')
+                    } else {
+                        $('.selectedtouserGroup').addClass('d-none')
+                    }
+                });
+                $('.selectedfromuser').attr("disabled", true);
+            });
+        </script>
+        <style>
+            ul.bs-autocomplete-menu {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                max-height: 200px;
+                overflow: auto;
+                z-index: 9999;
+                border: 1px solid #eeeeee;
+                border-radius: 4px;
+                background-color: #fff;
+                box-shadow: 0px 1px 6px 1px rgba(0, 0, 0, 0.4);
+            }
+
+            ul.bs-autocomplete-menu a {
+                font-weight: normal;
+                color: #000;
+            }
+            
+            
+        </style>
+
+
+    </body>
+
+</apex:page>

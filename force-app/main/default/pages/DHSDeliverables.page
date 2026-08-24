@@ -1,0 +1,213 @@
+﻿<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+    controller="DHSDeliverablesController">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Intel Deliverables</title>
+        <style>
+           .buttonCell .text { padding:5px 10px;}
+        .buttonCell:last-child, .buttonCell .duelingText,.buttonCell .text:nth-child(1){display:none}
+            .buttons-collection {
+                display: none
+            }
+
+            .dt-button {
+                color: #fff;
+                background-color: #00799B;
+                border-color: #00799B;
+                padding: 2px 25px;
+                border-radius: 5px;
+            }
+
+            .dt-buttons {
+                text-align: right;
+                margin: 0 0 10px;
+            }
+            #reportstable_wrapper{overflow:auto}
+        </style>
+
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+                <c:DHSHeader ></c:DHSHeader>
+                <script src="https://cdn.datatables.net/buttons/1.5.3/js/buttons.colVis.min.js"></script>
+                <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+                <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+                    <!-- Main Content -->
+                    <div id="content">
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Deliverable Manifest</b></h4>
+                            </div>
+                            <!-- Sidebar Toggle (Topbar) -->
+                            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile>
+                        </nav>
+                        <!-- End of Topbar -->
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="mt-2 mb-2 row">
+                                                <div class="form-group mb-2 col-6">
+                                                    <c:DHSMultiSelectPicklist leftLabel="Available Cases"
+                                                        leftOption="{!caseOptions}"
+                                                        rightLabel="Selected Cases"
+                                                        rightOption="{!selectedcaseOptions}"
+                                                        size="14"
+                                                        width="250px"/>
+                                                </div>
+                                            </div>
+                                             <div class="mt-2 mb-2 row">
+                                                <div class="form-group mb-2 col-1">
+                                                    <label>Select Version</label>
+                                                    <apex:selectlist styleclass="form-select form-control selectedreporttype"
+                                                        size="1" value="{!selectedVersion}">
+                                                        <apex:selectOptions value="{!versionOptions}" />
+                                                    </apex:selectlist>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 mb-2 row">
+                                             <div class="form-group mt-2 mb-2 ">
+                                                    <button id="downloadmanifestbutton" class="btn btn-primary mx-3 px-4"
+                                                        onclick="downloadmanifest();return false;">Generate Manifest</button>
+                                                        
+                                                </div>
+                                                 <div class="form-group mt-2 mb-2 mx-3 downloadmanifesContainer d-none">
+                                                     <apex:outputPanel id="downloadmanifestpanel">
+                                                         <apex:outputPanel rendered="{!manifestActionAttachmentId != Null}">
+                                                          <a target="_blank" onclick="hideDownloadManifest();" class="btn btn-primary px-4"
+                                                         href="{!URLFOR($Action.Attachment.Download, manifestActionAttachmentId)}">Download Manifest</a>
+                                                         </apex:outputPanel>
+                                                     </apex:outputPanel>
+                                                 </div>
+                                             </div>
+                                            <section>
+                                                <div class="mb-4 d-flex justify-content-end">
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.container-fluid -->
+                    <!-- End of Main Content -->
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+                </div>
+            </div>
+            <!-- End of Content Wrapper -->
+            <!-- End of Page Wrapper -->
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+
+              <apex:actionfunction status="loader" name="downloadmanifestapexaction"
+                                 action="{!downloadmanifestaction}"
+                                 rerender="downloadmanifestpanel"
+                                 oncomplete="loaddatatables(); return false;" />
+
+        </apex:form>
+        <script>
+            function hideDownloadManifest(){
+            $('.downloadmanifesContainer ').addClass('d-none');
+            }
+            function downloadmanifest() {
+            var isvalid = true;
+            if ($('.multilist:last option').length == 0) {
+             isvalid = false;
+             $('.multilist:last').addClass("border border-danger");
+            }
+            else if($('.selectedreporttype').val() == ""){
+            isvalid = false;
+            $('.selectedreporttype').addClass("border border-danger");
+            }
+            else{
+            $('.multilist:last').removeClass("border border-danger");
+            $('.selectedreporttype').removeClass("border border-danger");
+            
+            }
+         
+             if (isvalid) {
+             $.confirm({
+                 title: 'Please Confirm!',
+                 content: 'On click of confirm, Manifest will be generated.',
+                 buttons: {
+                     confirm: function () {
+                         $('.downloadmanifesContainer ').removeClass('d-none');
+                         downloadmanifestapexaction();
+                     },
+                     cancel: function () {}
+                 }
+             });
+             }
+             }
+             
+        
+            $(document).ready(function () {
+
+                $('.datepickerInput').datepicker({
+                    weekStart: 1,
+                    daysOfWeekHighlighted: "6,0",
+                    autoclose: true,
+                    todayHighlight: true,
+                });
+            });
+
+           
+            function loaddatatables() {
+                var reportLable = $('.selectedreporttype').val();
+                $('#reportstable').DataTable({
+                    "searching": false,
+                    "bLengthChange": false,
+                    "bFilter": true,
+                    "bInfo": true,
+                    "bAutoWidth": false,
+                    "dom": 'Bfrtip',
+                    buttons: [
+
+                        {
+                            extend: 'excelHtml5',
+                            title: reportLable,
+                            text: 'Export to Excel',
+                            extension: '.xlsx',
+                            exportOptions: {
+                                columns: ':visible'
+                            }
+                        },
+                        'colvis'
+                    ]
+                });
+            }
+        </script>
+    </body>
+</apex:page>

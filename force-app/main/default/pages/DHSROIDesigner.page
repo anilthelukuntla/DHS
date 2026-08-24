@@ -1,0 +1,46 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0" title="DHS ROI Designer" cache="false" controller="DHSHeaderProfileController">
+    <apex:includeLightning />
+    <html>
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <style>
+                html,
+                body,
+                #dhsRoiDesignerContainer {
+                    min-height: 100vh;
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                }
+
+                body {
+                    background: #f5f8fc;
+                    overflow: auto;
+                }
+            </style>
+        </head>
+        <body>
+            <apex:outputPanel rendered="{!canAccessDhsDesigner}" layout="none">
+                <div id="dhsRoiDesignerContainer"></div>
+                <script>
+                    $Lightning.use("c:lmsPortalOutApp", function() {
+                        $Lightning.createComponent(
+                            "c:dhsRoiDesigner",
+                            {},
+                            "dhsRoiDesignerContainer",
+                            function(component, status, errorMessage) {
+                                if (status !== "SUCCESS") {
+                                    console.error("Unable to load DHS ROI designer", status, errorMessage);
+                                }
+                            }
+                        );
+                    });
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!NOT(canAccessDhsDesigner)}" layout="block" style="font-family: Arial, sans-serif; padding: 32px;">
+                You do not have access to DHS Designer.
+            </apex:outputPanel>
+        </body>
+    </html>
+</apex:page>

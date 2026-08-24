@@ -1,0 +1,178 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" docType="html-5.0"
+    controller="DHSPayrollSettingsController">
+
+
+    <head>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Payroll Settings</title>
+
+    </head>
+
+    <body id="page-top">
+        <apex:form >
+
+            <!-- Page Wrapper -->
+            <div id="wrapper">
+
+                <c:DHSHeader ></c:DHSHeader>
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+
+                        <!-- Topbar -->
+                        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                            <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100">
+                                <h4 class=" mb-0 text-gray-800"><b>Payroll Settings</b></h4>
+                            </div>
+                            <!-- Topbar Navbar -->
+                            <c:DHSHeaderProfile ></c:DHSHeaderProfile> 
+
+                        </nav>
+                        <!-- End of Topbar -->
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-4">
+
+                                        <div
+                                            class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                            <h4 class="m-0 font-weight-bold text-primary">Payroll Settings </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <apex:outputpanel id="payrollsettingspanel">
+                                                <table id="payrollsettingstable" class="table" cellspacing="0"
+                                                    width="100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Region</th>
+                                                            <th>{!$Label.DHS_PayrollSettingH_W}</th>
+                                                            <th>Stipend (BYOD)</th>
+                                                            <th>HSA</th>
+                                                            <th>Transportation</th>
+                                                            <th>RPS</th>
+                                                            <th>Vacation</th>
+                                                            <th>Sick</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        <apex:repeat var="setting" value="{!payrollSettings}">
+                                                            <tr>
+                                                                <td>{!setting.Region__c}</td>
+                                                                <td>
+                                                                    <apex:inputfield value="{!setting.HW__c}"
+                                                                        styleclass="form-control"></apex:inputfield>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:inputfield value="{!setting.Stipend_BYOD__c}"
+                                                                        styleclass="form-control"></apex:inputfield>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:inputfield value="{!setting.HSA__c}"
+                                                                        styleclass="form-control"></apex:inputfield>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:inputfield value="{!setting.Transportation__c}"
+                                                                        styleclass="form-control"></apex:inputfield>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:inputfield value="{!setting.RPS__c}"
+                                                                        styleclass="form-control"></apex:inputfield>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:inputfield value="{!setting.Vacation__c}"
+                                                                        styleclass="form-control"></apex:inputfield>
+                                                                </td>
+                                                                <td>
+                                                                    <apex:inputfield value="{!setting.Sick__c}"
+                                                                        styleclass="form-control"></apex:inputfield>
+                                                                </td>
+                                                            </tr>
+                                                        </apex:repeat>
+
+                                                    </tbody>
+                                                </table>
+                                            </apex:outputpanel>
+                                            <div class="mt-3 col-12 row mx-1 justify-content-center">
+                                                <button class="btn btn-primary mb-2"
+                                                    onclick="updatepayrollsettings();return false;">Update</button>
+                                            </div>
+                                            <apex:actionfunction name="updatepayrollsettingsaction"
+                                                action="{!updatePayrollSettings}" rerender="payrollsettingspanel"
+                                                oncomplete="loaddatatables();return false;" status="loader"></apex:actionfunction>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.container-fluid -->
+
+
+                    <!-- End of Main Content -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2021</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
+                </div>
+            </div>
+            <!-- End of Content Wrapper -->
+
+
+            <!-- End of Page Wrapper -->
+
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            <c:DHSFooter />
+
+        </apex:form>
+
+        <script>
+            $(document).ready(function () {
+                $('.datepickerInput').datepicker({
+                    weekStart: 1,
+                    daysOfWeekHighlighted: "6,0",
+                    autoclose: true,
+                    todayHighlight: true,
+                });
+            });
+
+            function updatepayrollsettings() {
+                $.confirm({
+                    title: 'Please Confirm!',
+                    content: 'On click of confirm, payroll settings will be updated.',
+                    buttons: {
+                        confirm: function () {
+                            updatepayrollsettingsaction();
+                        },
+                        cancel: function () {}
+                    }
+                });
+
+
+            }
+        </script>
+    </body>
+</apex:page>
