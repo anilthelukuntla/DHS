@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Coverage_Type__c</fullName>
+    <label>Coverage Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>LeadType__c</controllingField>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Personal</fullName>
+                <default>false</default>
+                <label>Personal</label>
+            </value>
+            <value>
+                <fullName>Record</fullName>
+                <default>false</default>
+                <label>Record</label>
+            </value>
+            <value>
+                <fullName>Subject Interview</fullName>
+                <default>false</default>
+                <label>Subject Interview</label>
+            </value>
+            <value>
+                <fullName>General Record</fullName>
+                <default>false</default>
+                <label>General Record</label>
+            </value>
+            <value>
+                <fullName>Subject Recontact</fullName>
+                <default>false</default>
+                <label>Subject Recontact</label>
+            </value>
+            <value>
+                <fullName>Header</fullName>
+                <default>false</default>
+                <label>Header</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Public records (PUBR)</controllingFieldValue>
+            <controllingFieldValue>Law Enforcement (LAWE)</controllingFieldValue>
+            <controllingFieldValue>General (GENL)</controllingFieldValue>
+            <controllingFieldValue>Employment (EMPL)</controllingFieldValue>
+            <controllingFieldValue>Medical (MEDI)</controllingFieldValue>
+            <controllingFieldValue>Education (EDUC)</controllingFieldValue>
+            <controllingFieldValue>Financial (FINL)</controllingFieldValue>
+            <valueName>Record</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Public records (PUBR)</controllingFieldValue>
+            <controllingFieldValue>Law Enforcement (LAWE)</controllingFieldValue>
+            <controllingFieldValue>Publicly Available Electronic Information (PAEI)</controllingFieldValue>
+            <controllingFieldValue>General (GENL)</controllingFieldValue>
+            <controllingFieldValue>Employment (EMPL)</controllingFieldValue>
+            <controllingFieldValue>Medical (MEDI)</controllingFieldValue>
+            <controllingFieldValue>Residence (RESI)</controllingFieldValue>
+            <controllingFieldValue>Education (EDUC)</controllingFieldValue>
+            <controllingFieldValue>Unemployment</controllingFieldValue>
+            <controllingFieldValue>Financial (FINL)</controllingFieldValue>
+            <valueName>General Record</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>References (REFE)</controllingFieldValue>
+            <controllingFieldValue>General (GENL)</controllingFieldValue>
+            <controllingFieldValue>Employment (EMPL)</controllingFieldValue>
+            <controllingFieldValue>Medical (MEDI)</controllingFieldValue>
+            <controllingFieldValue>Residence (RESI)</controllingFieldValue>
+            <controllingFieldValue>Education (EDUC)</controllingFieldValue>
+            <controllingFieldValue>Former Spouse (FMSP)</controllingFieldValue>
+            <controllingFieldValue>Unemployment</controllingFieldValue>
+            <valueName>Personal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Header</controllingFieldValue>
+            <valueName>Header</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Subject Interview (ESI/TESI)</controllingFieldValue>
+            <valueName>Subject Interview</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Subject Recontact (SUBC)</controllingFieldValue>
+            <valueName>Subject Recontact</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

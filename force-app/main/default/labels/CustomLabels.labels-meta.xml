@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>DHS_Access_To_Lead_Upload</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Access To Lead Upload</shortDescription>
+        <value>PMO</value>
+    </labels>
+    <labels>
+        <fullName>DHS_AccountName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_AccountName</shortDescription>
+        <value>ISN</value>
+    </labels>
+    <labels>
+        <fullName>DHS_AdminEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_AdminEmail</shortDescription>
+        <value>isnbuy@yahoo.com</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CDRL_Case_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Intel CDRL Case Export</shortDescription>
+        <value>Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Cancel_Lead_Button</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Cancel Lead Button</shortDescription>
+        <value>Unassigned</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CaseCancellationRequestNotificationEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_CaseCancellationRequestNotificationEmail</shortDescription>
+        <value>devdistro@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CaseCancellationRequestNotificationUseCCAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_CaseCancellationRequestNotificationUseCCAddress</shortDescription>
+        <value>true</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CaseCancellationRequestSubject</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_CaseCancellationRequestSubject</shortDescription>
+        <value>Case Cancellation Request Status</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CaseIntakeNotificationEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_CaseIntakeNotificationEmail</shortDescription>
+        <value>devdistro@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CaseIntakeNotificationUseCCAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_CaseIntakeNotificationUseCCAddress</shortDescription>
+        <value>False</value>
+    </labels>
+    <labels>
+        <fullName>DHS_ContactToCaseFields</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_ContactToCaseFields</shortDescription>
+        <value>DHS_Manifest__c</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CustomerOrderUploadNotificationEmail</fullName>
+        <categories>CustomerOrderUploadNotification</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_CustomerOrderUploadNotificationEmail</shortDescription>
+        <value>devdistro@isncorp.com,athelukuntla@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CustomerOrderUploadNotificationSubject</fullName>
+        <categories>CustomerOrderUploadNotification</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_CustomerOrderUploadNotificationSubject</shortDescription>
+        <value>Customer Order Upload</value>
+    </labels>
+    <labels>
+        <fullName>DHS_CustomerOrderUploadNotificationUseCCAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_CustomerOrderUploadNotificationUseCCAddress</shortDescription>
+        <value>true</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Customer_Notification_Case_Fields</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Customer Notification Case Fields</shortDescription>
+        <value>Id,DHS_Case_Queue_Status__c,DHS_Case_Completed_Date__c</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Customer_Notification_Emails</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Customer Notification Emails</shortDescription>
+        <value>vreddy@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Data_Load_Batch_Size</fullName>
+        <categories>DataLoad</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Data Load Batch Size</shortDescription>
+        <value>100</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Do_Not_Cancel_Lead_Status</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Do Not Cancel Lead Status</shortDescription>
+        <value>DHS_Completed</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Duplicate_Item_Number_Message</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Duplicate Item Number Message</shortDescription>
+        <value>Duplicate Item Number!</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Error_Message</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error Message</shortDescription>
+        <value>User do not have permission to this action Please Contact System administrator.</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Export_Cases_Completed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Export Cases DHS_Completed</shortDescription>
+        <value>Id,Name,DHS_Case_Queue_Status__c</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Export_Pending_Cases_Fields</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Export Pending Cases Fields</shortDescription>
+        <value>Id,Name,DHS_Case_Queue_Status__c</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Export_Pending_Leads</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Export Pending Leads</shortDescription>
+        <value>Id,Name,DHS_Status__c,DHS_Case__r.DHS_Case_Number__c,DHS_Case__r.DHS_Subject_Name__c</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Export_Pending_Leads_By_Type</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Export Pending Leads By Type</shortDescription>
+        <value>Id,Name,DHS_Status__c,DHS_LeadType__c</value>
+    </labels>
+    <labels>
+        <fullName>DHS_ExtendedEmailsForMessages</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_ExtendedEmailsForMessages</shortDescription>
+        <value>cchin@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Grammer_Prompt_Template_Id</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Grammer Prompt Template Id</shortDescription>
+        <value>0hfcn000000lrVVAAY</value>
+    </labels>
+    <labels>
+        <fullName>DHS_JeriPPFAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_JeriPPFAddress</shortDescription>
+        <value>Department of Defense 9800 Savage Road Suite: 6771, A5231 Ft. Meade. MD 20755-6774</value>
+    </labels>
+    <labels>
+        <fullName>DHS_JeriPPFEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_JeriPPFEmail</shortDescription>
+        <value>jmselin@nsa.gov</value>
+    </labels>
+    <labels>
+        <fullName>DHS_JeriPPFName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_JeriPPFName</shortDescription>
+        <value>Jeri Selinger</value>
+    </labels>
+    <labels>
+        <fullName>DHS_KaylaPPFAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_KaylaPPFAddress</shortDescription>
+        <value>Department of Defense 9800 Savage Road Suite: 6771, A5232 Ft. Meade. MD 20755-6774</value>
+    </labels>
+    <labels>
+        <fullName>DHS_KaylaPPFEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_KaylaPPFEmail</shortDescription>
+        <value>jmselin@nsa.gov</value>
+    </labels>
+    <labels>
+        <fullName>DHS_KaylaPPFName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_KaylaPPFName</shortDescription>
+        <value>Kayla</value>
+    </labels>
+    <labels>
+        <fullName>DHS_LeadUploadTemplateName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_LeadUploadTemplateName</shortDescription>
+        <value>LeadUploadTemplate</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Lead_Report_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Lead Report Export</shortDescription>
+        <value>Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Message_Report_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Message Report Export</shortDescription>
+        <value>DHS_Case_Message__c,DHS_Case_Number__c,DHS_From_User__r.FirstName,DHS_From_User__r.LastName,DHS_Subject__c,DHS_Message_Body__c,DHS_Message_Date__c</value>
+    </labels>
+    <labels>
+        <fullName>DHS_OrderUploadTemplateName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_OrderUploadTemplateName</shortDescription>
+        <value>OrderUploadTemplate</value>
+    </labels>
+    <labels>
+        <fullName>DHS_PayrollSettingH_W</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>PayrollSettingH&amp;W</shortDescription>
+        <value>H&amp;W</value>
+    </labels>
+    <labels>
+        <fullName>DHS_SecondSundayStartDate</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_SecondSundayStartDate</shortDescription>
+        <value>01-07-2024</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Show_Subheaders</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Show Subheaders</shortDescription>
+        <value>0058y0000019EkMAAU,005Hv000001G5nfIAC</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Subject_Site</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Subject Site</shortDescription>
+        <value>https://isn-foresite--inteldev.sandbox.my.salesforce-sites.com/DHSSubjectFileUploadAuthPage</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Test_CMOs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Test CMOs</shortDescription>
+        <value>005Hv000001GFPN,005Hv000001GFPN</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Test_INVs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Test INVs</shortDescription>
+        <value>005Hv000001H0Qm</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Time_Sheet_Report_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Time Sheet Report Export</shortDescription>
+        <value>Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Types_Of_Reports</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Types Of DHSReports</shortDescription>
+        <value>ROIReport,Case,Lead,Messages,Check-in/Check-out,Waivers,IC DHSTimesheet,Workload</value>
+    </labels>
+    <labels>
+        <fullName>DHS_UserProfiles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_UserProfiles</shortDescription>
+        <value>DHS Community PMO Profile,DHS Community CMO Profile,DHS Community INV Profile,DHS Community QA Profile</value>
+    </labels>
+    <labels>
+        <fullName>DHS_UserProfilesToCreateTimesheets</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DHS_UserProfilesToCreateTimesheets</shortDescription>
+        <value>DHS Community PMO Profile,DHS Community CMO Profile,DHS Community INV Profile,DHS Community QA Profile,System Administrator</value>
+    </labels>
+    <labels>
+        <fullName>DHS_User_Profiles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>User Profiles</shortDescription>
+        <value>Customer Community Case Manager User,Customer Community Investigator User</value>
+    </labels>
+    <labels>
+        <fullName>DHS_Waiver_Report_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Waiver Report Export</shortDescription>
+        <value>Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>DHS_from_profile</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>from profile</shortDescription>
+        <value>Customer Community Investigator User</value>
+    </labels>
+    <labels>
+        <fullName>DHS_to_profile</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>to profile</shortDescription>
+        <value>DIA Customer Community Investigator User</value>
+    </labels>
+</CustomLabels>
