@@ -353,4 +353,433 @@
         <shortDescription>to profile</shortDescription>
         <value>DIA Customer Community Investigator User</value>
     </labels>
+    <labels>
+        <fullName>Access_To_Lead_Upload</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Access To Lead Upload</shortDescription>
+        <value>PMO</value>
+    </labels>
+    <labels>
+        <fullName>AdminEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>AdminEmail</shortDescription>
+        <value>rkunvar@yahoo.com</value>
+    </labels>
+    <labels>
+        <fullName>Cancel_Lead_Button</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Cancel Lead Button</shortDescription>
+        <value>Unassigned</value>
+    </labels>
+    <labels>
+        <fullName>CaseIntakeNotificationEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CaseIntakeNotificationEmail</shortDescription>
+        <value>cchin@isncorp.com,ukunvar@isncorp.com,bBrennan@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>CaseIntakeNotificationUseCCAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CaseIntakeNotificationUseCCAddress</shortDescription>
+        <value>True</value>
+    </labels>
+    <labels>
+        <fullName>ContactToCaseFields</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ContactToCaseFields</shortDescription>
+        <value>Manifest__c</value>
+    </labels>
+    <labels>
+        <fullName>CustomerOrderUploadNotificationEmail</fullName>
+        <categories>CustomerOrderUploadNotification</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CustomerOrderUploadNotificationEmail</shortDescription>
+        <value>cchin@isncorp.com,ukunvar@isncorp.com,bBrennan@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>CustomerOrderUploadNotificationSubject</fullName>
+        <categories>CustomerOrderUploadNotification</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CustomerOrderUploadNotificationSubject</shortDescription>
+        <value>Customer Order Upload</value>
+    </labels>
+    <labels>
+        <fullName>CustomerOrderUploadNotificationUseCCAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CustomerOrderUploadNotificationUseCCAddress</shortDescription>
+        <value>true</value>
+    </labels>
+    <labels>
+        <fullName>Customer_Notification_Case_Fields</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Customer Notification Case Fields</shortDescription>
+        <value>Id,Case_Queue_Status__c,Case_Completed_Date__c</value>
+    </labels>
+    <labels>
+        <fullName>Customer_Notification_Emails</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Customer Notification Emails</shortDescription>
+        <value>ukunvar@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>DIAAccountName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIAAccountName</shortDescription>
+        <value>ISN</value>
+    </labels>
+    <labels>
+        <fullName>DIALeadUploadTemplateName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIALeadUploadTemplateName</shortDescription>
+        <value>LeadUploadTemplate</value>
+    </labels>
+    <labels>
+        <fullName>DIAOnboardingDocusignTemplateName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIAOnboardingDocusignTemplateName</shortDescription>
+        <value>ISN ICA PaperProof</value>
+    </labels>
+    <labels>
+        <fullName>DIAPayrollSettingH_W</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIAPayrollSettingH&amp;W</shortDescription>
+        <value>H&amp;W</value>
+    </labels>
+    <labels>
+        <fullName>DIAUserProfiles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIAUserProfiles</shortDescription>
+        <value>DIA Customer Community PMO User,DIA Customer Community CMO User,DIA Customer Community Investigator User,DIA Customer Community QA User,ISNBI Customer Community PMO User,ISNBI Customer Community CMO User,ISNBI Customer Community Investigator User,ISNBI Customer Community QA User,System Administrator</value>
+    </labels>
+    <labels>
+        <fullName>DIAUserProfilesToCreateTimesheets</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIAUserProfilesToCreateTimesheets</shortDescription>
+        <value>DIA Customer Community CMO User,DIA Customer Community Investigator User,DIA Customer Community PMO User,DIA Customer Community QA User,DIA Employee Investigator,System Administrator</value>
+    </labels>
+    <labels>
+        <fullName>DIA_Duplicate_Item_Number_Message</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIA Duplicate Item Number Message</shortDescription>
+        <value>Duplicate Item Number!</value>
+    </labels>
+    <labels>
+        <fullName>DIA_Types_Of_Reports</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIA Types Of Reports</shortDescription>
+        <value>ROIReport,Case,Lead,Messages,Check-in/Check-out,Waiver/Extension</value>
+    </labels>
+    <labels>
+        <fullName>DIA_User_Profiles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DIA User Profiles</shortDescription>
+        <value>DIA Customer Community PMO User,DIA Customer Community CMO User,DIA Customer Community Investigator User,DIA Customer Community QA User,ISNBI Customer Community PMO User,ISNBI Customer Community CMO User,ISNBI Customer Community Investigator User,ISNBI Customer Community QA User</value>
+    </labels>
+    <labels>
+        <fullName>Data_Load_Batch_Size</fullName>
+        <categories>DataLoad</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Data Load Batch Size</shortDescription>
+        <value>100</value>
+    </labels>
+    <labels>
+        <fullName>DocusignAccountId</fullName>
+        <categories>DocuSign</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocusignAccountId</shortDescription>
+        <value>bb1789b1-f7cc-49b1-b544-62401860d2cd</value>
+    </labels>
+    <labels>
+        <fullName>DocusignHostURL</fullName>
+        <categories>DocuSign</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocusignHostURL</shortDescription>
+        <value>https://isn-foresite.my.salesforce.com/</value>
+    </labels>
+    <labels>
+        <fullName>DocusignIntegratorsKey</fullName>
+        <categories>DocuSign</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocusignIntegratorsKey</shortDescription>
+        <value>93c3afa8-c277-4dab-bf1b-f7af39c7f7a6</value>
+    </labels>
+    <labels>
+        <fullName>DocusignPassword</fullName>
+        <categories>DocuSign</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocusignPassword</shortDescription>
+        <value>isnDS@2020</value>
+    </labels>
+    <labels>
+        <fullName>DocusignUserId</fullName>
+        <categories>DocuSign</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocusignUserId</shortDescription>
+        <value>84bc5849-ad50-44cc-8ede-f33c0d9221a2</value>
+    </labels>
+    <labels>
+        <fullName>DocusignWebServiceUrl</fullName>
+        <categories>DocuSign</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>DocusignWebServiceUrl</shortDescription>
+        <value>https://demo.docusign.net/API/3.0/dsapi.asmx</value>
+    </labels>
+    <labels>
+        <fullName>Duplicate_Item_Number_Message</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Duplicate Item Number Message</shortDescription>
+        <value>Duplicate Item Number!</value>
+    </labels>
+    <labels>
+        <fullName>Error_Message</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error Message</shortDescription>
+        <value>User do not have permission to this action Please Contact System administrator.</value>
+    </labels>
+    <labels>
+        <fullName>Export_Cases_Completed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Export Cases Completed</shortDescription>
+        <value>Customer_Case_Number__c,Subject_Name__c,Case_Queue_Status__c,Manifest__c,Case_Due_Date__c,Waiver_Due_Date__c,ISP_requested_Waiver__c,Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>Export_Pending_Cases_Fields</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Export Pending Cases Fields</shortDescription>
+        <value>Customer_Case_Number__c,Subject_Name__c,Case_Queue_Status__c,Manifest__c,Case_Due_Date__c,Waiver_Due_Date__c,ISP_requested_Waiver__c,Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>Export_Pending_Leads</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Export Pending Leads</shortDescription>
+        <value>Case__r.Customer_Case_Number__c,Case__r.Subject_Name__c,Status__c,  Case__r.SF_86_Certification_Date__c,Waiver_Flagged_Date__c,Waiver_Initiated_Date__c,Waiver_Approved_Date__c,Reason_for_Waiver__c,Id,Name,Item_number__c</value>
+    </labels>
+    <labels>
+        <fullName>Export_Pending_Leads_By_Type</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Export Pending Leads By Type</shortDescription>
+        <value>Case__r.Customer_Case_Number__c,Case__r.Subject_Name__c,Status__c,  Case__r.SF_86_Certification_Date__c,Waiver_Flagged_Date__c,Waiver_Initiated_Date__c,Waiver_Approved_Date__c,Reason_for_Waiver__c,Id,Name,Item_number__c</value>
+    </labels>
+    <labels>
+        <fullName>ExtendedEmailsForMessages</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>ExtendedEmailsForMessages</shortDescription>
+        <value>cchin@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>Grammer_Prompt_Template_Id</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Grammer_Prompt_Template_Id</shortDescription>
+        <value>0hfcr000000x5i1AAA</value>
+    </labels>
+    <labels>
+        <fullName>IntelAccountName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>IntelAccountName</shortDescription>
+        <value>ISN</value>
+    </labels>
+    <labels>
+        <fullName>IntelOnboardingDocusignTemplateName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>IntelOnboardingDocusignTemplateName</shortDescription>
+        <value>ISN ICA PaperProof</value>
+    </labels>
+    <labels>
+        <fullName>IntelUserProfiles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>IntelUserProfiles</shortDescription>
+        <value>Customer Community PMO User,Customer Community CMO User,Customer Community Investigator User,Customer Community QA User</value>
+    </labels>
+    <labels>
+        <fullName>IntelUserProfilesToCreateTimesheets</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>IntelUserProfilesToCreateTimesheets</shortDescription>
+        <value>ISNBI Customer Community PMO User,ISNBI Customer Community CMO User,ISNBI Customer Community Investigator User,ISNBI Customer Community QA User,ISNBI Investigator CCPL,Customer Community PMO User,Customer Community CMO User,Customer Community Investigator User,Customer Community QA User</value>
+    </labels>
+    <labels>
+        <fullName>JeriPPFAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JeriPPFAddress</shortDescription>
+        <value>Department of Defense 9800 Savage Road Suite: 6771, A5231 Ft. Meade. MD 20755-6774</value>
+    </labels>
+    <labels>
+        <fullName>JeriPPFEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JeriPPFEmail</shortDescription>
+        <value>jmselin@nsa.gov</value>
+    </labels>
+    <labels>
+        <fullName>JeriPPFName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JeriPPFName</shortDescription>
+        <value>Jeri Selinger</value>
+    </labels>
+    <labels>
+        <fullName>KaylaPPFAddress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>KaylaPPFAddress</shortDescription>
+        <value>Department of Defense 9800 Savage Road Suite: 6771, A5232 Ft. Meade. MD 20755-6774</value>
+    </labels>
+    <labels>
+        <fullName>KaylaPPFEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>KaylaPPFEmail</shortDescription>
+        <value>jmselin@nsa.gov</value>
+    </labels>
+    <labels>
+        <fullName>KaylaPPFName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>KaylaPPFName</shortDescription>
+        <value>Kayla</value>
+    </labels>
+    <labels>
+        <fullName>LeadUploadTemplateName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>LeadUploadTemplateName</shortDescription>
+        <value>LeadUploadTemplate</value>
+    </labels>
+    <labels>
+        <fullName>Lead_Report_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Lead Report Export</shortDescription>
+        <value>Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>Message_Report_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Message Report Export</shortDescription>
+        <value>Case_Message__c,Case_Number__c,From_User__r.FirstName,From_User__r.LastName,Subject__c,Message_Body__c,Message_Date__c</value>
+    </labels>
+    <labels>
+        <fullName>OrderUploadTemplateName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>OrderUploadTemplateName</shortDescription>
+        <value>OrderUploadTemplate</value>
+    </labels>
+    <labels>
+        <fullName>PayrollSettingH_W</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>PayrollSettingH&amp;W</shortDescription>
+        <value>H&amp;W</value>
+    </labels>
+    <labels>
+        <fullName>SecondSundayStartDate</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>SecondSundayStartDate</shortDescription>
+        <value>01-11-2026</value>
+    </labels>
+    <labels>
+        <fullName>Show_Subheaders</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Show Subheaders</shortDescription>
+        <value>0058y0000019EkMAAU,0058y000001rmN9AAI,0058y000001FutH,0058y000001FutWAAS</value>
+    </labels>
+    <labels>
+        <fullName>Test_CMOs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Test CMOs</shortDescription>
+        <value>005cr000000tid8</value>
+    </labels>
+    <labels>
+        <fullName>Test_INVs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Test INVs</shortDescription>
+        <value>005cr000000tlCo,0058y000001DvQi</value>
+    </labels>
+    <labels>
+        <fullName>Time_Sheet_Report_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Time Sheet Report Export</shortDescription>
+        <value>Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>Types_Of_Reports</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Types Of Reports</shortDescription>
+        <value>ROIReport,Case,Lead,Messages,Check-in/Check-out,Waivers,IC Timesheet,Workload</value>
+    </labels>
+    <labels>
+        <fullName>User_Profiles</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>User Profiles</shortDescription>
+        <value>Customer Community Case Manager User,Customer Community Investigator User</value>
+    </labels>
+    <labels>
+        <fullName>Waiver_Report_Export</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Waiver Report Export</shortDescription>
+        <value>Id,Name</value>
+    </labels>
+    <labels>
+        <fullName>dashboardExportEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Dashboard reports recipients</shortDescription>
+        <value>ukunvar@isncorp.com</value>
+    </labels>
+    <labels>
+        <fullName>onboarding_bulk_edit_fields</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>onboarding bulk edit fields</shortDescription>
+        <value>Paychex_ID__c</value>
+    </labels>
 </CustomLabels>

@@ -1,0 +1,79 @@
+<template>
+    <div class="slds-card">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-1">
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-select
+                name="reportType"
+                label="Report Type"
+                value={value}
+                options={options}
+                onchange={handleChange}
+                required ></lightning-select>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <lightning-button
+                        variant="brand"
+                        label="find"
+                        title="find"
+                        onclick={findData}
+                        class="slds-m-around_x-large"
+                        ></lightning-button>
+                
+            </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1">
+                {reportData}
+                    <table 
+    class="table-dragable slds-table slds-table_cell-buffer slds-table_bordered"
+    aria-describedby="User Details"
+  >
+    <thead>
+      <tr>
+        <th scope="col"> &nbsp; </th>
+        <th scope="col">Index</th>
+        <th scope="col">Id</th>
+        <th scope="col">Label</th>
+        <th scope="col">Api Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <template if:true={reportData}>
+        <template for:each={reportData} for:item="user" for:index="index">
+          <tr
+            class="grabable"
+            key={user.Id}
+            id={user.Id}
+            draggable="true"
+            data-drag-id={index}
+            ondragstart={onDragStart}
+            ondragover={onDragOver}
+            ondrop={onDrop}
+          >
+            <th scope="col" >
+              <input class="mychkbox" type="checkbox"></input>
+            </th>
+            <th scope="col" class="myIndex">{index}</th>
+            <th scope="col" class="myId">{user.Id}</th>
+            <th scope="col">{user.Label__c}</th>
+            <th scope="col">{user.Api_Name__c}</th>
+          </tr>
+        </template>
+      </template>
+    </tbody>
+  </table>
+
+  <div>
+    <lightning-button
+      variant="brand"
+      label="Submit"
+      title="Submit"
+      onclick={handleSubmit}
+      class="slds-m-around_x-large"
+    ></lightning-button>
+  </div>
+                
+            </div>
+        </div>
+    </div>
+</template>

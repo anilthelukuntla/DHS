@@ -1,0 +1,57 @@
+<template>
+    <div class="frame">
+        <div class="center">
+            <h4 class="text-primary">Upload Documents</h4>
+
+            <!-- Custom File Upload -->
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="fileInput">Select Files</label>
+                <div class="slds-form-element__control">
+                    <input type="file" id="fileInput" class="slds-input" multiple accept=".pdf,.png,.jpg,.jpeg,.docx" onchange={handleFileSelection} />
+                </div>
+            </div>
+
+            <!-- Selected files preview -->
+            <template if:true={selectedFiles.length}>
+                <div class="slds-box slds-m-top_small">
+                    <h5>Selected Files ({selectedFiles.length})</h5>
+                    <ul class="slds-list_dotted">
+                        <template for:each={selectedFiles} for:item="file">
+                            <li key={file.name} class="slds-item">
+                                <span class="slds-truncate" title={file.name}>{file.name}</span>
+                                <span class="slds-text-body_small slds-text-color_weak">({file.size})</span>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </template>
+
+            <!-- Upload button -->
+            <template if:true={selectedFiles.length}>
+                <div class="slds-m-top_medium">
+                    <lightning-button variant="brand" label="Upload Files" onclick={handleUpload} disabled={isUploading}></lightning-button>
+                    <lightning-button variant="neutral" label="Clear Selection" onclick={clearSelection} class="slds-m-left_small"></lightning-button>
+                </div>
+            </template>
+
+            <!-- Upload progress -->
+            <template if:true={isUploading}>
+                <div class="slds-m-top_medium">
+                    <lightning-spinner alternative-text="Uploading files..." size="small"></lightning-spinner>
+                    <p class="slds-text-body_small slds-m-top_x-small">Uploading {uploadedCount} of {selectedFiles.length} files...</p>
+                </div>
+            </template>
+
+            <!-- Success message -->
+            <template if:true={showSuccessMessage}>
+                <div class="slds-notify slds-notify_alert slds-theme_success slds-m-top_medium" role="alert">
+                    <span class="slds-assistive-text">Success</span>
+                    <span class="slds-icon_container slds-icon-utility-success slds-m-right_x-small">
+                        <lightning-icon icon-name="utility:success" size="x-small"></lightning-icon>
+                    </span>
+                    DHS_All files uploaded successfully!
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

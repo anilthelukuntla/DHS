@@ -322,7 +322,7 @@ public with sharing class OnboardingTriggerHandler {
         onboardingTriggerRunOnce = true;
         Savepoint sp = Database.setSavepoint();
         try{
-            Account portalAccount = [Select Id, Name from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
+            Account portalAccount = [Select Id, Name, OwnerId from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
             list<Contact> contactsToCreate = new list<Contact>();
             set<Id> onboardingRecordsId = New set<Id>();
             list<string> customerOnboardingIdsToCreateUpdate = new  list<string>();
@@ -338,6 +338,7 @@ public with sharing class OnboardingTriggerHandler {
                     con.LastName = userinfo.last_Name__c;
                     con.Email = userinfo.Email__c;
                     con.AccountId = portalAccount.id;
+                    con.OwnerId = portalAccount.OwnerId;
                     con.onboarding__c = userinfo.id;
                     con.system_Access__c = userinfo.system_Access__c;
                     contactsToCreate.add(con);
@@ -381,7 +382,7 @@ public with sharing class OnboardingTriggerHandler {
         onboardingTriggerRunOnce = true;
         Savepoint sp = Database.setSavepoint();
         try{
-            Account portalAccount = [Select Id, Name from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
+            Account portalAccount = [Select Id, Name, OwnerId from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
             list<Contact> contactsToUpdate = new list<Contact>();
             list<Contact> contactsToCreate = new list<Contact>();
             list<string> onboardingIds = new list<string>();
@@ -435,6 +436,7 @@ public with sharing class OnboardingTriggerHandler {
                             newcon.LastName = userinfo.last_Name__c;
                             newcon.Email = userinfo.Email__c;
                             newcon.AccountId = portalAccount.id;
+                            newcon.OwnerId = portalAccount.OwnerId;
                             newcon.onboarding__c = userinfo.id;
                             newcon.system_Access__c = userinfo.system_Access__c;
                             contactsToCreate.add(newcon);

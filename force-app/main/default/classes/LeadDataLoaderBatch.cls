@@ -1,0 +1,233 @@
+global class LeadDataLoaderBatch implements Database.Batchable< String >,Database.Stateful{
+    global Blob csvFileAsBlob;
+    global List<String> resultCSVFileLines;
+    global String fileHeaderRow;
+    global string resultFileAttachmentId;
+    global string SuccessResultFileAttachmentId;
+    global string FailureResultFileAttachmentId;
+    global string exceptionMessage;
+    global DataLoad_Activity__c  DLActivity;
+    global integer totalRecords;
+    global integer successCount;
+    global integer errorCount;
+    global string generatedCSVFile;
+    global boolean attachmentNeedsToBeAttached;
+    global integer numberOfRecordsInFile;
+    global integer leadFilePart;
+    global LeadDataLoaderBatch(Blob csvFileBlob, DataLoad_Activity__c  Activity){
+        numberOfRecordsInFile = 0;
+        successCount = 0;
+        errorCount = 0;
+        csvFileAsBlob = csvFileBlob;
+        DLActivity = Activity;
+        totalRecords = 0;
+        generatedCSVFile = 'ISN Assigned Case Number,Case Name,Item_number__c,LeadType__c,Coverage_Type__c,Lead_Contact_Name__c,Lead_Contact_Address__c,Lead_Contact_City__c,Lead_Contact_State__c,Lead_Contact_Zip__c,Lead_Contact_Other_Information__c,Status,Error Message,Id\n';
+        attachmentNeedsToBeAttached = true;
+        leadFilePart = 1;
+    }
+    
+    global Iterable<String> start(Database.BatchableContext bc) {
+        List<String> resultCSVFileLinesWithoutHeader = new List<String>();
+        ResultCSVFileLines = new List<String>();
+        String csvAsString = csvFileAsBlob.toString();
+        Utility_RowIterator r = New Utility_RowIterator(csvAsString,'\n'); 
+        if(r.hasNext()) 
+            fileHeaderRow = r.next();
+        while(r.hasNext()){
+            resultCSVFileLinesWithoutHeader.add(r.next());    
+        }
+        resultCSVFileLines.add(fileHeaderRow);
+        for(String str: resultCSVFileLinesWithoutHeader){
+            resultCSVFileLines.add(str);
+        }
+        
+        for(String str: resultCSVFileLines){
+            System.debug('resultCSVFileLines...'+str);
+        }
+        System.debug('resultCSVFileLinesWithoutHeader...'+resultCSVFileLinesWithoutHeader.size());
+        return resultCSVFileLinesWithoutHeader;
+    }
+    
+    global void execute(Database.BatchableContext bc, List<String> csvFileLines) {
+        try{
+            attachmentNeedsToBeAttached = true;
+            List<Lead__c> leadListToInsert = new List<Lead__c>();
+            System.debug('csvFileLines.size()...'+csvFileLines.size());
+            List<String> caseNumbers = new List<String>();
+            for(Integer i=0;i<csvFileLines.size();i++){
+                List<string> csvRecordData = splitString(csvFileLines[i]);
+                if(csvRecordData.size()>0){
+                    caseNumbers.add(csvRecordData[0]);    
+                }                  
+            }
+            List<Case__c> cases = [Select Id,Contact__c,Case_Number__c from case__c where Case_Number__c IN:caseNumbers];
+            Map<String,Case__c> caseMap = new Map<String,Case__c>();
+            Map<String,Case__c> caseIdMap = new Map<String,Case__c>();
+            for(Case__c c: cases){
+                caseMap.put(c.case_number__c, c); 
+                caseIdMap.put(c.id,c);
+            }
+            
+            for(Integer i=0;i<csvFileLines.size();i++){
+                List<string> csvRecordData = splitString(csvFileLines[i]);
+                Lead__c lead = new Lead__c();
+                 if(csvRecordData.size()>1)
+                //lead.LeadType__c= csvRecordData[1];
+                if(csvRecordData.size()>2)
+                lead.Item_number__c = Decimal.valueof(csvRecordData[2]);
+                if(csvRecordData.size()>3)
+                lead.LeadType__c= csvRecordData[3];
+                if(csvRecordData.size()>4)
+                lead.Coverage_Type__c= csvRecordData[4];
+                if(csvRecordData.size()>5)
+                lead.Lead_Contact_Name__c= csvRecordData[5];
+                if(csvRecordData.size()>6)
+                lead.Lead_Contact_Address__c= csvRecordData[6];
+                if(csvRecordData.size()>7)
+                lead.Lead_Contact_City__c= csvRecordData[7];
+                if(csvRecordData.size()>8)
+                lead.Lead_Contact_State__c = csvRecordData[8];
+                if(csvRecordData.size()>9)
+                lead.Lead_Contact_Zip__c = csvRecordData[9];
+                if(csvRecordData.size()>10)
+                lead.Lead_Contact_Other_Information__c = csvRecordData[10];
+                lead.Case__c = caseMap.get(csvRecordData[0]).id;
+                lead.Contact__c = caseMap.get(csvRecordData[0]).contact__c;
+                leadListToInsert.add(lead); 
+            }
+            List<Database.SaveResult> dsrs = Database.insert(leadListToInsert, false);
+            Integer index = 0;
+            for(Database.SaveResult dsr : dsrs){
+                Lead__c lead = leadListToInsert[index];
+                if(!dsr.isSuccess()){
+                    System.debug('caseIdMap..'+caseIdMap);
+                    System.debug('lead.Case__c..'+lead.Case__c);
+                    String errMsg = dsr.getErrors()[0].getMessage();
+                    System.debug('errMsg...'+errMsg);
+                    generatedCSVFile = generatedCSVFile + caseIdMap.get(lead.Case__c).Case_Number__c+','+''+','+lead.Item_number__c+','+''+','+''+','+''+','+''+','+''+','+''+','+''+','+''+','+'Fail'+','+errMsg+','+''+ '\n';
+                    errorCount ++;
+                } else {
+                    generatedCSVFile = generatedCSVFile + caseIdMap.get(lead.Case__c).Case_Number__c+','+''+','+lead.Item_number__c+','+''+','+''+','+''+','+''+','+''+','+''+','+''+','+''+','+'Success'+','+''+','+dsr.getId() + '\n';
+                    successCount ++;
+                }
+                index++;
+                totalRecords ++;
+                numberOfRecordsInFile++;
+            }
+            if(numberOfRecordsInFile >=15000 && attachmentNeedsToBeAttached){
+                Attachment att = new Attachment();
+                att.parentId = DLActivity.Id;
+                att.Name = 'LeadFileUploadedPart'+leadFilePart+'.csv';
+                att.Body = Blob.valueOf(generatedCSVFile);
+                insert att;
+                generatedCSVFile = 'ISN Assigned Case Number,Case Name,Item_number__c,LeadType__c,Coverage_Type__c,Lead_Contact_Name__c,Lead_Contact_Address__c,Lead_Contact_City__c,Lead_Contact_State__c,Lead_Contact_Zip__c,Lead_Contact_Other_Information__c,Status,Error Message,Id\n';
+                numberOfRecordsInFile = 0;
+                attachmentNeedsToBeAttached = false;
+                leadFilePart++;
+            }  
+            System.debug('totalRecords...'+totalRecords);
+        }catch(Exception ex){
+            if(String.isBlank(exceptionMessage)){
+                exceptionMessage = ex.getMessage()+'<br/>';    
+            }else{
+                exceptionMessage = exceptionMessage+ ex.getMessage()+'<br/>';    
+            }
+            
+        }
+    }
+    
+    global void finish(Database.BatchableContext bc){
+            if(attachmentNeedsToBeAttached){
+                Attachment att = new Attachment();
+                att.parentId = DLActivity.Id;
+                att.Name = 'LeadFileUploadedPart'+leadFilePart+'.csv';
+                att.Body = Blob.valueOf(generatedCSVFile);
+                insert att;
+                generatedCSVFile = 'ISN Assigned Case Number,Case Name,Item_number__c,LeadType__c,Coverage_Type__c,Lead_Contact_Name__c,Lead_Contact_Address__c,Lead_Contact_City__c,Lead_Contact_State__c,Lead_Contact_Zip__c,Lead_Contact_Other_Information__c,Status,Error Message,Id\n';
+                numberOfRecordsInFile = 0;
+                attachmentNeedsToBeAttached = false;
+            } 
+           
+            DLActivity.Activity_User__c  = userinfo.getUserId();
+            DLActivity.Success_Count__c = successCount;
+            DLActivity.Failure_Count__c = errorCount; 
+            DLActivity.Total_Record_Count__c = totalRecords;
+            DLActivity.job_end_time__c = system.now();
+            update DLActivity;
+             SendEmailWithAttachments(DLActivity.id);
+    }
+    
+    
+    global static void SendEmailWithAttachments(String reportId) {
+        User currentUser = [Select Id, Name,Email, ContactId from User where Id=:userinfo.getuserid()];
+        Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
+        message.setToAddresses(new String[] { currentUser.Email });
+        
+        List<Attachment> files = [SELECT Name, Body,ParentId, ContentType FROM Attachment WHERE parentId=:reportId];
+        
+        List<Messaging.EmailFileAttachment> attachments = new List<Messaging.EmailFileAttachment>();
+        for (Attachment file: files) {
+          Messaging.EmailFileAttachment efa = new Messaging.EmailFileAttachment();
+          efa.setFileName(file.Name);
+          efa.setBody(file.Body);
+          efa.setContentType(file.ContentType);
+          attachments.add(efa);
+        }
+        message.setFileAttachments(attachments);
+        // Set the message template
+        List<EmailTemplate> templates = [SELECT Id, Subject, HtmlValue FROM EmailTemplate WHERE DeveloperName = 'DataLoadActivityTemplate'];
+        message.setWhatId(reportId);
+        message.setTemplateId(templates[0].id);
+        
+        String contactId;
+        if(currentUser.contactId == Null){
+            Contact con = [select Id from Contact Limit 1];
+            contactId = con.id;
+        }else{
+            contactId = currentUser.contactId;
+        }
+        message.setTargetObjectId(contactID);
+        message.setTreatTargetObjectAsRecipient(false);
+        message.setSaveAsActivity(false);
+        // Send the message
+        try {
+          Messaging.sendEmail(new Messaging.SingleEmailMessage[] { message });
+        } catch (Exception e) {
+          throw e;
+        }
+    }
+    
+    public list<string> splitString(String csvLine){
+         csvLine = csvLine.replace('\r\n', '');
+            csvLine = csvLine.replace('\n', '');
+            csvLine = csvLine.replace('\r', '');
+        Integer startIndex;
+        Integer endIndex;
+        while(csvLine.indexOf('"') > -1){
+            if(startIndex == null){
+                startIndex = csvLine.indexOf('"');
+                csvLine = csvLine.substring(0, startIndex) + ':quotes:' + csvLine.substring(startIndex+1, csvLine.length());
+            }else{
+                if(endIndex == null){
+                    endIndex = csvLine.indexOf('"');
+                    csvLine = csvLine.substring(0, endIndex) + ':quotes:' + csvLine.substring(endIndex+1, csvLine.length());
+                }
+            }
+            if(startIndex != null && endIndex != null){
+                String sub = csvLine.substring(startIndex, endIndex);
+                sub = sub.replaceAll(',', ':comma:');
+                csvLine = csvLine.substring(0, startIndex) + sub + csvLine.substring(endIndex, csvLine.length());
+                startIndex = null;
+                endIndex = null;
+            }
+        }
+        List<String> columnValues = new List<String>();
+        for(String column : csvLine.split(',')){
+          column = column.replaceAll(':quotes:', '').replaceAll(':comma:', ',');
+          columnValues.add(column);
+        }
+        return columnValues;
+    }
+    
+    
+}

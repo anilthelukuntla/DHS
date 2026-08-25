@@ -1,0 +1,83 @@
+public class CustomerInterfaceController {
+    public List<OrderRecord> customerOrders {get;set;}
+    public List<OrderRecord> UploadedcustomerOrders {get;set;}
+    public List<OrderRecord> executedCustomerOrders {get;set;}
+    public Map<Id,List<Case__c>> executedCustomerOrdersandCasesMap {get;set;}
+    public Map<Id,customer_order__c> executedCustomerOrdersMap {get;set;}
+    public CustomerInterfaceController(){
+        uploadedcustomerOrders = new List<OrderRecord> ();
+        executedCustomerOrders = new List<OrderRecord> ();
+        UploadedcustomerOrders = FetchOrderInformation('Uploaded'); 
+        executedCustomerOrders = FetchOrderInformation('Executed');
+        list<string> executedCustomerOrderIds = new list<string>();
+        for(OrderRecord ord: executedCustomerOrders){
+            executedCustomerOrderIds.add(ord.order.id);    
+        }     
+        executedCustomerOrdersandCasesMap = new Map<Id,List<Case__c>>();
+        executedCustomerOrdersMap = new Map<Id,customer_order__c> ([Select Id, Status__c from customer_order__c where id in:executedCustomerOrderIds]);
+        List<Case__c> cases = FetchCasesofCustomerOrder(executedCustomerOrderIds);
+        for(Case__c c: cases){
+            if(!executedCustomerOrdersandCasesMap.containsKey(c.order__c)){
+                executedCustomerOrdersandCasesMap.put(c.order__c, new list<case__c> {c});
+            }else{
+                executedCustomerOrdersandCasesMap.get(c.order__c).add(c);
+            }
+        }
+    }
+    public list<case__c> FetchCasesofCustomerOrder(list<string> orderids){
+        List<string> caseFields = new List<string>();
+        List<ApexUtil.Criteria> whereCriteria = new List<ApexUtil.Criteria>();
+        caseFields = ApexUtil.FetchFields('Case__c');
+        String query = 'Select '+string.join(caseFields, ',') + ' From Case__c ';
+        String where_cond;
+        //whereCriteria.add(new ApexUtil.Criteria('Order__c', orderids, 'IN:'));
+        //where_cond = ApexUtil.generateWhereQuery(whereCriteria);    
+        System.debug('where_cond...'+where_cond);
+        query = query + ' WHERE Order__c in:orderids'; 
+        System.debug('query...'+query);
+        list<case__c> cases = database.query(query);
+        return cases;
+    }
+    public class OrderRecord{
+        public string attachmentId{get;set;}   
+        public Customer_Order__c order{get;set;}
+        public OrderRecord(string attachmentId, Customer_Order__c order){
+            this.order = order;    
+            this.attachmentId = attachmentId;
+        }
+    }
+    
+    public List<OrderRecord> FetchOrderInformation(string status){
+        List<OrderRecord> customerOrders = new List<OrderRecord> ();
+        List<string> orderFields = new List<string>();
+        List<ApexUtil.Criteria> whereCriteria = new List<ApexUtil.Criteria>();
+        orderFields = ApexUtil.FetchFields('customer_order__c'); 
+        orderFields.add('owner.name');
+        String query = 'Select '+string.join(orderFields, ',') + ' From customer_order__c ';
+        whereCriteria.add(new ApexUtil.Criteria('Status__c',status, '=')); 
+        String where_cond = ApexUtil.generateWhereQuery(whereCriteria); 
+        if(String.isNotblank(where_cond)){
+            query = query + ' WHERE '+where_cond ;     
+        }else{
+            query = query+' Order by createddate desc';         
+        }
+        System.debug('query...'+query);
+        list<customer_order__c> orders = database.query(query);
+        List<string> orderIds = new List<string>();
+        for(customer_order__c doc: orders){
+            orderIds.add(doc.id);
+        }
+        List<attachment> attachments = new List<attachment>();
+        attachments = [Select id, parentid from attachment where parentid in: orderIds];
+        Map<String,String> orderNattachmentMap = new Map<String,String>();
+        for(attachment att: attachments){
+            orderNattachmentMap.put(att.parentid, att.id);    
+        }
+        
+        for(customer_order__c doc: orders){
+            customerOrders.add(new OrderRecord(orderNattachmentMap.get(doc.id),doc));  
+        }
+        
+        return customerOrders;
+    }
+}
