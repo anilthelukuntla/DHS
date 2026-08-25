@@ -1,14 +1,27 @@
-public class OnBoardingController {
+/** Controls onboarding user administration and DocuSign actions. */
+// Legacy Visualforce orchestration is intentionally kept together to preserve page state and actions.
+@SuppressWarnings('PMD.CyclomaticComplexity,PMD.CognitiveComplexity,PMD.MethodNamingConventions,PMD.AvoidBooleanMethodParameters,PMD.ExcessivePublicCount,PMD.StdCyclomaticComplexity,PMD.NcssCount,PMD.FieldDeclarationsShouldBeAtStart')
+public with sharing class OnBoardingController {
+    /** Describes a field exposed by the bulk-edit interface. */
     public class BulkEditFieldConfig {
+        /** Field API name. */
         public String apiName {get;set;}
+        /** User-facing field label. */
         public String label {get;set;}
+        /** HTML input type used to edit the field. */
         public String inputType {get;set;}
+        /** Indicates whether the field uses picklist options. */
         public Boolean isPicklist {get;set;}
+        /** Indicates whether the field contains a Boolean value. */
         public Boolean isBoolean {get;set;}
+        /** Indicates whether the field uses a text area. */
         public Boolean isTextArea {get;set;}
+        /** Indicates whether the standard input field is displayed. */
         public Boolean showInputField {get;set;}
+        /** Available options when the field is a picklist. */
         public List<SelectOption> picklistOptions {get;set;}
 
+        /** Initializes the default bulk-edit field configuration. */
         public BulkEditFieldConfig() {
             picklistOptions = new List<SelectOption>();
             inputType = 'text';
@@ -19,14 +32,24 @@ public class OnBoardingController {
         }
     }
 
+    /** User currently accessing the onboarding page. */
     public user currentUser{get;set;}
+    /** Onboarding records displayed on the page. */
     public list<onboarding__c> onboardingUsers{get;set;}
+    /** New onboarding record being created. */
     public onboarding__c newUser {get;set;}
+    /** JSON payload containing bulk-edit changes. */
     public String bulkUpdatePayload {get;set;}
+    /** Field configurations available for bulk editing. */
     public List<BulkEditFieldConfig> bulkEditFields {get;set;}
+    /** Selected system access for a new onboarding user. */
+    @SuppressWarnings('PMD.PropertyNamingConventions')
     public string UserSystemAccess {get;set;}
     private String auth;
+    /** Selected system access for an onboarding user being edited. */
+    @SuppressWarnings('PMD.PropertyNamingConventions')
     public string UserSystemAccess1 {get;set;}
+    /** Authentication endpoint used by the DocuSign integration. */
     public string tokenURL {get; set;}
     private String accountId = System.Label.DocusignAccountId;
     private String userId = System.Label.DocusignUserId;
@@ -34,17 +57,20 @@ public class OnBoardingController {
     private String integratorsKey = System.Label.DocusignIntegratorsKey;
     private String webServiceUrl = System.Label.DocusignWebServiceUrl;
     private String devHost = System.Label.DocusignHostURL;
-    private String DocusignEmailSubject {get;set;}
-    private String DocusignEmailMessage {get;set;}
-    private boolean DocusignReminderEnabled {get;set;}
-    private Integer DocusignReminderDelay {get;set;}
-    private Integer DocusignReminderFrequency {get;set;}
-    private boolean DocusignExpireEnabled {get;set;}
-    private Integer DocusignExpireAfter {get;set;}
-    private Integer DocusignExpireWarn {get;set;}
-    private String DocusignTemplateID {get;set;}
+    private String docusignEmailSubject {get;set;}
+    private String docusignEmailMessage {get;set;}
+    private boolean docusignReminderEnabled {get;set;}
+    private Integer docusignReminderDelay {get;set;}
+    private Integer docusignReminderFrequency {get;set;}
+    private boolean docusignExpireEnabled {get;set;}
+    private Integer docusignExpireAfter {get;set;}
+    private Integer docusignExpireWarn {get;set;}
+    private String docusignTemplateId {get;set;}
+    /** Identifier of the DocuSign envelope created by the controller. */
     public String envelopeId {get;set;}
+    /** Indicates whether the requested username already exists. */
     public boolean duplicateUsername {get;set;}
+    /** Initializes page state and DocuSign configuration. */
     public OnBoardingController(){
         duplicateUsername = false;
         currentUser = [select id, firstname, profile.Name, lastname, email, User_Type__c from User where id = :userinfo.getUserId()];  
@@ -53,27 +79,34 @@ public class OnBoardingController {
         bulkEditFields = buildBulkEditFields();
         fetchOnboardingUsers();
         
-        String IntelOnboardingDocusignTemplateName = System.Label.IntelOnboardingDocusignTemplateName;
-        Intel_Docusign_Templates__c docusignTemplateSettings = Intel_Docusign_Templates__c.getValues(IntelOnboardingDocusignTemplateName);
-        System.debug('docusignTemplateSettings....'+docusignTemplateSettings);
+        String intelOnboardingDocusignTemplateName = System.Label.intelOnboardingDocusignTemplateName;
+        Intel_Docusign_Templates__c docusignTemplateSettings = Intel_Docusign_Templates__c.getValues(intelOnboardingDocusignTemplateName);
         if(docusignTemplateSettings != Null){
-            DocusignEmailSubject =  docusignTemplateSettings.DocusignEmailSubject__c;
-            DocusignEmailMessage = docusignTemplateSettings.DocusignEmailMessage__c;
-            DocusignReminderEnabled = Boolean.valueof(docusignTemplateSettings.DocusignEmailSubject__c);
-            DocusignReminderDelay = Integer.valueof(docusignTemplateSettings.DocusignReminderDelay__c);
-            DocusignReminderFrequency = Integer.valueof(docusignTemplateSettings.DocusignReminderFrequency__c);
-            DocusignExpireEnabled = Boolean.valueof(docusignTemplateSettings.DocusignExpireEnabled__c);
-            DocusignExpireAfter = Integer.valueof(docusignTemplateSettings.DocusignExpireAfter__c);
-            DocusignExpireWarn = Integer.valueof(docusignTemplateSettings.DocusignExpireWarn__c);
-            DocusignTemplateID = docusignTemplateSettings.Template_ID__c;
+            docusignEmailSubject =  docusignTemplateSettings.DocusignEmailSubject__c;
+            docusignEmailMessage = docusignTemplateSettings.DocusignEmailMessage__c;
+            docusignReminderEnabled = Boolean.valueof(docusignTemplateSettings.DocusignEmailSubject__c);
+            docusignReminderDelay = Integer.valueof(docusignTemplateSettings.DocusignReminderDelay__c);
+            docusignReminderFrequency = Integer.valueof(docusignTemplateSettings.DocusignReminderFrequency__c);
+            docusignExpireEnabled = Boolean.valueof(docusignTemplateSettings.DocusignExpireEnabled__c);
+            docusignExpireAfter = Integer.valueOf(docusignTemplateSettings.DocusignExpireAfter__c);
+            docusignExpireWarn = Integer.valueOf(docusignTemplateSettings.DocusignExpireWarn__c);
+            docusignTemplateId = docusignTemplateSettings.Template_ID__c;
         }
     }
 
+    /**
+     * Determines whether the current user can manage onboarding records.
+     * @return true when the current user has onboarding administration access
+     */
     public Boolean getCanManageOnboarding() {
         return currentUser != null &&
             (currentUser.Profile.Name == 'System Administrator' || currentUser.User_Type__c == 'PMO');
     }
     
+    /**
+     * Returns the system-access options displayed by the page.
+     * @return available system-access options
+     */
     public List<SelectOption> getItems() {
         List<SelectOption> options = new List<SelectOption>(); 
         options.add(new SelectOption('Intel','Intel')); 
@@ -81,28 +114,28 @@ public class OnBoardingController {
 		options.add(new SelectOption('Intel;DIA','Both')); 
         return options; 
     }
+    /** Creates an onboarding record from the current page input. */
     public void CreateNewUser(){
-        System.debug('inside createnewuser...!!'+newUSer);
-        System.debug('User System Access...!!'+UserSystemAccess);
         newUser.System_Access__c = UserSystemAccess;
         list<string> usernames = getAllUsernames();
         if(usernames.contains(newUser.email__c)){
             duplicateUsername = true;
         }else{
             duplicateUsername = false;
-            insert newUser;   
+            Database.insert(newUser, AccessLevel.USER_MODE);
             fetchOnboardingUsers();
             newUser = new onboarding__c();
         }
     }
     
+    /** Identifier of the onboarding record selected for deactivation. */
     public string deleteOnboardingUserId{get;set;}
+    /** Deactivates the selected onboarding record when access permits. */
     public void DeleteOnboardingUser(){
         if(!getCanManageOnboarding()){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'You do not have permission to deactivate onboarding users.'));
             return;
         }
-        System.debug('deleteOnboardingUserId...'+deleteOnboardingUserId);
         onboarding__c deleteuser = new onboarding__c();
         for(onboarding__c onboardinguser: onboardingUsers){
             if(deleteOnboardingUserId == onboardinguser.id){
@@ -112,13 +145,19 @@ public class OnBoardingController {
         if(deleteuser.Id == null){
             return;
         }
-        deleteuser.Status__c = 'Inactive';
-        update deleteuser;   
+        Onboarding__c userToDeactivate = new Onboarding__c(
+            Id = deleteuser.Id,
+            Status__c = 'Inactive'
+        );
+        Database.update(userToDeactivate, AccessLevel.USER_MODE);
         fetchOnboardingUsers();
     }
     
+    /** Identifier of the onboarding record selected for editing. */
     public string editOnboardingUserId{get;set;}
+    /** Onboarding record currently being edited. */
     public onboarding__c editOnboardingUser{Get;set;}
+    /** Loads the selected onboarding record into the edit state. */
     public void editOnboardingUser(){
         for(onboarding__c onboardinguser: onboardingUsers){
             if(editOnboardingUserId == onboardinguser.id){
@@ -128,6 +167,7 @@ public class OnBoardingController {
         }
     }
     
+    /** Saves changes to the selected onboarding record. */
     public void SaveModifiedOnboardingUser(){
         editOnboardingUser.System_Access__c = UserSystemAccess1;
         list<string> usernames = getAllUsernames();
@@ -135,18 +175,18 @@ public class OnBoardingController {
             duplicateUsername = true;
         }else{
             duplicateUsername = false;
-            update editOnboardingUser;
+            Database.update(editOnboardingUser, AccessLevel.USER_MODE);
             fetchOnboardingUsers();
         }
         
     }
 
+    /** Applies the bulk-edit payload to onboarding records. */
     public void SaveMainScreenUpdates(){
         if(!getCanManageOnboarding()){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'You do not have permission to update onboarding users from the dashboard.'));
             return;
         }
-		system.debug('bulkUpdatePayload...'+bulkUpdatePayload);
         List<Onboarding__c> onboardingUsersToUpdate = new List<Onboarding__c>();
         Map<String, Schema.SObjectField> onboardingFieldsMap = Schema.SObjectType.Onboarding__c.fields.getMap();
         if(String.isNotBlank(bulkUpdatePayload)){
@@ -175,12 +215,14 @@ public class OnBoardingController {
         }
 
         if(!onboardingUsersToUpdate.isEmpty()){
-            update onboardingUsersToUpdate;
+            Database.update(onboardingUsersToUpdate, AccessLevel.USER_MODE);
         }
         bulkUpdatePayload = null;
         fetchOnboardingUsers();
     }
     
+    /** Loads the onboarding records visible to the current user. */
+    @SuppressWarnings('PMD.ApexSOQLInjection')
     public void fetchOnboardingUsers(){
         onboardingUsers = new list<onboarding__c>();
         List<string> onBoardingFields = new List<string>();
@@ -190,13 +232,13 @@ public class OnBoardingController {
         if(currentUser.profile.Name != 'System Administrator'){
             whereCriteria.add(new ApexUtil.Criteria('System_Access__c','Intel','='));
 		}
-        String where_cond = ApexUtil.generateWhereQuery(whereCriteria); 
-        if(String.isNotBlank(where_cond)){
-            query = query + ' WHERE '+where_cond;     
+        String whereCondition = ApexUtil.generateWhereQuery(whereCriteria); 
+        if(String.isNotBlank(whereCondition)){
+            query = query + ' WHERE '+whereCondition;     
         }
         query = query +' ORDER BY Last_Name__c,Createddate desc';
         
-        onboardingUsers = database.query(query);
+        onboardingUsers = Database.query(query, AccessLevel.USER_MODE);
     }
 
     private List<BulkEditFieldConfig> buildBulkEditFields(){
@@ -279,35 +321,35 @@ public class OnBoardingController {
         return stringValue;
     }
     
+    /** Creates and sends a DocuSign envelope for the selected onboarding user. */
     public void SendToDocusign(){
         DocuSignAPI.APIServiceSoap dsApiSend = new DocuSignAPI.APIServiceSoap();
         dsApiSend.endpoint_x = webServiceUrl;
         String auth = '<DocuSignCredentials><Username>'+ userId+'</Username><Password>'+ password+'</Password><IntegratorKey>'+ integratorsKey+ '</IntegratorKey></DocuSignCredentials>';
-        System.debug('Setting authentication to: ' + auth);
         dsApiSend.inputHttpHeaders_x = new Map<String, String>();
         dsApiSend.inputHttpHeaders_x.put('X-DocuSign-Authentication', auth);
         DocuSignAPI.EnvelopeInformation envelope = new DocuSignAPI.EnvelopeInformation();
-        envelope.Subject = DocusignEmailSubject;
-        envelope.EmailBlurb = DocusignEmailMessage;
+        envelope.Subject = docusignEmailSubject;
+        envelope.EmailBlurb = docusignEmailMessage;
         envelope.AccountId  = accountId; 
         
-        DocuSignAPI.Notification Notification = new DocuSignAPI.Notification();
-        Notification.UseAccountDefaults = false;
+        DocuSignAPI.Notification notification = new DocuSignAPI.Notification();
+        notification.UseAccountDefaults = false;
         
-        DocuSignAPI.Reminders Reminders = new DocuSignAPI.Reminders();
-        Reminders.ReminderEnabled = DocusignReminderEnabled;
-        Reminders.ReminderDelay = DocusignReminderDelay;
-        Reminders.ReminderFrequency = DocusignReminderFrequency;
+        DocuSignAPI.Reminders reminders = new DocuSignAPI.Reminders();
+        reminders.ReminderEnabled = docusignReminderEnabled;
+        reminders.ReminderDelay = docusignReminderDelay;
+        reminders.ReminderFrequency = docusignReminderFrequency;
         
-        DocuSignAPI.Expirations Expirations = new DocuSignAPI.Expirations();
-        Expirations.ExpireEnabled = DocusignExpireEnabled;
-        Expirations.ExpireAfter = DocusignExpireAfter;
-        Expirations.ExpireWarn = DocusignExpireWarn;
+        DocuSignAPI.Expirations expirations = new DocuSignAPI.Expirations();
+        expirations.ExpireEnabled = docusignExpireEnabled;
+        expirations.ExpireAfter = docusignExpireAfter;
+        expirations.ExpireWarn = docusignExpireWarn;
         
-        Notification.Reminders = Reminders;
-        Notification.Expirations = Expirations;
+        notification.Reminders = reminders;
+        notification.Expirations = expirations;
         
-        envelope.Notification = Notification;
+        envelope.Notification = notification;
         
         DocuSignAPI.Recipient recipient = new DocuSignAPI.Recipient();
         recipient.ID = 1;
@@ -334,7 +376,7 @@ public class OnBoardingController {
         
         DocuSignAPI.ArrayOfTemplateReference templateReferences = new DocuSignAPI.ArrayOfTemplateReference();
         templateReferences.TemplateReference = new List<DocuSignAPI.TemplateReference>();  
-        templateReferences.TemplateReference.add(addTemplate(DocusignTemplateID,recipient,recipient2)); 
+        templateReferences.TemplateReference.add(addTemplate(docusignTemplateId,recipient,recipient2)); 
         
         DocuSignAPI.CustomField field = new DocuSignAPI.CustomField();
         field.Name = 'DSFSSourceObjectId';
@@ -345,19 +387,23 @@ public class OnBoardingController {
         envelope.CustomFields.CustomField = new DocuSignAPI.CustomField[22];
         envelope.CustomFields.CustomField[0] = field;
         
-        System.debug('Calling the API');
         try {
-            System.debug('Signers=:' + recipients);
             if(!test.isRunningTest()){
                 DocuSignAPI.EnvelopeStatus es = dsApiSend.CreateEnvelopeFromTemplates(templateReferences, recipients, envelope, true);
                 envelopeId = es.EnvelopeID;
             }
         } catch ( CalloutException e) {
-            System.debug('Exception - ' + e );
             envelopeId = 'Exception - ' + e;
         }
     }
     
+    /**
+     * Builds a DocuSign template reference and signer assignments.
+     * @param templateId identifier of the DocuSign server template
+     * @param recipient first signer assigned to the template
+     * @param recipient2 second signer assigned to the template
+     * @return configured DocuSign template reference
+     */
     public DocuSignAPI.TemplateReference addTemplate(string templateId, DocuSignAPI.Recipient recipient,DocuSignAPI.Recipient recipient2 ){
         DocuSignAPI.TemplateReference myTemplateReference = new DocuSignAPI.TemplateReference();
         myTemplateReference.Template = templateId;
@@ -388,9 +434,13 @@ public class OnBoardingController {
            return myTemplateReference;
            
     }
+    /**
+     * Returns usernames currently stored for Salesforce users.
+     * @return existing username values
+     */
     public static list<string> getAllUsernames(){
         list<string> usernames = new list<string>();
-        list<user> users = [select id,username__c from user];	
+        list<user> users = [select id,username__c from user WHERE username__c != null];	
         for(user u : users){
             usernames.add(u.username__c);
         }

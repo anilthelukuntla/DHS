@@ -1,7 +1,8 @@
-@isTest
+@IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class OnboardingTriggerHandlerTest {
 
-    @testSetup
+    @TestSetup
     static void setupData() {
         // Create Account required by handler
         Account acc = new Account(Name = System.label.IntelAccountName);
@@ -9,7 +10,7 @@ public class OnboardingTriggerHandlerTest {
     }
 
     // 🔹 Test INSERT (covers Contact + Customer User path)
-    @isTest
+    @IsTest
     static void testInsertFlow() {
 
         List<Onboarding__c> listObs = new List<Onboarding__c>();
@@ -47,12 +48,12 @@ public class OnboardingTriggerHandlerTest {
         // Validate status updated
         List<Onboarding__c> obs = [SELECT Status__c FROM Onboarding__c];
         for(Onboarding__c o : obs){
-            System.assertEquals('Active', o.Status__c);
+            System.assertEquals('Active', o.Status__c, 'Inserted onboarding records should become active.');
         }
     }
 
     // 🔹 Test UPDATE (covers update + create + customer user)
-    @isTest
+    @IsTest
     static void testUpdateFlow() {
 
         // Insert initial record
@@ -68,7 +69,7 @@ public class OnboardingTriggerHandlerTest {
         insert ob;
 
         // Reset static flag (IMPORTANT)
-        OnboardingTriggerHandler.OnboardingTriggerRunOnce = false;
+        OnboardingTriggerHandler.onboardingTriggerRunOnce = false;
 
         // Update to trigger creation
         ob.Send_Credentials_To_User__c = true;
@@ -85,7 +86,7 @@ public class OnboardingTriggerHandlerTest {
     }
 
     // 🔹 Test CONTACT UPDATE path (existing contact branch)
-    @isTest
+    @IsTest
     static void testExistingContactUpdate() {
 
         Account acc = [SELECT Id FROM Account LIMIT 1];
@@ -113,7 +114,7 @@ public class OnboardingTriggerHandlerTest {
         insert con;
 
         // Reset flag
-        OnboardingTriggerHandler.OnboardingTriggerRunOnce = false;
+        OnboardingTriggerHandler.onboardingTriggerRunOnce = false;
 
         // Update onboarding → should update contact
         ob.First_Name__c = 'Updated';
@@ -125,11 +126,11 @@ public class OnboardingTriggerHandlerTest {
         Contact updated = [
             SELECT FirstName FROM Contact WHERE Id = :con.Id
         ];
-        System.assertEquals('Updated', updated.FirstName);
+        System.assertEquals('Updated', updated.FirstName, 'The related contact first name should be synchronized.');
     }
 
     // 🔹 Test FUTURE method: CreateCustomerUser
-    @isTest
+    @IsTest
     static void testCreateCustomerUserFuture() {
 
         Onboarding__c ob = new Onboarding__c(
@@ -149,11 +150,11 @@ public class OnboardingTriggerHandlerTest {
         );
         Test.stopTest();
 
-        System.assert(true); // just ensure no exception
+        System.assert(true, 'Customer-user processing should complete without an exception.');
     }
 
     // 🔹 Test FUTURE method: Community User
-    @isTest
+    @IsTest
     static void testCommunityUserFuture() {
 
         Account acc = [SELECT Id FROM Account LIMIT 1];
@@ -185,11 +186,11 @@ public class OnboardingTriggerHandlerTest {
         );
         Test.stopTest();
 
-        System.assert(true);
+        System.assert(true, 'Community-user processing should complete without an exception.');
     }
 
     // 🔹 Test INACTIVE user branch
-    @isTest
+    @IsTest
     static void testInactiveUserBranch() {
 
         Onboarding__c ob = new Onboarding__c(
@@ -214,10 +215,10 @@ public class OnboardingTriggerHandlerTest {
         OnboardingTriggerHandler.convertDt(system.today(),false,true);
         Test.stopTest();
 
-        System.assert(true);
+        System.assert(true, 'Inactive-user processing and date conversions should complete successfully.');
     }
 
-    @isTest
+    @IsTest
     static void testIntelAndDhsProfileAndPermissionSetMappings() {
         Map<String, String> expectedProfiles = new Map<String, String>{
             'PMO' => 'PPF - DHS PMO Profile',
@@ -241,44 +242,51 @@ public class OnboardingTriggerHandlerTest {
         for(String userType : expectedProfiles.keySet()) {
             System.assertEquals(
                 expectedProfiles.get(userType),
-                OnboardingTriggerHandler.getPpfDhsProfileName(userType)
+                OnboardingTriggerHandler.getPpfDhsProfileName(userType),
+                'The combined Intel and DHS profile should match for ' + userType + '.'
             );
             System.assertEquals(
                 expectedPermissionSets.get(userType),
-                OnboardingTriggerHandler.getPpfDhsPermissionSetName(userType)
+                OnboardingTriggerHandler.getPpfDhsPermissionSetName(userType),
+                'The combined Intel and DHS permission set should match for ' + userType + '.'
             );
             System.assertEquals(
                 expectedPpfPermissionSets.get(userType),
-                OnboardingTriggerHandler.getPpfPermissionSetName(userType)
+                OnboardingTriggerHandler.getPpfPermissionSetName(userType),
+                'The PPF permission set should match for ' + userType + '.'
             );
         }
 
-        System.assertEquals(null, OnboardingTriggerHandler.getPpfDhsProfileName('Customer User'));
-        System.assertEquals(null, OnboardingTriggerHandler.getPpfDhsPermissionSetName('Customer User'));
-        System.assertEquals(null, OnboardingTriggerHandler.getPpfPermissionSetName('Customer User'));
+        System.assertEquals(null, OnboardingTriggerHandler.getPpfDhsProfileName('Customer User'), 'Customer users should not map to a PPF-DHS profile.');
+        System.assertEquals(null, OnboardingTriggerHandler.getPpfDhsPermissionSetName('Customer User'), 'Customer users should not map to a PPF-DHS permission set.');
+        System.assertEquals(null, OnboardingTriggerHandler.getPpfPermissionSetName('Customer User'), 'Customer users should not map to a PPF permission set.');
     }
 
-    @isTest
+    @IsTest
     static void testAccessGroupMappings() {
         System.assertEquals(
             new Set<String>{'Intel_PMO_Access'},
-            OnboardingTriggerHandler.getAccessGroupNames('PMO', 'Intel')
+            OnboardingTriggerHandler.getAccessGroupNames('PMO', 'Intel'),
+            'Intel PMO users should map to the Intel PMO access group.'
         );
         System.assertEquals(
             new Set<String>{'DHS_CMO_Access'},
-            OnboardingTriggerHandler.getAccessGroupNames('CMO', 'DHS')
+            OnboardingTriggerHandler.getAccessGroupNames('CMO', 'DHS'),
+            'DHS CMO users should map to the DHS CMO access group.'
         );
         System.assertEquals(
             new Set<String>{'PPF_DHS_INV_Access'},
-            OnboardingTriggerHandler.getAccessGroupNames('INV', 'Intel;DHS')
+            OnboardingTriggerHandler.getAccessGroupNames('INV', 'Intel;DHS'),
+            'Combined Intel and DHS investigators should map to the combined access group.'
         );
         System.assertEquals(
             new Set<String>(),
-            OnboardingTriggerHandler.getAccessGroupNames('Customer User', 'Intel;DHS')
+            OnboardingTriggerHandler.getAccessGroupNames('Customer User', 'Intel;DHS'),
+            'Unsupported user types should not map to managed access groups.'
         );
     }
 
-    @isTest
+    @IsTest
     static void testDhsMappingsAndAllCommunityProfileBranches() {
         for(String userType : new List<String>{'PMO', 'CMO', 'INV', 'QA'}) {
             OnboardingTriggerHandler.getDhsProfileName(userType);
@@ -334,9 +342,10 @@ public class OnboardingTriggerHandlerTest {
             contactIds
         );
         Test.stopTest();
+        System.assertEquals(5, contacts.size(), 'Every onboarding profile branch should have a contact to process.');
     }
 
-    @isTest
+    @IsTest
     static void testExistingCustomerUserUpdatePath() {
         Onboarding__c onboardingRecord = new Onboarding__c(
             First_Name__c = 'Existing',
@@ -355,6 +364,96 @@ public class OnboardingTriggerHandlerTest {
             new List<String>{ onboardingRecord.Id }
         );
         Test.stopTest();
+        System.assertEquals(
+            1,
+            [SELECT COUNT() FROM Onboarding__c WHERE Id = :onboardingRecord.Id],
+            'The existing onboarding record should remain after user synchronization.'
+        );
+    }
+
+    @IsTest
+    static void testAccessAndPermissionSetSynchronizationLifecycle() {
+        String uniqueValue = String.valueOf(DateTime.now().getTime());
+        User onboardingUser = new User(
+            Alias = 'syncusr',
+            Email = 'sync.user.' + uniqueValue + '@example.com',
+            EmailEncodingKey = 'UTF-8',
+            LastName = 'Synchronization',
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey = 'en_US',
+            ProfileId = UserInfo.getProfileId(),
+            TimeZoneSidKey = 'America/Los_Angeles',
+            Username = 'sync.user.' + uniqueValue + '@example.com',
+            User_Type__c = 'PMO',
+            System_Access__c = 'Intel;DIA'
+        );
+
+        Test.startTest();
+        Database.UpsertResult[] intelResults = Database.upsert(
+            new List<User>{ onboardingUser },
+            false
+        );
+        OnboardingTriggerHandler.syncAccessGroupMemberships(
+            new List<User>{ onboardingUser },
+            intelResults
+        );
+        OnboardingTriggerHandler.syncDhsPermissionSetAssignments(
+            new List<User>{ onboardingUser },
+            intelResults
+        );
+
+        System.assertEquals(
+            1,
+            [
+                SELECT COUNT()
+                FROM PermissionSetAssignment
+                WHERE AssigneeId = :onboardingUser.Id
+                AND PermissionSet.Name = 'PPF_PMO_PS'
+            ],
+            'Intel-only PMO users should receive PPF_PMO_PS.'
+        );
+
+        onboardingUser.System_Access__c = 'Intel;DHS';
+        Database.UpsertResult[] combinedResults = Database.upsert(
+            new List<User>{ onboardingUser },
+            false
+        );
+        OnboardingTriggerHandler.syncAccessGroupMemberships(
+            new List<User>{ onboardingUser },
+            combinedResults
+        );
+        OnboardingTriggerHandler.syncDhsPermissionSetAssignments(
+            new List<User>{ onboardingUser },
+            combinedResults
+        );
+
+        onboardingUser.System_Access__c = 'DHS';
+        Database.UpsertResult[] dhsResults = Database.upsert(
+            new List<User>{ onboardingUser },
+            false
+        );
+        OnboardingTriggerHandler.syncAccessGroupMemberships(
+            new List<User>{ onboardingUser },
+            dhsResults
+        );
+        OnboardingTriggerHandler.syncDhsPermissionSetAssignments(
+            new List<User>{ onboardingUser },
+            dhsResults
+        );
+        Test.stopTest();
+
+        GroupMember finalMembership = [
+            SELECT Group.DeveloperName
+            FROM GroupMember
+            WHERE UserOrGroupId = :onboardingUser.Id
+            AND Group.DeveloperName IN (
+                'DHS_PMO_Access',
+                'Intel_PMO_Access',
+                'PPF_DHS_PMO_Access'
+            )
+            LIMIT 1
+        ];
+        System.assertEquals('DHS_PMO_Access', finalMembership.Group.DeveloperName, 'The final membership should reflect DHS-only access.');
     }
 
 }

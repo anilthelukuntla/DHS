@@ -1,7 +1,8 @@
-@isTest
+@IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 public class OnBoardingControllerTest {
 
-    @testSetup
+    @TestSetup
     static void setupData() {
 
         Profile p = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
@@ -39,10 +40,20 @@ public class OnBoardingControllerTest {
         insert onboardingList;
     }
 
-    @isTest
+    @IsTest
     static void testOnboardingControllerMethods() {
 
         User runUser = [SELECT Id FROM User WHERE Email = 'testadmin@test.com' LIMIT 1];
+        PermissionSet adminPermissionSet = [
+            SELECT Id
+            FROM PermissionSet
+            WHERE Name = 'DHS_Admin_Permissionset'
+            LIMIT 1
+        ];
+        insert new PermissionSetAssignment(
+            AssigneeId = runUser.Id,
+            PermissionSetId = adminPermissionSet.Id
+        );
 
         System.runAs(runUser) {
 
@@ -129,10 +140,17 @@ public class OnBoardingControllerTest {
             OnBoardingController.getAllUsernames();
 
             Test.stopTest();
+
+            Onboarding__c deactivatedUser = [
+                SELECT Status__c
+                FROM Onboarding__c
+                WHERE Id = :onboardingCtrl.deleteOnboardingUserId
+            ];
+            System.assertEquals('Inactive', deactivatedUser.Status__c, 'The selected onboarding user should be deactivated.');
         }
     }
 
-    @isTest
+    @IsTest
     static void testConvertBulkEditBranches() {
 
         Test.startTest();
@@ -155,5 +173,12 @@ public class OnBoardingControllerTest {
         ctrl.SaveMainScreenUpdates();
 
         Test.stopTest();
+
+        Onboarding__c updatedOnboarding = [
+            SELECT Paychex_ID__c
+            FROM Onboarding__c
+            WHERE Id = :onboardings[0].Id
+        ];
+        System.assertEquals('55555', updatedOnboarding.Paychex_ID__c, 'Bulk editing should update the configured field.');
     }
 }

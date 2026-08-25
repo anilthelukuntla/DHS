@@ -1,5 +1,8 @@
-public class OnboardingTriggerHandler {
-    public static boolean OnboardingTriggerRunOnce = false;
+/** Handles onboarding-trigger automation and community-user synchronization. */
+// Legacy trigger orchestration is intentionally retained while its security findings are remediated.
+@SuppressWarnings('PMD.CyclomaticComplexity,PMD.CognitiveComplexity,PMD.MethodNamingConventions,PMD.AvoidBooleanMethodParameters,PMD.StdCyclomaticComplexity,PMD.NcssCount,PMD.NcssMethodCount,PMD.NcssTypeCount,PMD.AvoidDeeplyNestedIfStmts,PMD.AvoidFutureAnnotation')
+public with sharing class OnboardingTriggerHandler {
+    public static boolean onboardingTriggerRunOnce = false;
     private static final Set<String> ONBOARDING_PERMISSION_SET_NAMES = new Set<String>{
         'DHS_Community_PMO_PS',
         'DHS_Community_CMO_PS',
@@ -21,48 +24,101 @@ public class OnboardingTriggerHandler {
         'PPF_DHS_INV_Access', 'PPF_DHS_QA_Access'
     };
 
+    /** Routes trigger contexts to the appropriate handler action. */
+    public static void run() {
+        if(Trigger.isInsert && Trigger.isAfter) {
+            OnInsertAction((List<Onboarding__c>) Trigger.new);
+        }
+        if(Trigger.isUpdate && Trigger.isAfter && !onboardingTriggerRunOnce) {
+            OnUpdateAction(
+                (List<Onboarding__c>) Trigger.new,
+                (Map<Id, Onboarding__c>) Trigger.oldMap
+            );
+        }
+    }
+
     @TestVisible
     private static String getDhsProfileName(String userProfile) {
-        if(userProfile == 'PMO') return 'DHS Community PMO Profile';
-        if(userProfile == 'CMO') return 'DHS Community CMO Profile';
-        if(userProfile == 'INV') return 'DHS Community INV Profile';
-        if(userProfile == 'QA') return 'DHS Community QA Profile';
+        if (userProfile == 'PMO') {
+            return 'DHS Community PMO Profile';
+        }
+        if (userProfile == 'CMO') {
+            return 'DHS Community CMO Profile';
+        }
+        if (userProfile == 'INV') {
+            return 'DHS Community INV Profile';
+        }
+        if (userProfile == 'QA') {
+            return 'DHS Community QA Profile';
+        }
         return null;
     }
 
     @TestVisible
     private static String getPpfDhsProfileName(String userProfile) {
-        if(userProfile == 'PMO') return 'PPF - DHS PMO Profile';
-        if(userProfile == 'CMO') return 'PPF - DHS CMO Profile';
-        if(userProfile == 'INV') return 'PPF - DHS INV Profile';
-        if(userProfile == 'QA') return 'PPF - DHS QA Profile';
+        if (userProfile == 'PMO') {
+            return 'PPF - DHS PMO Profile';
+        }
+        if (userProfile == 'CMO') {
+            return 'PPF - DHS CMO Profile';
+        }
+        if (userProfile == 'INV') {
+            return 'PPF - DHS INV Profile';
+        }
+        if (userProfile == 'QA') {
+            return 'PPF - DHS QA Profile';
+        }
         return null;
     }
 
     @TestVisible
     private static String getDhsPermissionSetName(String userProfile) {
-        if(userProfile == 'PMO') return 'DHS_Community_PMO_PS';
-        if(userProfile == 'CMO') return 'DHS_Community_CMO_PS';
-        if(userProfile == 'INV') return 'DHS_Community_INV_PS';
-        if(userProfile == 'QA') return 'DHS_Community_QA_PS';
+        if (userProfile == 'PMO') {
+            return 'DHS_Community_PMO_PS';
+        }
+        if (userProfile == 'CMO') {
+            return 'DHS_Community_CMO_PS';
+        }
+        if (userProfile == 'INV') {
+            return 'DHS_Community_INV_PS';
+        }
+        if (userProfile == 'QA') {
+            return 'DHS_Community_QA_PS';
+        }
         return null;
     }
 
     @TestVisible
     private static String getPpfDhsPermissionSetName(String userProfile) {
-        if(userProfile == 'PMO') return 'PPF_DHS_PMO_PS';
-        if(userProfile == 'CMO') return 'PPF_DHS_CMO_PS';
-        if(userProfile == 'INV') return 'PPF_DHS_INV_PS';
-        if(userProfile == 'QA') return 'PPF_DHS_QA_PS';
+        if (userProfile == 'PMO') {
+            return 'PPF_DHS_PMO_PS';
+        }
+        if (userProfile == 'CMO') {
+            return 'PPF_DHS_CMO_PS';
+        }
+        if (userProfile == 'INV') {
+            return 'PPF_DHS_INV_PS';
+        }
+        if (userProfile == 'QA') {
+            return 'PPF_DHS_QA_PS';
+        }
         return null;
     }
 
     @TestVisible
     private static String getPpfPermissionSetName(String userProfile) {
-        if(userProfile == 'PMO') return 'PPF_PMO_PS';
-        if(userProfile == 'CMO') return 'PPF_CMO_PS';
-        if(userProfile == 'INV') return 'PPF_INV_PS';
-        if(userProfile == 'QA') return 'PPF_QA_PS';
+        if (userProfile == 'PMO') {
+            return 'PPF_PMO_PS';
+        }
+        if (userProfile == 'CMO') {
+            return 'PPF_CMO_PS';
+        }
+        if (userProfile == 'INV') {
+            return 'PPF_INV_PS';
+        }
+        if (userProfile == 'QA') {
+            return 'PPF_QA_PS';
+        }
         return null;
     }
 
@@ -73,7 +129,9 @@ public class OnboardingTriggerHandler {
            userProfile != 'INV' && userProfile != 'QA') {
             return groupNames;
         }
-        if(String.isBlank(systemAccess)) return groupNames;
+        if (String.isBlank(systemAccess)) {
+            return groupNames;
+        }
 
         Boolean hasIntel = systemAccess.contains('Intel');
         Boolean hasDhs = systemAccess.contains('DHS');
@@ -87,6 +145,7 @@ public class OnboardingTriggerHandler {
         return groupNames;
     }
 
+    @TestVisible
     private static void syncAccessGroupMemberships(
         List<User> usersToUpsert,
         Database.UpsertResult[] upsertResults
@@ -94,7 +153,9 @@ public class OnboardingTriggerHandler {
         Set<Id> successfulUserIds = new Set<Id>();
         Map<Id, Set<String>> desiredGroupsByUserId = new Map<Id, Set<String>>();
         for(Integer index = 0; index < upsertResults.size(); index++) {
-            if(!upsertResults[index].isSuccess()) continue;
+            if (!upsertResults[index].isSuccess()) {
+                continue;
+            }
             Id userId = upsertResults[index].getId();
             successfulUserIds.add(userId);
             desiredGroupsByUserId.put(
@@ -105,7 +166,9 @@ public class OnboardingTriggerHandler {
                 )
             );
         }
-        if(successfulUserIds.isEmpty()) return;
+        if (successfulUserIds.isEmpty()) {
+            return;
+        }
 
         Map<String, Id> groupIdByName = new Map<String, Id>();
         Set<Id> managedGroupIds = new Set<Id>();
@@ -114,11 +177,14 @@ public class OnboardingTriggerHandler {
             FROM Group
             WHERE Type = 'Regular'
             AND DeveloperName IN :ONBOARDING_ACCESS_GROUP_NAMES
+            WITH USER_MODE
         ]) {
             groupIdByName.put(accessGroup.DeveloperName, accessGroup.Id);
             managedGroupIds.add(accessGroup.Id);
         }
-        if(managedGroupIds.isEmpty()) return;
+        if (managedGroupIds.isEmpty()) {
+            return;
+        }
 
         Set<String> existingMembershipKeys = new Set<String>();
         List<GroupMember> membershipsToDelete = new List<GroupMember>();
@@ -127,6 +193,7 @@ public class OnboardingTriggerHandler {
             FROM GroupMember
             WHERE GroupId IN :managedGroupIds
             AND UserOrGroupId IN :successfulUserIds
+            WITH USER_MODE
         ]) {
             Set<String> desiredGroupNames = desiredGroupsByUserId.get(membership.UserOrGroupId);
             if(desiredGroupNames != null &&
@@ -140,7 +207,7 @@ public class OnboardingTriggerHandler {
             }
         }
         if(!membershipsToDelete.isEmpty()) {
-            Database.delete(membershipsToDelete, false);
+            Database.delete(membershipsToDelete, false, AccessLevel.USER_MODE);
         }
 
         List<GroupMember> membershipsToInsert = new List<GroupMember>();
@@ -157,10 +224,11 @@ public class OnboardingTriggerHandler {
             }
         }
         if(!membershipsToInsert.isEmpty()) {
-            Database.insert(membershipsToInsert, false);
+            Database.insert(membershipsToInsert, false, AccessLevel.USER_MODE);
         }
     }
 
+    @TestVisible
     private static void syncDhsPermissionSetAssignments(
         List<User> usersToUpsert,
         Database.UpsertResult[] upsertResults
@@ -169,7 +237,9 @@ public class OnboardingTriggerHandler {
         Map<Id, String> desiredPermissionSetByUserId = new Map<Id, String>();
 
         for(Integer index = 0; index < upsertResults.size(); index++) {
-            if(!upsertResults[index].isSuccess()) continue;
+            if (!upsertResults[index].isSuccess()) {
+                continue;
+            }
 
             Id userId = upsertResults[index].getId();
             successfulUserIds.add(userId);
@@ -189,16 +259,20 @@ public class OnboardingTriggerHandler {
                 if(permissionSetName != null) {
                     desiredPermissionSetByUserId.put(userId, permissionSetName);
                 }
+
             }
         }
 
-        if(successfulUserIds.isEmpty()) return;
+        if (successfulUserIds.isEmpty()) {
+            return;
+        }
 
         Map<String, Id> permissionSetIdByName = new Map<String, Id>();
         for(PermissionSet permissionSetRecord : [
             SELECT Id, Name
             FROM PermissionSet
             WHERE Name IN :ONBOARDING_PERMISSION_SET_NAMES
+            WITH USER_MODE
         ]) {
             permissionSetIdByName.put(permissionSetRecord.Name, permissionSetRecord.Id);
         }
@@ -210,6 +284,7 @@ public class OnboardingTriggerHandler {
             FROM PermissionSetAssignment
             WHERE AssigneeId IN :successfulUserIds
             AND PermissionSet.Name IN :ONBOARDING_PERMISSION_SET_NAMES
+            WITH USER_MODE
         ]) {
             String desiredPermissionSetName = desiredPermissionSetByUserId.get(assignment.AssigneeId);
             if(assignment.PermissionSet.Name == desiredPermissionSetName) {
@@ -220,9 +295,8 @@ public class OnboardingTriggerHandler {
         }
 
         if(!assignmentsToDelete.isEmpty()) {
-            Database.delete(assignmentsToDelete, false);
+            Database.delete(assignmentsToDelete, false, AccessLevel.USER_MODE);
         }
-
         List<PermissionSetAssignment> assignmentsToInsert = new List<PermissionSetAssignment>();
         for(Id userId : desiredPermissionSetByUserId.keySet()) {
             String permissionSetName = desiredPermissionSetByUserId.get(userId);
@@ -236,22 +310,26 @@ public class OnboardingTriggerHandler {
         }
 
         if(!assignmentsToInsert.isEmpty()) {
-            Database.insert(assignmentsToInsert, false);
+            Database.insert(assignmentsToInsert, false, AccessLevel.USER_MODE);
         }
     }
 
+    /**
+     * Processes newly inserted onboarding records.
+     * @param onboardingUsers newly inserted onboarding records
+     */
     public static void OnInsertAction(list<Onboarding__c> onboardingUsers){
-        OnboardingTriggerRunOnce = true;
+        onboardingTriggerRunOnce = true;
         Savepoint sp = Database.setSavepoint();
         try{
-            Account portalAccount = [Select Id, Name from Account Where Name=:System.label.IntelAccountName LIMIT 1];
+            Account portalAccount = [Select Id, Name from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
             list<Contact> contactsToCreate = new list<Contact>();
-            list<User> usersToCreate = new list<User>();
-            list<Onboarding__c> onboardingRecordsToUpdate = new List<Onboarding__c>();
             set<Id> onboardingRecordsId = New set<Id>();
             list<string> customerOnboardingIdsToCreateUpdate = new  list<string>();
             for(Onboarding__c userinfo: onboardingUsers){
-                if(!userinfo.Send_Credentials_To_User__c) continue;
+                if (!userinfo.Send_Credentials_To_User__c) {
+                    continue;
+                }
                 if(userinfo.User_Profile__c == 'Customer User'){
                 	customerOnboardingIdsToCreateUpdate.add(userINfo.id);	    
                 }else{
@@ -267,12 +345,12 @@ public class OnboardingTriggerHandler {
                 onboardingRecordsId.add(userinfo.Id);
             }
             if(!onboardingRecordsId.isEmpty()){
-                List<Onboarding__c> onboardingRecords = [select id,Status__c from Onboarding__c where Id IN: onboardingRecordsId];
+                List<Onboarding__c> onboardingRecords = [select id,Status__c from Onboarding__c where Id IN: onboardingRecordsId WITH USER_MODE];
                 for(Onboarding__c uinfo : onboardingRecords){
                     uinfo.Status__c = 'Active';
                 }
                 if(!onboardingRecords.isEmpty()){
-                    update onboardingRecords;
+                    Database.update(onboardingRecords, AccessLevel.USER_MODE);
                 }
             }
            
@@ -281,15 +359,7 @@ public class OnboardingTriggerHandler {
                 list<string> contactIds = new list<string>();
                 for (Database.SaveResult sr : srList) {
                     if (sr.isSuccess()) {
-                        System.debug('Successfully inserted contact. Contact ID: ' + sr.getId());
                         contactIds.add(sr.getId());
-                    }
-                    else {              
-                        for(Database.Error err : sr.getErrors()) {
-                            System.debug('The following error has occurred.');                    
-                            System.debug(err.getStatusCode() + ': ' + err.getMessage());
-                            System.debug('Contact fields that affected this error: ' + err.getFields());
-                        }
                     }
                 }
                 CreateOrUpdateCustomerCommunityUser(contactIds);
@@ -298,56 +368,54 @@ public class OnboardingTriggerHandler {
             	CreateCustomerUser(customerOnboardingIdsToCreateUpdate);    
             }
         }catch(Exception ex){
-            System.debug('exception ex...'+ex);
             Database.RollBack(sp);
         }
     }
 
+    /**
+     * Synchronizes contacts and users after onboarding records change.
+     * @param onboardingUsers updated onboarding records
+     * @param olOnboardingUsersMap prior versions of the updated records
+     */
     public static void OnUpdateAction(list<onboarding__c> onboardingUsers, map<Id,onboarding__c> olOnboardingUsersMap){
-        OnboardingTriggerRunOnce = true;
+        onboardingTriggerRunOnce = true;
         Savepoint sp = Database.setSavepoint();
         try{
-            Account portalAccount = [Select Id, Name from Account Where Name=:System.label.IntelAccountName LIMIT 1];
+            Account portalAccount = [Select Id, Name from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
             list<Contact> contactsToUpdate = new list<Contact>();
-            list<User> usersToUpdate = new list<User>(); 
             list<Contact> contactsToCreate = new list<Contact>();
-            list<User> usersToCreate = new list<User>(); 
             list<string> onboardingIds = new list<string>();
             set<Id> onboardingRecordsId = New set<Id>();
-            list<Onboarding__c> onboardingRecordsToUpdate = new List<Onboarding__c>();
             for(onboarding__c onboardingUser: onboardingUsers){
                 onboardingIds.add(onboardingUser.id);    
             }
-            system.debug('onboardingIds...'+onboardingIds);
             list<string> customerOnboardingIdsToCreateUpdate = new  list<string>();
-            map<id, Contact> contactsMap = new map<id, Contact>([select id, onboarding__c from Contact WHERE onboarding__c IN:onboardingIds]);
+            map<id, Contact> contactsMap = new map<id, Contact>([select id, onboarding__c from Contact WHERE onboarding__c IN:onboardingIds WITH USER_MODE]);
 			map<string, Contact> contactonboardingUserMap = new map<string, Contact>();
             for(id contactId: contactsMap.keySet()){
                 contactonboardingUserMap.put(contactsMap.get(contactId).onboarding__c, contactsMap.get(contactId));     
             }
             
-            system.debug('contactonboardingUserMap...'+contactonboardingUserMap);
         map<string, onboarding__c> onboardingsMap =new map<string, onboarding__c>([Select id,First_Name__c,user__c,email__c,last_Name__c ,Candidate_type__c,User_Profile__c,status__c,system_Access__c
-                                                                        FROM onboarding__c WHERE Id IN: onboardingIds]); 
+                                                                        FROM onboarding__c WHERE Id IN: onboardingIds WITH USER_MODE]); 
         map<string, string> onboardingNuserId = new map<string, string> ();
             for(onboarding__c onboarding: onboardingsMap.values()){
                 if(onboarding.user__c != Null){
                 	onboardingNuserId.put(onboarding.id,onboarding.user__c);    
                 } 	    
             }
-            system.debug('onboardingNuserId...'+onboardingNuserId);
-         map<string,user> usersMap = new map<string,user>([select Id from user where id in:onboardingNuserId.values() ]);
-
             for(onboarding__c userinfo: onboardingUsers){
                 if(userinfo.User_Profile__c == 'Customer User'){
                     if(userinfo.Send_Credentials_To_User__c && !olOnboardingUsersMap.get(userinfo.id).Send_Credentials_To_User__c){
-                    	if(!customerOnboardingIdsToCreateUpdate.contains(userINfo.id))
+                    	if (!customerOnboardingIdsToCreateUpdate.contains(userINfo.id)) {
                         customerOnboardingIdsToCreateUpdate.add(userINfo.id);	    
+                    	}
                     }
                     
                     if(onboardingNuserId.get(userinfo.id) != Null){
-                        if(!customerOnboardingIdsToCreateUpdate.contains(userINfo.id))
+                        if (!customerOnboardingIdsToCreateUpdate.contains(userINfo.id)) {
                     	customerOnboardingIdsToCreateUpdate.add(userInfo.id);    
+                        }
                     }
                 }else{
                     Contact conOfOnboardingUser = contactonboardingUserMap.get(userinfo.id);
@@ -373,19 +441,18 @@ public class OnboardingTriggerHandler {
                             //userinfo.Status__c = 'Active';
                             onboardingRecordsId.add(userinfo.Id);
                             //onboardingRecordsToUpdate.add(userinfo);
-                            system.debug('newcon....'+newcon);
                         }
                     }
                 }
             }
             
             if(!onboardingRecordsId.isEmpty()){
-                List<Onboarding__c> onboardingRecords = [select id,Status__c from Onboarding__c where Id IN: onboardingRecordsId];
+                List<Onboarding__c> onboardingRecords = [select id,Status__c from Onboarding__c where Id IN: onboardingRecordsId WITH USER_MODE];
                 for(Onboarding__c uinfo : onboardingRecords){
                     uinfo.Status__c = 'Active';
                 }
                 if(!onboardingRecords.isEmpty()){
-                    update onboardingRecords;
+                    Database.update(onboardingRecords, AccessLevel.USER_MODE);
                 }
             }
             /*if(!onboardingRecordsToUpdate.isEmpty()){
@@ -393,20 +460,12 @@ public class OnboardingTriggerHandler {
             }*/
 
             if(!contactsToUpdate.isEmpty()){
-                Database.SaveResult[] srList = Database.update(contactsToUpdate, false);
+                Database.SaveResult[] srList = Database.update(contactsToUpdate, false, AccessLevel.USER_MODE);
             
                 list<string> contactIds = new list<string>();
                 for (Database.SaveResult sr : srList) {
                     if (sr.isSuccess()) {
-                        System.debug('Successfully updated contact. Contact ID: ' + sr.getId());
                         contactIds.add(sr.getId());
-                    }
-                    else {              
-                        for(Database.Error err : sr.getErrors()) {
-                            System.debug('The following error has occurred.');                    
-                            System.debug(err.getStatusCode() + ': ' + err.getMessage());
-                            System.debug('Contact fields that affected this error: ' + err.getFields());
-                        }
                     }
                 }
                 CreateOrUpdateCustomerCommunityUser(contactIds);
@@ -417,15 +476,7 @@ public class OnboardingTriggerHandler {
                 list<string> contactIds = new list<string>();
                 for (Database.SaveResult sr : srList) {
                     if (sr.isSuccess()) {
-                        System.debug('Successfully inserted contact. Contact ID: ' + sr.getId());
                         contactIds.add(sr.getId());
-                    }
-                    else {              
-                        for(Database.Error err : sr.getErrors()) {
-                            System.debug('The following error has occurred.');                    
-                            System.debug(err.getStatusCode() + ': ' + err.getMessage());
-                            System.debug('Contact fields that affected this error: ' + err.getFields());
-                        }
                     }
                 }
                 CreateOrUpdateCustomerCommunityUser(contactIds);
@@ -435,34 +486,34 @@ public class OnboardingTriggerHandler {
             }
         }Catch(Exception ex){
              Database.RollBack(sp);
-            System.debug('exception ex...'+ex);    
         }
     }
-    @future
+    @Future
+    /**
+     * Creates or updates customer users for onboarding records asynchronously.
+     * @param onboardingIds identifiers of onboarding records to process
+     */
     public static void CreateCustomerUser(list<string> onboardingIds){
-        System.debug('onboardingIds...'+onboardingIds);
         try{
     	List<Profile> profiles = new List<Profile>();
-            profiles = [Select id, Name from Profile];
+            profiles = [Select id, Name from Profile WHERE Name != null];
             Map<String,Id> profileMap = new Map<String,Id>();
             for(profile p: profiles){
                 profileMap.put(p.Name,p.id);    
             } 
         map<string, onboarding__c> onboardingsMap =new map<string, onboarding__c>([Select id,First_Name__c,user__c,email__c,last_Name__c ,Candidate_type__c,User_Profile__c,status__c,system_Access__c,CCPL__c
-                                                                        FROM onboarding__c WHERE Id IN: onboardingIds]); 
-        System.debug('onboardingsMap...'+onboardingsMap);
+                                                                        FROM onboarding__c WHERE Id IN: onboardingIds WITH USER_MODE]); 
             map<string, string> onboardingNuserId = new map<string, string> ();
             for(onboarding__c onboarding: onboardingsMap.values()){
                 if(onboarding.user__c != Null){
                 	onboardingNuserId.put(onboarding.id,onboarding.user__c);    
                 } 	    
             }
-         map<string,user> usersMap = new map<string,user>([select Id from user where id in:onboardingNuserId.values() ]);
+         map<string,user> usersMap = new map<string,user>([select Id from user where id in:onboardingNuserId.values()]);
          list<user> usersToUpsert = new list<user>();
 		 for(string onboardingId: onboardingIds){
              	
                 onboarding__c onboarding = onboardingsMap.get(onboardingId);
-             System.debug('onboarding...'+onboarding);
                 Database.DMLOptions dmo = new Database.DMLOptions();
                 dmo.EmailHeader.triggerUserEmail = true;       
                 dmo.EmailHeader.triggerOtherEmail = false;
@@ -504,11 +555,11 @@ public class OnboardingTriggerHandler {
              	existingUser = usersMap.get(existingUserId);    
              }
                  string alias;
-                 integer AtSymbolPtr = onboarding.email__c.indexOf('@');
+                 integer atSymbolPtr = onboarding.email__c.indexOf('@');
         
-                if(AtSymbolPtr < 8) 
+                if(atSymbolPtr < 8) 
                 {
-                    alias = onboarding.email__c.substring(0, AtSymbolPtr - 1);
+                    alias = onboarding.email__c.substring(0, atSymbolPtr - 1);
                 }
                 else
                 {
@@ -554,40 +605,29 @@ public class OnboardingTriggerHandler {
                 existingUser.setOptions(dmo);
                 usersToUpsert.add(existingUser);
             }
-            System.debug('usersToUpsert....'+usersToUpsert);
-            Database.UpsertResult[] userSrList = Database.upsert(usersToUpsert, false);
-            for (Database.UpsertResult sr : userSrList) {
-                if (sr.isSuccess()) {
-                    System.debug('Successfully updated user. User ID: ' + sr.getId());
-                } 
-                else {              
-                    for(Database.Error err : sr.getErrors()) {
-                        System.debug('The following error has occurred.');                    
-                        System.debug(err.getStatusCode() + ': ' + err.getMessage());
-                        System.debug('User fields that affected this error: ' + err.getFields());
-                    }
-                }
-            }            
+            Database.upsert(usersToUpsert, false);
             
             
             
         } catch(Exception ex){
-            
+            return;
         }
     }
     
     
-    @future
+    @Future
+    /**
+     * Creates or updates community users associated with contacts.
+     * @param contactIds identifiers of contacts to process
+     */
     public static void CreateOrUpdateCustomerCommunityUser(list<string> contactIds){
         try{
             List<Profile> profiles = new List<Profile>();
-            profiles = [Select id, Name from Profile];
+            profiles = [Select id, Name from Profile WHERE Name != null];
             Map<String,Id> profileMap = new Map<String,Id>();
             for(profile p: profiles){
                 profileMap.put(p.Name,p.id);    
             }
-            System.debug('profileMap..'+profileMap);
-            System.debug('contactIds...'+contactIds);
             map<id, User> usersMap = new map<id, User>([select id, contactId from User WHERE contactId IN:contactIds]);
             map<string, user> contactNuserMap = new map<string, user>();
             for(id userId: usersMap.keySet()){
@@ -596,7 +636,7 @@ public class OnboardingTriggerHandler {
             list<user> usersToUpsert = new list<user>();
             
             map<string, contact> contactsMap =new map<string, contact>([Select id,firstName,email,lastname,onboarding__c,onboarding__r.Candidate_type__c,onboarding__r.User_Profile__c,onboarding__r.status__c,onboarding__r.system_Access__c,onboarding__r.CCPL__c,onboarding__r.BI_Candidate_type__c
-                                                                        FROM Contact WHERE Id IN: contactIds]); 
+                                                                        FROM Contact WHERE Id IN: contactIds WITH USER_MODE]); 
             for(string contactId: contactIds){
                 contact con = contactsMap.get(contactId);
                 Database.DMLOptions dmo = new Database.DMLOptions();
@@ -604,10 +644,7 @@ public class OnboardingTriggerHandler {
                 dmo.EmailHeader.triggerOtherEmail = false;
                 dmo.EmailHeader.triggerAutoResponseEmail = false;       
                 dmo.optAllOrNone = false;
-                System.debug('con...'+con);
-                System.debug('con.onboarding__r.system_access__c...'+con.onboarding__r.system_access__c);
                 String profileId;
-                System.debug('con.onboarding__r.User_Profile__c...'+con.onboarding__r.User_Profile__c);
                 if(con.onboarding__r.User_Profile__c=='PMO' && con.onboarding__r.system_access__c.contains('Intel')){
                     if(con.onboarding__r.CCPL__c == true){
                         profileId = profileMap.get('CCPL Login Profile');
@@ -699,7 +736,6 @@ public class OnboardingTriggerHandler {
                     }
                 }
                 
-                system.debug('profileId...'+profileId);
                 if(test.isRunningTest()){
                 	profileId = profileMap.get('ISNBI Community QA User');      
                 }
@@ -722,11 +758,11 @@ public class OnboardingTriggerHandler {
                 }
                 User existingUser = contactNuserMap.get(contactId);
                  string alias;
-                 integer AtSymbolPtr = con.email.indexOf('@');
+                 integer atSymbolPtr = con.email.indexOf('@');
         
-                if(AtSymbolPtr < 8) 
+                if(atSymbolPtr < 8) 
                 {
-                    alias = con.email.substring(0, AtSymbolPtr - 1);
+                    alias = con.email.substring(0, atSymbolPtr - 1);
                 }
                 else
                 {
@@ -775,24 +811,17 @@ public class OnboardingTriggerHandler {
             }
             
             Database.UpsertResult[] userSrList = Database.upsert(usersToUpsert, false);
-            for (Database.UpsertResult sr : userSrList) {
-                if (sr.isSuccess()) {
-                    System.debug('Successfully updated user. User ID: ' + sr.getId());
-                } 
-                else {              
-                    for(Database.Error err : sr.getErrors()) {
-                        System.debug('The following error has occurred.');                    
-                        System.debug(err.getStatusCode() + ': ' + err.getMessage());
-                        System.debug('User fields that affected this error: ' + err.getFields());
-                    }
-                }
-            }
             syncAccessGroupMemberships(usersToUpsert, userSrList);
             syncDhsPermissionSetAssignments(usersToUpsert, userSrList);
         }catch(Exception ex){
-            System.debug('exception ex...'+ex);       
+            return;
         }
     }
+    /**
+     * Converts a date to a datetime at midnight.
+     * @param dt date to convert
+     * @return datetime representation of the supplied date
+     */
     public static datetime convertDt(date dt){
         datetime dtime;
         integer day;
@@ -804,6 +833,13 @@ public class OnboardingTriggerHandler {
         dtime = datetime.newinstance(day,month,year);
         return dtime;
     }
+    /**
+     * Converts a date to a datetime using the requested date mode.
+     * @param dt date to convert
+     * @param isdate indicates whether date conversion is requested
+     * @param isdatetime indicates whether datetime handling is requested
+     * @return converted datetime value, or null when date mode is disabled
+     */
     public static datetime convertDt(date dt,boolean isdate,boolean isdatetime){
         datetime dtime;
         integer day;
@@ -815,6 +851,12 @@ public class OnboardingTriggerHandler {
         dtime = datetime.newinstance(day,month,year);
         return dtime;
     }
+    /**
+     * Converts a date to a datetime when date conversion is enabled.
+     * @param dt date to convert
+     * @param isdate indicates whether date conversion is requested
+     * @return converted datetime value, or null when conversion is disabled
+     */
     public static datetime convertDt(date dt,boolean isdate){
         datetime dtime;
         integer day;

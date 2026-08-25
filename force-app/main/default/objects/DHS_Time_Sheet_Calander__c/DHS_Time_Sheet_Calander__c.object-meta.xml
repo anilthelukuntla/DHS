@@ -155,6 +155,7 @@
     <externalSharingModel>Private</externalSharingModel>
     <label>Time Sheet Calander</label>
     <nameField>
+        <encryptionScheme>None</encryptionScheme>
         <label>Time Sheet Calander Name</label>
         <type>Text</type>
     </nameField>

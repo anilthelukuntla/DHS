@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Gen_Template_Record_Type_Nts__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
     <label>General Template Record Type Notes</label>
     <length>20000</length>
     <trackHistory>false</trackHistory>

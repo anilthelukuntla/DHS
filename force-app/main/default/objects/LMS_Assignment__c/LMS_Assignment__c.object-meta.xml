@@ -155,6 +155,7 @@
     <externalSharingModel>Private</externalSharingModel>
     <label>LMS Assignment</label>
     <nameField>
+        <encryptionScheme>None</encryptionScheme>
         <label>LMS Assignment Name</label>
         <type>Text</type>
     </nameField>

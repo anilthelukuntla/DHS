@@ -101,16 +101,15 @@
                 <label>Other</label>
             </value>
             <value>
+                <fullName>Bursar’s office</fullName>
+                <default>false</default>
+                <label>Bursar’s office</label>
+            </value>
+            <value>
                 <fullName>BursarÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s office</fullName>
                 <default>false</default>
                 <isActive>false</isActive>
                 <label>BursarÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s office</label>
-            </value>
-            <value>
-                <fullName>Bursar’s office</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>Bursar’s office</label>
             </value>
             <value>
                 <fullName>DHS_Unemployment</fullName>
