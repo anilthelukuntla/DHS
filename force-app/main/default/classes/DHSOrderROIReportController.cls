@@ -52,9 +52,9 @@ public without sharing class DHSOrderROIReportController {
         }
         
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
-        //query = query + ' WHERE '+where_cond+' WITH USER_MODE'; 
+        //query = query + ' WHERE '+where_cond;
         query = query + ' WHERE '+whereCond; 
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
         if(!cases.isEmpty()){
             caseRecord = cases[0]; 
         }    
@@ -77,10 +77,10 @@ public without sharing class DHSOrderROIReportController {
         }
         
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
-        //query = query + ' WHERE '+where_cond+ ' WITH USER_MODE ORDER BY Item_number__c ASC'; 
+        //query = query + ' WHERE '+where_cond+ ' ORDER BY Item_number__c ASC'; 
         query = query + ' WHERE '+whereCond+ ' ORDER BY Item_number__c ASC'; 
         
-        leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        leads = database.query(query, AccessLevel.USER_MODE);
         Integer i = 1;
         for(DHS_Lead__c l: leads){
             leadRecords.add(new leadRecord(l,null));    

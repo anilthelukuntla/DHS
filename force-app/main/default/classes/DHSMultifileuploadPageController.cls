@@ -85,7 +85,7 @@ global without sharing class DHSMultifileuploadPageController {
     */
    global static string createDocumentRecord(string caseid){
 		DHS_Document__c document = new DHS_Document__c();
-		document.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() WITH USER_MODE ].Name;
+		document.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() ].Name;
 		document.DHS_Case__c = caseid;
 		Database.insert(document, AccessLevel.USER_MODE);
 		return document.Id;
@@ -132,7 +132,7 @@ global without sharing class DHSMultifileuploadPageController {
             // Only create document record if this is the first chunk
             if(attachmentId == '' || attachmentId == null){
                 DHS_Document__c document = new DHS_Document__c();
-                document.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() WITH USER_MODE ].Name;
+                document.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() ].Name;
                 document.DHS_Case__c = parentId;
                 document.Name__c = fileName;
                 Database.insert(document, AccessLevel.USER_MODE);
@@ -219,7 +219,7 @@ global without sharing class DHSMultifileuploadPageController {
 		}
         
 		DHS_Document__c doc = New DHS_Document__c();
-		doc.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() WITH USER_MODE ].Name;
+		doc.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() ].Name;
 		doc.DHS_Case__c = caseId;
 		doc.Name__c = fileName;
         Database.insert(doc, AccessLevel.USER_MODE);

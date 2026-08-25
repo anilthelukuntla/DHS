@@ -21,7 +21,7 @@ public without sharing class DHSLoginFlow_Controller {
      */
     Public DHSLoginFlow_Controller()
     {
-        userData = [select id,Name,Email from user where id =: Userinfo.getUserId() WITH USER_MODE ];
+        userData = [select id,Name,Email from user where id =: Userinfo.getUserId() ];
     }
     /**
      * @description This method creates the New OTP record which contails the OTP when ever the user try to login.

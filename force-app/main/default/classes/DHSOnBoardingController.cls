@@ -92,7 +92,7 @@ public without sharing class DHSOnBoardingController {
     /** @description Provides this DHS API member. */
     public DHSOnBoardingController(){
         duplicateUsername = false;
-        currentUser = [select id, firstname, profile.Name, lastname, email, User_Type__c from User where id = :userinfo.getUserId() WITH USER_MODE ];  
+        currentUser = [select id, firstname, profile.Name, lastname, email, User_Type__c from User where id = :userinfo.getUserId() ];  
         newUser = new onboarding__c();
         editOnboardingUser = new onboarding__c();
         bulkEditFields = buildBulkEditFields();
@@ -243,6 +243,11 @@ public without sharing class DHSOnBoardingController {
         List<string> onBoardingFields = new List<string>();
         List<ApexUtil.Criteria> whereCriteria = new List<ApexUtil.Criteria>();
         onBoardingFields = ApexUtil.FetchFields('onboarding__c');
+        for(Integer fieldIndex = onBoardingFields.size() - 1; fieldIndex >= 0; fieldIndex--){
+            if(onBoardingFields[fieldIndex].equalsIgnoreCase('DocuSign_Status__c')){
+                onBoardingFields.remove(fieldIndex);
+            }
+        }
         String query = 'Select '+string.join(onBoardingFields, ',') + ' From onboarding__c ';
         if(currentUser.profile.Name != 'System Administrator'){
             whereCriteria.add(new ApexUtil.Criteria('System_Access__c','DHS','='));
@@ -253,7 +258,7 @@ public without sharing class DHSOnBoardingController {
         }
         query = query +' ORDER BY Last_Name__c,Createddate desc';
         
-        onboardingUsers = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        onboardingUsers = database.query(query, AccessLevel.USER_MODE);
     }
 
     private List<BulkEditFieldConfig> buildBulkEditFields(){
@@ -455,7 +460,7 @@ public without sharing class DHSOnBoardingController {
      */
     public static list<string> getAllUsernames(){
         list<string> usernames = new list<string>();
-        list<user> users = [select id,username__c from user WITH USER_MODE ];	
+        list<user> users = [select id,username__c from user ];	
         for(user u : users){
             usernames.add(u.username__c);
         }

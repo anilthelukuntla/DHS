@@ -229,7 +229,7 @@ Public with sharing Class DHSLeadTriggerHandler {
         for(user u : [
             SELECT Id, Candidate_type__c, Contact.OnBoarding__r.Candidate_Type__c
             FROM User
-            WHERE Id IN :userId WITH USER_MODE
+            WHERE Id IN :userId
         ]){
             String candidateType = u.Contact != null &&
                 u.Contact.OnBoarding__r != null
@@ -378,7 +378,7 @@ Public with sharing Class DHSLeadTriggerHandler {
         if (userIds.isEmpty()) {
             return userIdToPaychexId;
         }
-        for(user u : [select id,contact.OnBoarding__r.Paychex_ID__c from user where Id IN: userIds WITH USER_MODE ]){
+        for(user u : [select id,contact.OnBoarding__r.Paychex_ID__c from user where Id IN: userIds ]){
             userIdToPaychexId.put(u.Id,u.contact.OnBoarding__r.Paychex_ID__c);
         }        
         return userIdToPaychexId;

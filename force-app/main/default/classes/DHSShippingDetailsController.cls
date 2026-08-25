@@ -26,7 +26,7 @@ public with sharing class DHSShippingDetailsController{
         currentUser = [
             SELECT Id, User_Type__c
             FROM User
-            WHERE Id = :UserInfo.getUserId() WITH USER_MODE
+            WHERE Id = :UserInfo.getUserId()
         ];
         fetchCaseInformation();
         showshippingdetailspanel = false;
@@ -46,7 +46,7 @@ public with sharing class DHSShippingDetailsController{
         String query = 'Select '+string.join(shippingfields, ',') + ' From DHS_PPF_Shipping_Information__c ';  
         query = query + ' ORDER BY LastModifiedDate DESC'; 
         
-        List<DHS_PPF_Shipping_Information__c> ppfShippingInformations = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        List<DHS_PPF_Shipping_Information__c> ppfShippingInformations = database.query(query, AccessLevel.USER_MODE);
             
         for(DHS_PPF_Shipping_Information__c ppf: ppfShippingInformations){
             if(ppf.Status__c == 'Investigator Posted'){
@@ -98,7 +98,7 @@ public with sharing class DHSShippingDetailsController{
             String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
             query = query + ' WHERE '+whereCondition+ ' ORDER BY Createddate DESC LIMIT 5'; 
         
-            recentPPFShippinginformationofInvestigator = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+            recentPPFShippinginformationofInvestigator = database.query(query, AccessLevel.USER_MODE);
         }
         
     }
@@ -127,7 +127,7 @@ public with sharing class DHSShippingDetailsController{
         
             String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
             query = query + ' WHERE '+whereCondition+ ' ORDER BY Createddate DESC LIMIT 1'; 
-            list<DHS_PPF_Shipping_Information__c> temp = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+            list<DHS_PPF_Shipping_Information__c> temp = database.query(query, AccessLevel.USER_MODE);
             newShippingInfo = new DHS_PPF_Shipping_Information__c();
             if(!temp.isEmpty()){
                 newShippingInfo = temp[0];

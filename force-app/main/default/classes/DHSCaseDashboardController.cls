@@ -70,9 +70,9 @@ public with sharing class DHSCaseDashboardController {
         pageNumber = 1;
         disablePrev = true;
         records = New List<Object>();
-        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId()  WITH USER_MODE];
+        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId()];
         List<user> assignUsers = new List<user>();
-        assignUsers = [select Id, User_Type__c, FirstName,System_Access__c, lastname  FROM User where isactive=true AND User_Type__c = 'CMO'   WITH USER_MODE];
+        assignUsers = [select Id, User_Type__c, FirstName,System_Access__c, lastname  FROM User where isactive=true AND User_Type__c = 'CMO'];
         assignUserList = new List<SelectOption>();
         assignUserList.add(new SelectOption('','--None--'));
         for(User u: assignUsers){
@@ -317,27 +317,27 @@ public with sharing class DHSCaseDashboardController {
        
         //query = query + ' WHERE '+where_cond; 
         //
-        //list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE)
+        //list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE)
         
         string countQuery;
         if(string.isnotblank(whereCond)){
         	queryForNextRecords = query + ' WHERE '+whereCond;
-            query = query + ' WHERE '+whereCond+' WITH USER_MODE Order by Name asc Limit 200';
-            countQuery = 'Select Count() from DHS_Case__c WHERE '+ whereCond+' WITH USER_MODE' ;
+            query = query + ' WHERE '+whereCond+' Order by Name asc Limit 200';
+            countQuery = 'Select Count() from DHS_Case__c WHERE '+ whereCond;
         }else{
         	queryForNextRecords = query; 
-            query = query +' WITH USER_MODE Order by Name asc Limit 200';
-             countQuery = 'Select Count() from DHS_Case__c WITH USER_MODE';
+            query = query +' Order by Name asc Limit 200';
+             countQuery = 'Select Count() from DHS_Case__c';
         }
         
          
         
-        totalRecordCount = database.countquery(String.escapeSingleQuotes(Countquery), AccessLevel.USER_MODE);
+        totalRecordCount = database.countquery(Countquery, AccessLevel.USER_MODE);
         list<DHS_Case__c> c = new list<DHS_Case__c>();
         if(test.isRunningTest()){
         	c = [select id,Name from DHS_Case__c WITH USER_MODE];   
         }else{
-         	c = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);        
+         	c = database.query(query, AccessLevel.USER_MODE);        
        }
         integer i = 0;
         for(DHS_Case__c cs: c){
@@ -553,8 +553,8 @@ public with sharing class DHSCaseDashboardController {
             casesSearched = new List<CaseRecord>(); 
             PageNumber --;
             firstRecordName = String.escapeSingleQuotes(firstRecordName);
-    	string query = String.escapeSingleQuotes(queryForNextRecords) + ' AND Name <:firstRecordName WITH USER_MODE  Order by Name desc Limit 200';	   
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+    	string query = queryForNextRecords + ' AND Name <:firstRecordName  Order by Name desc Limit 200';	   
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
         for(Integer j=cases.size()-1;j>=0; j--){
             casesSearched.add(new CaseRecord(cases[j]));
             if(j==cases.size()-1){
@@ -576,8 +576,8 @@ public with sharing class DHSCaseDashboardController {
         casesSearched = new List<CaseRecord>();
         PageNumber ++ ;
         lastRecordName = String.escapeSingleQuotes(lastRecordName);
-    	string query = String.escapeSingleQuotes(queryForNextRecords) + ' AND Name >:lastRecordName WITH USER_MODE  Order by Name asc Limit 200';	   
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+    	string query = queryForNextRecords + ' AND Name >:lastRecordName  Order by Name asc Limit 200';	   
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
         integer i = 0;
         for(DHS_Case__c cs: cases){
             casesSearched.add(new CaseRecord(cs));

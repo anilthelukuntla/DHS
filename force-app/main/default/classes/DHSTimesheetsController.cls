@@ -132,8 +132,8 @@ public with sharing class DHSTimesheetsController {
         whereCriteria.add(new DHSApexUtil.Criteria('Date__c',String.valueof(enddate), '<=', 'Date'));
         whereCriteria.add(new DHSApexUtil.Criteria('DHS_User__c',userinfo.getUserId(), '='));
         String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
-        query = query + ' WHERE '+whereCondition+' WITH USER_MODE Order By Date__c'; 
-        timesheets = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + ' WHERE '+whereCondition+' Order By Date__c'; 
+        timesheets = database.query(query, AccessLevel.USER_MODE);
         for(DHS_TimeSheet__c t: timesheets){
             if(!test.isRunningTest()){
                 if(t.DHS_User__c == userinfo.getuserid() && t.Date__c==system.today()){
@@ -164,8 +164,8 @@ public with sharing class DHSTimesheetsController {
             String query = 'Select '+string.join(investigatorCheckFields, ',') + ' From DHS_Investigator_Check__c ';
             whereCriteria.add(new DHSApexUtil.Criteria('DHS_TimeSheet__c',todaysTimeSheet.id, '='));  
             String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
-            query = query + ' WHERE '+whereCondition+' WITH USER_MODE'; 
-            list<DHS_Investigator_Check__c> invChecks = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+            query = query + ' WHERE '+whereCondition; 
+            list<DHS_Investigator_Check__c> invChecks = database.query(query, AccessLevel.USER_MODE);
             
             for(DHS_Investigator_Check__c invc: invChecks){
                 if(invc.Type__c == 'CheckOut'){

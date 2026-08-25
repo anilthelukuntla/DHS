@@ -31,9 +31,9 @@ public with sharing class DHSMyMessagesController {
     
     /** @description Provides this DHS API member. */
     public DHSMyMessagesController(){
-        currentUser = [select id, firstname, lastname, email, user_type__c from User where id=:userinfo.getuserid() WITH USER_MODE];
+        currentUser = [select id, firstname, lastname, email, user_type__c from User where id=:userinfo.getuserid()];
         showCurrentMessagePanel = false;
-        userMap = new Map<String,User>([Select Id,Firstname,lastname, Email from User WITH USER_MODE]); 
+        userMap = new Map<String,User>([Select Id,Firstname,lastname, Email from User]); 
         toAddressOptions = new list<selectoption>();
         toAddressOptions.add(new selectoption('','--None--'));
         for(String lType: apexUtil.getPickListValuesIntoList('DHS_Message__c','To_Address_Type__c')){
@@ -48,7 +48,7 @@ public with sharing class DHSMyMessagesController {
         List<User> toUsersForMessageLogs = new List<User>();
         List<String> toAddressList = new list<String>();
         if(selecteToAddressOption == 'All PMOs'){
-            toUsers = [Select Id,System_Access__c, Email,contact.email, User_Type__c from User where User_Type__c = 'PMO' and isActive = true WITH USER_MODE];
+            toUsers = [Select Id,System_Access__c, Email,contact.email, User_Type__c from User where User_Type__c = 'PMO' and isActive = true];
             for(User u: toUsers){
                 if(u.contact.email != userinfo.getuseremail()){
                     if(u.System_Access__c.contains('DHS')){
@@ -59,7 +59,7 @@ public with sharing class DHSMyMessagesController {
             }
         }
         if(selecteToAddressOption == 'All Program Members'){
-            toUsers = [Select Id,System_Access__c, Email,contact.email, User_Type__c from User where (User_Type__c = 'PMO' OR User_Type__c = 'CMO' OR User_Type__c = 'INV' OR User_Type__c = 'QA') and isActive = true WITH USER_MODE];
+            toUsers = [Select Id,System_Access__c, Email,contact.email, User_Type__c from User where (User_Type__c = 'PMO' OR User_Type__c = 'CMO' OR User_Type__c = 'INV' OR User_Type__c = 'QA') and isActive = true];
             for(User u: toUsers){
                 if(u.contact.email != userinfo.getuseremail()){
                     if(u.System_Access__c.contains('DHS')){
@@ -70,7 +70,7 @@ public with sharing class DHSMyMessagesController {
             }
         }
         if(selecteToAddressOption == 'All CMOs'){
-            toUsers = [Select Id,System_Access__c, Email,contact.email, User_Type__c from User where User_Type__c = 'CMO' and isActive = true WITH USER_MODE];
+            toUsers = [Select Id,System_Access__c, Email,contact.email, User_Type__c from User where User_Type__c = 'CMO' and isActive = true];
             for(User u: toUsers){
                 if(u.contact.email != userinfo.getuseremail()){
                     if(u.System_Access__c.contains('DHS')){
@@ -81,7 +81,7 @@ public with sharing class DHSMyMessagesController {
             }
         }
         if(selecteToAddressOption == 'All Investigators'){
-            toUsers = [Select Id,System_Access__c, Email,contact.email, User_Type__c from User where User_Type__c = 'INV' and isActive = true WITH USER_MODE];
+            toUsers = [Select Id,System_Access__c, Email,contact.email, User_Type__c from User where User_Type__c = 'INV' and isActive = true];
             for(User u: toUsers){
                 if(u.System_Access__c.contains('DHS')){
                 toAddressList.add(u.contact.email); 
@@ -90,7 +90,7 @@ public with sharing class DHSMyMessagesController {
             }
         }
         if(selecteToAddressOption == 'All QAs'){
-            toUsers = [Select Id,System_Access__c, Email, User_Type__c from User where User_Type__c = 'QA' and isActive = true WITH USER_MODE];
+            toUsers = [Select Id,System_Access__c, Email, User_Type__c from User where User_Type__c = 'QA' and isActive = true];
             for(User u: toUsers){
                 if(u.System_Access__c.contains('DHS')){
                 toAddressList.add(u.email);  
@@ -140,7 +140,7 @@ public with sharing class DHSMyMessagesController {
         whereCriteria.add(new DHSApexUtil.Criteria('Id',currentMessageId,'='));
         String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCondition+ 'ORDER BY Createddate desc'; 
-        messages = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        messages = database.query(query, AccessLevel.USER_MODE);
         currentMessage = messages[0];
         showCurrentMessagePanel = true;
         
@@ -182,8 +182,8 @@ public with sharing class DHSMyMessagesController {
             whereCondition = whereCondition + ' AND (To_Address_Type__c = \'All Program Members\' OR To_Address_Type__c = \'All QAs\')';       
         }
         
-        query = query + whereCondition+' WITH USER_MODE ORDER BY Createddate desc'; 
-        allmessages = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + whereCondition+' ORDER BY Createddate desc'; 
+        allmessages = database.query(query, AccessLevel.USER_MODE);
         List<string> messageIds = new List<string>();
         for(DHS_Message__c doc: allMessages){
             messageIds.add(doc.id);

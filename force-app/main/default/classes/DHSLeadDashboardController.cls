@@ -79,7 +79,7 @@ public with sharing class DHSLeadDashboardController {
         disableNext = true;
         showleadssearchcriteriapanel = true; 
         showleadslistpanel = false;
-        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE];
+        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId()];
        
         assignUserList = new List<SelectOption>();
         leadTypeOptions = new list<selectoption>();
@@ -193,9 +193,9 @@ public with sharing class DHSLeadDashboardController {
         assignUserList.add(new SelectOption('','-- Investigator --'));
         List<user> assignUsers = new List<user>();
         if(assigneeStateSelected != 'DHS_All States'){
-            assignUsers = [select Id, User_Type__c,System_Access__c, FirstName, lastname, contact.OnBoarding__r.State__c  FROM User where contact.OnBoarding__r.State__c =:assigneeStateSelected and  isactive=true and User_Type__c='INV' WITH USER_MODE order by LastName];
+            assignUsers = [select Id, User_Type__c,System_Access__c, FirstName, lastname, contact.OnBoarding__r.State__c  FROM User where contact.OnBoarding__r.State__c =:assigneeStateSelected and  isactive=true and User_Type__c='INV' order by LastName];
         }else{
-            assignUsers = [select Id, User_Type__c,System_Access__c, FirstName, lastname, contact.OnBoarding__r.State__c  FROM User where isactive=true and User_Type__c='INV' WITH USER_MODE order by LastName];
+            assignUsers = [select Id, User_Type__c,System_Access__c, FirstName, lastname, contact.OnBoarding__r.State__c  FROM User where isactive=true and User_Type__c='INV' order by LastName];
         }
         for(User u: assignUsers){
             if(u.System_Access__c.contains('DHS')){
@@ -241,9 +241,9 @@ public with sharing class DHSLeadDashboardController {
             whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
             whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);
             
-            query1 = query1 + ' WHERE '+whereCond+' WITH USER_MODE'; 
+            query1 = query1 + ' WHERE '+whereCond;
             list<DHS_Lead__c> leads = new list<DHS_Lead__c>();
-            leads = database.query(String.escapeSingleQuotes(query1), AccessLevel.USER_MODE);
+            leads = database.query(query1, AccessLevel.USER_MODE);
             myavailableleadscount = leads.size();
             
             leads = new list<DHS_Lead__c>();
@@ -254,8 +254,8 @@ public with sharing class DHSLeadDashboardController {
             whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Rejected', '!='));
             whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
             whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
-            query2 = query2 + ' WHERE '+whereCond+' WITH USER_MODE'; 
-            leads = database.query(String.escapeSingleQuotes(query2), AccessLevel.USER_MODE);
+            query2 = query2 + ' WHERE '+whereCond;
+            leads = database.query(query2, AccessLevel.USER_MODE);
             myassignedadscount = leads.size();
             
             leads = new list<DHS_Lead__c>();
@@ -266,8 +266,8 @@ public with sharing class DHSLeadDashboardController {
             whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Rejected', '='));
             whereCriteria.add(new DHSApexUtil.Criteria('Status__c','QA Review Completed', '!='));
             whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
-            query3 = query3 + ' WHERE '+whereCond+' WITH USER_MODE'; 
-            leads = database.query(String.escapeSingleQuotes(query3), AccessLevel.USER_MODE);
+            query3 = query3 + ' WHERE '+whereCond;
+            leads = database.query(query3, AccessLevel.USER_MODE);
             myqarejectedleadscount = leads.size();
             
             leads = new list<DHS_Lead__c>();
@@ -275,8 +275,8 @@ public with sharing class DHSLeadDashboardController {
             whereCriteria.add(new DHSApexUtil.Criteria('DHS_Assigned_To__c', userinfo.getuserid(), '=')); 
             whereCriteria.add(new DHSApexUtil.Criteria('Status__c','Discontinued', '='));
             whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);  
-            query4 = query4 + ' WHERE '+whereCond+' WITH USER_MODE'; 
-            leads = database.query(String.escapeSingleQuotes(query4), AccessLevel.USER_MODE);
+            query4 = query4 + ' WHERE '+whereCond;
+            leads = database.query(query4, AccessLevel.USER_MODE);
             mydiscontinuedcount = leads.size();
     }
     /** @description Provides this DHS API member. */
@@ -442,19 +442,19 @@ public with sharing class DHSLeadDashboardController {
         string countQuery;
             if(!string.isblank(whereCond)){
                 queryForNextRecords = query + ' WHERE '+whereCond+' AND';
-                query = query + ' WHERE '+whereCond+' WITH USER_MODE Order by Name asc Limit 200'; 
-                countQuery = 'Select Count() from DHS_Lead__c WHERE '+ whereCond+' WITH USER_MODE';
+                query = query + ' WHERE '+whereCond+' Order by Name asc Limit 200'; 
+                countQuery = 'Select Count() from DHS_Lead__c WHERE '+ whereCond;
             }else{
                 queryForNextRecords = query + ' WHERE ';
-                query = query + ' WITH USER_MODE Order by Name asc Limit 200'; 
-                countQuery = 'Select Count() from DHS_Lead__c WITH USER_MODE';
+                query = query + ' Order by Name asc Limit 200'; 
+                countQuery = 'Select Count() from DHS_Lead__c';
             }
-        totalRecordCount = database.countquery(String.escapeSingleQuotes(Countquery), AccessLevel.USER_MODE);
+        totalRecordCount = database.countquery(Countquery, AccessLevel.USER_MODE);
         list<DHS_Lead__c> leads = new list<DHS_Lead__c>();
         if(test.isRunningTest()){
         	leads = [select id,Name from DHS_Lead__c WITH USER_MODE ];   
         }else{
-         	leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);        
+         	leads = database.query(query, AccessLevel.USER_MODE);        
        }
         
         integer i = 0;
@@ -497,7 +497,7 @@ public with sharing class DHSLeadDashboardController {
     public void handlePrev(){
         PageNumber --;
     	string query = queryForNextRecords + ' Name <:firstRecordName  Order by Name desc Limit 200';	   
-        list<DHS_Lead__c> leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Lead__c> leads = database.query(query, AccessLevel.USER_MODE);
         LeadsSearched = new list<LeadRecord>();
         for(Integer j=leads.size()-1;j>=0; j--){
             LeadsSearched.add(new LeadRecord(leads[j])); 
@@ -532,7 +532,7 @@ public with sharing class DHSLeadDashboardController {
     public void handleNext(){
         PageNumber ++ ;
     	string query = queryForNextRecords + ' Name >:lastRecordName  Order by Name asc Limit 200';	   
-        list<DHS_Lead__c> leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Lead__c> leads = database.query(query, AccessLevel.USER_MODE);
         LeadsSearched = new list<LeadRecord>();
         integer i = 0;
         for(DHS_Lead__c cs: leads){

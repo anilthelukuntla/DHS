@@ -16,7 +16,7 @@ public with sharing class DHSKnowledgeBaseController{
     
     /** @description Provides this DHS API member. */
     public DHSKnowledgeBaseController(){
-        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE];
+        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId()];
         fetchArticles();
     }
   
@@ -39,8 +39,8 @@ public with sharing class DHSKnowledgeBaseController{
         articleFields = DHSApexUtil.FetchFields('DHS_Knowledge_Base__c');
         
         String query = 'Select '+string.join(articleFields, ',') + ' From DHS_Knowledge_Base__c';
-        query = query + ' WITH USER_MODE ORDER BY Category__c, Sequence__c NULLS LAST, Createddate DESC';
-        List<DHS_Knowledge_Base__c> temp = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + ' ORDER BY Category__c, Sequence__c NULLS LAST, Createddate DESC';
+        List<DHS_Knowledge_Base__c> temp = database.query(query, AccessLevel.USER_MODE);
        
         List<string> documentIds = new List<string>();
         for(DHS_Knowledge_Base__c doc: temp){

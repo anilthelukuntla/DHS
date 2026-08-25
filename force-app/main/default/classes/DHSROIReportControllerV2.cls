@@ -94,7 +94,7 @@ public class DHSROIReportControllerV2 {
             showAllRecordObtained = false;
         }
         skipTitles = New Map<integer,boolean>();
-        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE ];
+        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() ];
         
         String sequenceIdParameter = ApexPages.currentPage().getParameters().get('sequenceid');
         sequenceId = String.isBlank(sequenceIdParameter) ? null : String.valueOf(Id.valueOf(sequenceIdParameter.escapeHtml4()));

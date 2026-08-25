@@ -81,7 +81,7 @@ public with sharing class DHSCaseDetailController {
         pageNumber = 1;
         disablePrev = true;
         disableNext = true;
-        currentUser = [Select Id, FirstName, LastName, User_Type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE ];
+        currentUser = [Select Id, FirstName, LastName, User_Type__c FROM User where Id=:userinfo.getUserId() ];
         if(currentUser.User_Type__c == 'CMO' || currentUser.User_Type__c == 'PMO'){
             showMultiUploadDocuments = true;
         }else{
@@ -111,7 +111,7 @@ public with sharing class DHSCaseDetailController {
         newLead = new DHS_Lead__c();
         newCaseHistory = new DHS_Case_History__c();
         List<user> assignUsers = new List<user>();
-        assignUsers = [select Id, User_Type__c,System_Access__c, FirstName, lastname  FROM User where isactive=true AND User_Type__c = 'CMO' WITH USER_MODE ];
+        assignUsers = [select Id, User_Type__c,System_Access__c, FirstName, lastname  FROM User where isactive=true AND User_Type__c = 'CMO' ];
         assignUserList = new List<SelectOption>();
         assignUserList.add(new SelectOption('','--None--'));
         for(User u: assignUsers){
@@ -416,7 +416,7 @@ public with sharing class DHSCaseDetailController {
         
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCond; 
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
         if(!cases.isEmpty()){
             caseRecord = cases[0];
             if(caseRecord.DHS_Contact__c != Null){
@@ -442,7 +442,7 @@ public with sharing class DHSCaseDetailController {
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCond+ 'ORDER BY Item_number__c Asc'; 
         
-        leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        leads = database.query(query, AccessLevel.USER_MODE);
         boolean qaReviewCompleted = true;
         for(DHS_Lead__c lead: leads){
             if(lead.Status__c != 'QA Review Completed'){
@@ -473,9 +473,9 @@ public with sharing class DHSCaseDetailController {
         queryForNextRecords = query + ' WHERE '+whereCond;
         query = query + ' WHERE '+whereCond+' Order by Name asc Limit 200'; 
         string countQuery = 'Select Count() from DHS_Message__c WHERE '+ whereCond;
-        totalRecordCount = database.countquery(String.escapeSingleQuotes(Countquery), AccessLevel.USER_MODE);
+        totalRecordCount = database.countquery(Countquery, AccessLevel.USER_MODE);
         
-        List<DHS_Message__c> msgs = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE); 
+        List<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE); 
         integer i = 0;
         for(DHS_Message__c msg: msgs){
             messages.add(msg); 
@@ -518,7 +518,7 @@ public with sharing class DHSCaseDetailController {
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCond+ 'ORDER BY CreatedDate Asc'; 
         
-        waiverInformation = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE); 
+        waiverInformation = database.query(query, AccessLevel.USER_MODE); 
         if(!waiverInformation.isEmpty()){
             hasWaiver = true;
         }   
@@ -558,7 +558,7 @@ public with sharing class DHSCaseDetailController {
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCond+ 'ORDER BY CreatedDate Asc'; 
         
-        caseHistory = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        caseHistory = database.query(query, AccessLevel.USER_MODE);
     }
     /** @description Provides this DHS API member. */
     public void fetchDocumentInformation(){
@@ -575,7 +575,7 @@ public with sharing class DHSCaseDetailController {
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCond ; 
         
-        list<DHS_Document__c> documentsOfCase = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Document__c> documentsOfCase = database.query(query, AccessLevel.USER_MODE);
         List<string> documentIds = new List<string>();
         for(DHS_Document__c doc: documentsOfCase){
             documentIds.add(doc.id);
@@ -820,7 +820,7 @@ public with sharing class DHSCaseDetailController {
         
         PageNumber --;
     	string query = queryForNextRecords + ' AND Name <:firstRecordName  Order by Name desc Limit 200';	   
-        list<DHS_Message__c> msgs = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE);
         for(Integer j=msgs.size()-1;j>=0; j--){
             messages.add(msgs[j]); 
             if(j==msgs.size()-1){
@@ -847,7 +847,7 @@ public with sharing class DHSCaseDetailController {
         messages = new list<DHS_Message__c>();
         PageNumber ++ ;
     	string query = queryForNextRecords + ' AND Name >:lastRecordName  Order by Name asc Limit 200';	   
-        list<DHS_Message__c> msgs = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE);
         integer i = 0;
         for(DHS_Message__c msg: msgs){
             messages.add(msg); 
@@ -918,7 +918,7 @@ public with sharing class DHSCaseDetailController {
      * @return The requested result.
      */
     public PageReference previewROI() {
-        user u = [select id,user_type__c from user where id =: UserInfo.getUserId() WITH USER_MODE limit 1];
+        user u = [select id,user_type__c from user where id =: UserInfo.getUserId() limit 1];
         if(u.user_type__c == 'CMO'){
             caseRecord.Subheader_packaged_date_by_CMO__c = system.today();
         	Database.update(caseRecord, AccessLevel.USER_MODE);

@@ -463,10 +463,10 @@ public with sharing class DHSROIDesignerController {
 
         if (caseId != null) {
             String caseQuery = 'SELECT ' + sortedJoin(caseFields) + ' FROM DHS_Case__c WHERE Id = :caseId LIMIT 1';
-            caseRecord = Database.query(String.escapeSingleQuotes(caseQuery), AccessLevel.USER_MODE);
+            caseRecord = Database.query(caseQuery, AccessLevel.USER_MODE);
 
             String leadQuery = 'SELECT ' + sortedJoin(leadFields) + ' FROM DHS_Lead__c WHERE DHS_Case__c = :caseId ORDER BY Item_number__c ASC NULLS LAST, CreatedDate ASC';
-            leads = Database.query(String.escapeSingleQuotes(leadQuery), AccessLevel.USER_MODE);
+            leads = Database.query(leadQuery, AccessLevel.USER_MODE);
         }
 
         Map<String, Object> caseMap = caseRecord == null ? new Map<String, Object>() : flattenRecord(caseRecord);
@@ -550,13 +550,14 @@ public with sharing class DHSROIDesignerController {
         }
 
         String caseQuery = 'SELECT ' + sortedJoin(caseFields) + ' FROM DHS_Case__c WHERE Id = :caseId LIMIT 1';
-        DHS_Case__c caseRecord = Database.query(String.escapeSingleQuotes(caseQuery), AccessLevel.USER_MODE);
+        DHS_Case__c caseRecord = Database.query(caseQuery, AccessLevel.USER_MODE);
         Map<String, Object> caseMap = flattenRecord(caseRecord);
 
         Set<Id> configuredLeadIds = leadIdToTemplateTitle.keySet();
         Map<Id, DHS_Lead__c> leadById = new Map<Id, DHS_Lead__c>((List<DHS_Lead__c>) Database.query(
-            String.escapeSingleQuotes('SELECT ' + sortedJoin(leadFields) + ' FROM DHS_Lead__c WHERE Id IN :configuredLeadIds ORDER BY Item_number__c ASC NULLS LAST, CreatedDate ASC')
-        , AccessLevel.USER_MODE));
+            'SELECT ' + sortedJoin(leadFields) + ' FROM DHS_Lead__c WHERE Id IN :configuredLeadIds ORDER BY Item_number__c ASC NULLS LAST, CreatedDate ASC',
+            AccessLevel.USER_MODE
+        ));
 
         List<String> htmlParts = new List<String>{ '<div class="roi-preview-document">' };
         for (String caseTemplateName : caseLevelTemplateNames()) {

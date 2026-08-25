@@ -30,7 +30,7 @@ Public class DHSLoginPageController{
     public pagereference doLogin(){
         errorMessage = null;
         List<User> u= [Select id,username,contact.onboarding__r.User_Profile__c, system_access__c
-                       from user where username=:username WITH USER_MODE];
+                       from user where username=:username];
         string userType;
         if(!test.isRunningTest()){
             if(!u.isEmpty()){
@@ -102,7 +102,7 @@ Public class DHSLoginPageController{
     /** @description Provides this DHS API member. */
     public void sendOTP(){
         
-        List<user> usr = [select id,email,username,Name from user where username =:username WITH USER_MODE];
+        List<user> usr = [select id,email,username,Name from user where username =:username];
         if(!usr.isEmpty()){
             String randomIntegerString = string.valueof(Math.abs(Crypto.getRandomInteger()));
             String generatedOTP = randomIntegerString.substring(0,6);
@@ -126,7 +126,7 @@ Public class DHSLoginPageController{
     }
     /** @description Provides this DHS API member. */
     public void verifyOTP(){
-        user usr = [select id,email,username from user where username =:username WITH USER_MODE];
+        user usr = [select id,email,username from user where username =:username];
         List<OTP__C> otpRecord = [select id,OTP__c,User__c,Status__c,Expired__c,is_portal__c from OTP__c where id=:oTPrecId AND OTP__c =: enteredOTP AND User__c =: usr.Id AND  Status__c = 'Generated' AND Expired__c = false and is_portal__c = true WITH USER_MODE];
         if(otpRecord.size()==1)
         {
@@ -151,7 +151,7 @@ Public class DHSLoginPageController{
     public void resetpassword(){
         try{
             errorMessage  = NULL;
-            User u= [Select id,username from user where username=:username WITH USER_MODE];
+            User u= [Select id,username from user where username=:username];
             //System.resetPassword(u.id, true); 
             system.setPassword(u.id, newPassword);
             

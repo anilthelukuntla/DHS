@@ -108,7 +108,7 @@ public without sharing class DHSSubjectFileUploadAuthPageController {
         
         String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCondition; 
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
         if(!cases.isEmpty()){
             caseRecord = cases[0];
             if(caseRecord.DHS_Contact__c != Null){

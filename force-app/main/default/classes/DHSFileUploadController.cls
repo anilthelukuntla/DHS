@@ -90,7 +90,7 @@ global without sharing class DHSFileUploadController {
         String parentDocumentId;
         if(String.isBlank(attachmentId)){
            DHS_Document__c document = new DHS_Document__c();
-            document.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid() WITH USER_MODE].Name;
+            document.Added_By__c = [Select Id,Name from user where id=:userinfo.getuserid()].Name;
             document.DHS_Case__c = parentId;
             document.Name__c = fileName;
             database.insert(document,false,AccessLevel.USER_MODE);

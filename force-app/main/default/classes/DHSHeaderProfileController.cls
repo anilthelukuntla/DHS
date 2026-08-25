@@ -16,7 +16,7 @@ public with sharing class DHSHeaderProfileController {
             SELECT User_Type__c, Profile.Name
             FROM User
             WHERE Id = :UserInfo.getUserId()
-             WITH USER_MODE LIMIT 1
+            LIMIT 1
         ];
         if (!users.isEmpty()) {
             User currentUser = users[0];

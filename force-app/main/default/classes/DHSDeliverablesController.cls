@@ -36,8 +36,8 @@ public with sharing class DHSDeliverablesController {
         whereCriteria.add(new DHSApexUtil.Criteria('Current_Task__c','QA Review Completed','='));
         
         String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
-        query = query + ' WHERE '+whereCondition+' WITH USER_MODE'; 
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);  
+        query = query + ' WHERE '+whereCondition; 
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);  
         for(DHS_Case__c c: cases){
             caseOptions.add(new selectoption(c.id,c.Case_Number__c));    
         }

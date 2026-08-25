@@ -145,7 +145,7 @@ public with sharing class DHSCDRLReportsController {
     }
     /** @description Provides this DHS API member. */
     public void fetchICTimesheettracking(){
-        user selectedIC = [select id,Name from user where id =:selectedUserId  WITH USER_MODE ];
+        user selectedIC = [select id,Name from user where id =:selectedUserId ];
         selectedICName = selectedIC.Name;
         selectedUserTimesheet = New list<DHS_TimeSheet__c>();
         DateTime todaysDateTime = System.now();
@@ -864,7 +864,7 @@ public with sharing class DHSCDRLReportsController {
                 }
                 reviewerIds.add(dps.DHS_Reviewer__c);
             }
-            Map<string,user> userMap = new Map<String,user>([select id, firstname,lastname from user where id in:reviewerIds WITH USER_MODE ]);
+            Map<string,user> userMap = new Map<String,user>([select id, firstname,lastname from user where id in:reviewerIds ]);
             
             for(string reviewerId : reviewerIds){
                 User reviewer = userMap.get(reviewerId);
@@ -906,7 +906,7 @@ public with sharing class DHSCDRLReportsController {
                 whereCriteria.add(new DHSApexUtil.Criteria('Date__c',String.valueof(trackingtoDate), '<=', 'Date'));
             }
             
-            Map<id,User> users = new Map<id,User>([Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' WITH USER_MODE ]);
+            Map<id,User> users = new Map<id,User>([Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' ]);
             set<id> invs = users.keyset(); // NOPMD - Referenced by dynamic SOQL bind expressions below.
             String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);
             string countQuery;
@@ -1074,7 +1074,7 @@ public with sharing class DHSCDRLReportsController {
         if(selectedReportType == 'Case' || selectedReportType == 'Lead' || selectedReportType == 'Workload'){
             cmoUsers = new list<selectoption>();
             cmoUsers.add(new selectoption('DHS_All','All'));
-            list<User> users = [Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'CMO' WITH USER_MODE ];
+            list<User> users = [Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'CMO' ];
             for(user u: users){
                 if(u.System_Access__c.contains('DHS')){
                 cmoUsers.add(new selectoption(u.id,u.LastName+' '+u.FirstName)); 
@@ -1084,7 +1084,7 @@ public with sharing class DHSCDRLReportsController {
         if(selectedReportType == 'Lead' || selectedReportType == 'IC DHSTimesheet' || selectedReportType == 'Workload'){
             investigatorUsers = new list<selectoption>();
             investigatorUsers.add(new selectoption('DHS_All','All'));
-            list<User> users = [Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' WITH USER_MODE ];
+            list<User> users = [Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' ];
             for(user u: users){
                 if(u.System_Access__c.contains('DHS')){
                 investigatorUsers.add(new selectoption(u.id,u.LastName+' '+u.FirstName)); 
@@ -1743,7 +1743,7 @@ public ReportRecord(string subjectFirstName,string subjectLastName, string caseN
             }
         }
         if(selectedReportType == 'IC DHSTimesheet'){
-            Map<id,User> users = new Map<id,User>([Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' WITH USER_MODE ]); // NOPMD - Supplies the dynamic SOQL bind set.
+            Map<id,User> users = new Map<id,User>([Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' ]); // NOPMD - Supplies the dynamic SOQL bind set.
             set<id> invs = users.keyset(); // NOPMD - Referenced by a dynamic SOQL bind expression.
             // code-analyzer-suppress-next-line PMD.ApexSOQLInjection -- Schema-validated fields and bound or validated values.
             list<DHS_TimeSheet__c> waivers = database.query(query);

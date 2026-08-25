@@ -41,7 +41,7 @@ public with sharing class DHSOtherMessagesController{
         }else{
           userProfiles.add('System Administrator');        
         }
-        Map<String, Profile> profileMap = new Map<String, Profile>([Select Id, Name from Profile WHERE Name IN:userProfiles  WITH USER_MODE ]);
+        Map<String, Profile> profileMap = new Map<String, Profile>([Select Id, Name from Profile WHERE Name IN:userProfiles ]);
         List<String> profileIds = new List<String> ();
         profileIds.addAll(profileMap.Keyset());
         List<string> userFields = new List<string>();

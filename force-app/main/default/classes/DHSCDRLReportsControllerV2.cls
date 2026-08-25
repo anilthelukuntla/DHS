@@ -705,7 +705,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
                 }
                 reviewerIds.add(dps.DHS_Reviewer__c);
             }
-            Map<string,user> userMap = new Map<String,user>([select id, firstname,lastname from user where id in:reviewerIds WITH USER_MODE ]);
+            Map<string,user> userMap = new Map<String,user>([select id, firstname,lastname from user where id in:reviewerIds ]);
             
             for(string reviewerId : reviewerIds){
                 User reviewer = userMap.get(reviewerId);
@@ -766,7 +766,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
         if(selectedReportType == 'Case'){
             cmoUsers = new list<selectoption>();
             cmoUsers.add(new selectoption('DHS_All','All'));
-            list<User> users = [Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'CMO' WITH USER_MODE ];
+            list<User> users = [Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'CMO' ];
             for(user u: users){
                 if(u.System_Access__c.contains('DHS')){
                 cmoUsers.add(new selectoption(u.id,u.LastName+' '+u.FirstName)); 
@@ -776,7 +776,7 @@ public with sharing class DHSCDRLReportsControllerV2 {
         if(selectedReportType == 'Lead'){
             investigatorUsers = new list<selectoption>();
             investigatorUsers.add(new selectoption('DHS_All','All'));
-            list<User> users = [Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' WITH USER_MODE ];
+            list<User> users = [Select Id, name,System_Access__c, FirstName, LastName, user_type__c from User Where user_type__c = 'INV' ];
             for(user u: users){
                 if(u.System_Access__c.contains('DHS')){
                 investigatorUsers.add(new selectoption(u.id,u.LastName+' '+u.FirstName)); 

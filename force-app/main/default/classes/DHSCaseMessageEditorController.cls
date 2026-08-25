@@ -20,7 +20,7 @@ public with sharing class DHSCaseMessageEditorController {
     /** @description Provides this DHS API member. */
     public Boolean isCMOOrPMO { 
         get {
-            String userType = [SELECT User_Type__c FROM User WHERE Id = :UserInfo.getUserId() WITH USER_MODE LIMIT 1].User_Type__c;
+            String userType = [SELECT User_Type__c FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1].User_Type__c;
             return userType == 'CMO' || userType == 'PMO';
         }
     }
@@ -28,7 +28,7 @@ public with sharing class DHSCaseMessageEditorController {
     /** @description Provides this DHS API member. */
     public Boolean isInvestigator { 
         get {
-            String userType = [SELECT User_Type__c FROM User WHERE Id = :UserInfo.getUserId() WITH USER_MODE LIMIT 1].User_Type__c;
+            String userType = [SELECT User_Type__c FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1].User_Type__c;
             return userType == 'INV';
         }
     }
@@ -46,7 +46,7 @@ public with sharing class DHSCaseMessageEditorController {
     public PageReference saveMessage() {
         try {
             // Get current user info
-            User currentUser = [SELECT Id, User_Type__c FROM User WHERE Id = :UserInfo.getUserId() WITH USER_MODE LIMIT 1];
+            User currentUser = [SELECT Id, User_Type__c FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
             
             // Get the message to edit
             DHS_Message__c messageToEdit = [SELECT Id, Subject__c, Message_Body__c, DHS_From_User__c, DHS_Case__c 
@@ -101,7 +101,7 @@ public with sharing class DHSCaseMessageEditorController {
      */
     public static Boolean canDeleteMessage(String messageId) {
         try {
-            User currentUser = [SELECT Id, User_Type__c FROM User WHERE Id = :UserInfo.getUserId() WITH USER_MODE LIMIT 1];
+            User currentUser = [SELECT Id, User_Type__c FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
             
             // Only CMO and PMO can delete messages
             return currentUser.User_Type__c == 'CMO' || currentUser.User_Type__c == 'PMO';

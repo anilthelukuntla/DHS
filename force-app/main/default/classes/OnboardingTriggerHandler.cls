@@ -322,7 +322,7 @@ public with sharing class OnboardingTriggerHandler {
         onboardingTriggerRunOnce = true;
         Savepoint sp = Database.setSavepoint();
         try{
-            Account portalAccount = [Select Id, Name from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
+            Account portalAccount = [Select Id, Name, OwnerId from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
             list<Contact> contactsToCreate = new list<Contact>();
             set<Id> onboardingRecordsId = New set<Id>();
             list<string> customerOnboardingIdsToCreateUpdate = new  list<string>();
@@ -338,6 +338,7 @@ public with sharing class OnboardingTriggerHandler {
                     con.LastName = userinfo.last_Name__c;
                     con.Email = userinfo.Email__c;
                     con.AccountId = portalAccount.id;
+                    con.OwnerId = portalAccount.OwnerId;
                     con.onboarding__c = userinfo.id;
                     con.system_Access__c = userinfo.system_Access__c;
                     contactsToCreate.add(con);
@@ -355,7 +356,7 @@ public with sharing class OnboardingTriggerHandler {
             }
            
             if(!contactsToCreate.isEmpty()){
-                Database.SaveResult[] srList = Database.insert(contactsToCreate, false, AccessLevel.USER_MODE);
+                Database.SaveResult[] srList = Database.insert(contactsToCreate, false);
                 list<string> contactIds = new list<string>();
                 for (Database.SaveResult sr : srList) {
                     if (sr.isSuccess()) {
@@ -381,7 +382,7 @@ public with sharing class OnboardingTriggerHandler {
         onboardingTriggerRunOnce = true;
         Savepoint sp = Database.setSavepoint();
         try{
-            Account portalAccount = [Select Id, Name from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
+            Account portalAccount = [Select Id, Name, OwnerId from Account Where Name=:System.label.IntelAccountName WITH USER_MODE LIMIT 1];
             list<Contact> contactsToUpdate = new list<Contact>();
             list<Contact> contactsToCreate = new list<Contact>();
             list<string> onboardingIds = new list<string>();
@@ -435,6 +436,7 @@ public with sharing class OnboardingTriggerHandler {
                             newcon.LastName = userinfo.last_Name__c;
                             newcon.Email = userinfo.Email__c;
                             newcon.AccountId = portalAccount.id;
+                            newcon.OwnerId = portalAccount.OwnerId;
                             newcon.onboarding__c = userinfo.id;
                             newcon.system_Access__c = userinfo.system_Access__c;
                             contactsToCreate.add(newcon);
@@ -472,7 +474,7 @@ public with sharing class OnboardingTriggerHandler {
             }
 
             if(!contactsToCreate.isEmpty()){
-                Database.SaveResult[] srList = Database.insert(contactsToCreate, false, AccessLevel.USER_MODE);
+                Database.SaveResult[] srList = Database.insert(contactsToCreate, false);
                 list<string> contactIds = new list<string>();
                 for (Database.SaveResult sr : srList) {
                     if (sr.isSuccess()) {
@@ -496,7 +498,7 @@ public with sharing class OnboardingTriggerHandler {
     public static void CreateCustomerUser(list<string> onboardingIds){
         try{
     	List<Profile> profiles = new List<Profile>();
-            profiles = [Select id, Name from Profile WHERE Name != null WITH USER_MODE];
+            profiles = [Select id, Name from Profile WHERE Name != null];
             Map<String,Id> profileMap = new Map<String,Id>();
             for(profile p: profiles){
                 profileMap.put(p.Name,p.id);    
@@ -509,7 +511,7 @@ public with sharing class OnboardingTriggerHandler {
                 	onboardingNuserId.put(onboarding.id,onboarding.user__c);    
                 } 	    
             }
-         map<string,user> usersMap = new map<string,user>([select Id from user where id in:onboardingNuserId.values() WITH USER_MODE]);
+         map<string,user> usersMap = new map<string,user>([select Id from user where id in:onboardingNuserId.values()]);
          list<user> usersToUpsert = new list<user>();
 		 for(string onboardingId: onboardingIds){
              	
@@ -605,7 +607,7 @@ public with sharing class OnboardingTriggerHandler {
                 existingUser.setOptions(dmo);
                 usersToUpsert.add(existingUser);
             }
-            Database.upsert(usersToUpsert, false, AccessLevel.USER_MODE);
+            Database.upsert(usersToUpsert, false);
             
             
             
@@ -623,12 +625,12 @@ public with sharing class OnboardingTriggerHandler {
     public static void CreateOrUpdateCustomerCommunityUser(list<string> contactIds){
         try{
             List<Profile> profiles = new List<Profile>();
-            profiles = [Select id, Name from Profile WHERE Name != null WITH USER_MODE];
+            profiles = [Select id, Name from Profile WHERE Name != null];
             Map<String,Id> profileMap = new Map<String,Id>();
             for(profile p: profiles){
                 profileMap.put(p.Name,p.id);    
             }
-            map<id, User> usersMap = new map<id, User>([select id, contactId from User WHERE contactId IN:contactIds WITH USER_MODE]);
+            map<id, User> usersMap = new map<id, User>([select id, contactId from User WHERE contactId IN:contactIds]);
             map<string, user> contactNuserMap = new map<string, user>();
             for(id userId: usersMap.keySet()){
                 contactNuserMap.put(usersMap.get(userId).contactId, usersMap.get(userId));      
@@ -810,7 +812,7 @@ public with sharing class OnboardingTriggerHandler {
                 usersToUpsert.add(existingUser);
             }
             
-            Database.UpsertResult[] userSrList = Database.upsert(usersToUpsert, false, AccessLevel.USER_MODE);
+            Database.UpsertResult[] userSrList = Database.upsert(usersToUpsert, false);
             syncAccessGroupMemberships(usersToUpsert, userSrList);
             syncDhsPermissionSetAssignments(usersToUpsert, userSrList);
         }catch(Exception ex){

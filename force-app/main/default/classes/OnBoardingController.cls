@@ -73,7 +73,7 @@ public with sharing class OnBoardingController {
     /** Initializes page state and DocuSign configuration. */
     public OnBoardingController(){
         duplicateUsername = false;
-        currentUser = [select id, firstname, profile.Name, lastname, email, User_Type__c from User where id = :userinfo.getUserId() WITH USER_MODE];  
+        currentUser = [select id, firstname, profile.Name, lastname, email, User_Type__c from User where id = :userinfo.getUserId()];  
         newUser = new onboarding__c();
         editOnboardingUser = new onboarding__c();
         bulkEditFields = buildBulkEditFields();
@@ -440,7 +440,7 @@ public with sharing class OnBoardingController {
      */
     public static list<string> getAllUsernames(){
         list<string> usernames = new list<string>();
-        list<user> users = [select id,username__c from user WHERE username__c != null WITH USER_MODE];	
+        list<user> users = [select id,username__c from user WHERE username__c != null];	
         for(user u : users){
             usernames.add(u.username__c);
         }

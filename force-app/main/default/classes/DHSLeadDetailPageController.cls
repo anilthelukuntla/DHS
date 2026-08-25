@@ -577,7 +577,7 @@ global with sharing class DHSLeadDetailPageController {
    
     /** @description Provides this DHS API member. */
     public DHSLeadDetailPageController(){
-        currentUser = [Select Id, User_Type__c, Candidate_type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE];
+        currentUser = [Select Id, User_Type__c, Candidate_type__c FROM User where Id=:userinfo.getUserId()];
         currentUserPermissions = DHSPermissionsUtil.GetUserPermssions(currentUser.User_Type__c);
         pageNumber = 1;
         disablePrev = true;
@@ -643,8 +643,8 @@ global with sharing class DHSLeadDetailPageController {
         }
         
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
-        query = query + ' WHERE '+whereCond+' WITH USER_MODE'; 
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + ' WHERE '+whereCond;
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
         if(!cases.isEmpty()){
             caseRecord = cases[0];    
         }    
@@ -737,11 +737,11 @@ global with sharing class DHSLeadDetailPageController {
         
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         queryForNextRecords = query + ' WHERE '+whereCond;
-        query = query + ' WHERE '+whereCond+' WITH USER_MODE Order by Name asc Limit 200'; 
-        string countQuery = 'Select Count() from DHS_Message__c WHERE '+ whereCond+' WITH USER_MODE';
-        totalRecordCount = database.countquery(String.escapeSingleQuotes(Countquery), AccessLevel.USER_MODE);
+        query = query + ' WHERE '+whereCond+' Order by Name asc Limit 200'; 
+        string countQuery = 'Select Count() from DHS_Message__c WHERE '+ whereCond;
+        totalRecordCount = database.countquery(Countquery, AccessLevel.USER_MODE);
         
-        List<DHS_Message__c> msgs = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE); 
+        List<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE); 
         integer i = 0;
         for(DHS_Message__c msg: msgs){
             messages.add(msg); 
@@ -788,8 +788,8 @@ global with sharing class DHSLeadDetailPageController {
         }
         
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
-        query = query + ' WHERE '+whereCond+' WITH USER_MODE'; 
-        list<DHS_Lead__c> leads = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + ' WHERE '+whereCond;
+        list<DHS_Lead__c> leads = database.query(query, AccessLevel.USER_MODE);
         if(!leads.isEmpty()){
             leadRecord = leads[0]; 
             caseId = leadRecord.DHS_Case__c; 
@@ -1075,7 +1075,7 @@ global with sharing class DHSLeadDetailPageController {
         String where_cond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+where_cond; 
 
-        list<ROI_Report_Matrix__c> reportMatrices = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<ROI_Report_Matrix__c> reportMatrices = database.query(query, AccessLevel.USER_MODE);
 
         if(!reportMatrices.isEmpty()){
             String textToPopulate = reportMatrices[0].Text_To_Populate__c;
@@ -1099,7 +1099,7 @@ global with sharing class DHSLeadDetailPageController {
         String where_cond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+where_cond; 
 
-        list<ROI_Report_Matrix__c> reportMatrices = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<ROI_Report_Matrix__c> reportMatrices = database.query(query, AccessLevel.USER_MODE);
         
         for(ROI_Report_Matrix__c roi: reportMatrices){
             Map<String,String> mergeFieldsMap = new Map<String,String>();
@@ -1152,8 +1152,8 @@ global with sharing class DHSLeadDetailPageController {
             messages = new list<DHS_Message__c>();
         
         PageNumber --;
-        string query = queryForNextRecords + ' AND Name <:firstRecordName WITH USER_MODE Order by Name desc Limit 200';    
-        list<DHS_Message__c> msgs = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        string query = queryForNextRecords + ' AND Name <:firstRecordName Order by Name desc Limit 200';    
+        list<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE);
         for(Integer j=msgs.size()-1;j>=0; j--){
             messages.add(msgs[j]); 
             if(j==msgs.size()-1){
@@ -1179,8 +1179,8 @@ global with sharing class DHSLeadDetailPageController {
     public void handleNext(){
         messages = new list<DHS_Message__c>();
         PageNumber ++ ;
-        string query = queryForNextRecords + ' AND Name >:lastRecordName WITH USER_MODE Order by Name asc Limit 200';      
-        list<DHS_Message__c> msgs = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        string query = queryForNextRecords + ' AND Name >:lastRecordName Order by Name asc Limit 200';      
+        list<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE);
         integer i = 0;
         for(DHS_Message__c msg: msgs){
             messages.add(msg); 

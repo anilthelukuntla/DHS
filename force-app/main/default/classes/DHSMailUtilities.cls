@@ -141,7 +141,7 @@ public class DHSMailUtilities {
             SELECT Id, ContactId
             FROM User
             WHERE Id = :UserInfo.getUserId()
-         WITH USER_MODE ];
+        ];
 
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
 

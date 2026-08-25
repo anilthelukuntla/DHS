@@ -7,8 +7,8 @@ public class DHSTransferUserProfile {
     public static void doTransfer(){
         string fromProfileName = string.valueOf(system.label.DHS_from_profile);
         string toProfileName = string.valueOf(system.label.DHS_to_profile);
-        profile toProfile = [select id from profile where name =: toProfileName  WITH USER_MODE order by createddate desc limit 1];
-        list<user> users = [select id,profileId from user where profile.Name =: fromProfileName WITH USER_MODE ];
+        profile toProfile = [select id from profile where name =: toProfileName order by createddate desc limit 1];
+        list<user> users = [select id,profileId from user where profile.Name =: fromProfileName ];
         list<user> updateUsers = New list<user>();
         for(user usr : users){
             usr.profileId = toProfile.Id;

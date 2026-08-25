@@ -20,7 +20,7 @@ public with sharing class DHSProfilePageController {
     public DHSProfilePageController(){
     
         List<user> assignUsers = new List<user>();
-        assignUsers = [select Id, User_Type__c, FirstName, lastname  FROM User where user_type__c = 'INV' WITH USER_MODE];
+        assignUsers = [select Id, User_Type__c, FirstName, lastname  FROM User where user_type__c = 'INV'];
         assignUserList = new List<SelectOption>();
         assignLeaveTypes =  new List<SelectOption>();
         String requestedUserId = apexpages.currentpage().getparameters().get('id');
@@ -60,7 +60,7 @@ public with sharing class DHSProfilePageController {
     private User getUserInfo(String userId){
 
 
-        userRecord = [Select FirstName, LastName, Address, Email, Backup_User__c, Backup_UserId__c , From_Date__c,To_Date__c,Out_of_Office__c  from User where id=:userId WITH USER_MODE];
+        userRecord = [Select FirstName, LastName, Address, Email, Backup_User__c, Backup_UserId__c , From_Date__c,To_Date__c,Out_of_Office__c  from User where id=:userId];
 
         //
 

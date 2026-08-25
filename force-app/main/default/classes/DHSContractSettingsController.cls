@@ -15,8 +15,8 @@ public with sharing class DHSContractSettingsController {
     	list<DHS_Contract_Setting__c> contractSettings = new list<DHS_Contract_Setting__c>();
         List<string> contractSettingFields = new List<string>();
         contractSettingFields = DHSApexUtil.FetchFields('DHS_Contract_Setting__c');
-        String query = 'Select '+string.join(contractSettingFields, ',') + ' From DHS_Contract_Setting__c   WITH USER_MODE';
-        contractSettings = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        String query = 'Select '+string.join(contractSettingFields, ',') + ' From DHS_Contract_Setting__c';
+        contractSettings = database.query(query, AccessLevel.USER_MODE);
         if(!contractSettings.isEmpty()){
         	contractSetting = contractSettings[0];        
         }

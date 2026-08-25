@@ -59,8 +59,8 @@ public with sharing class DHSCaseWizardController {
         
         
         String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
-        query = query + ' WHERE '+whereCondition+' WITH USER_MODE'; 
-        subjects = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + ' WHERE '+whereCondition; 
+        subjects = database.query(query, AccessLevel.USER_MODE);
          for(DHS_Contact__c con: subjects){
             subjectsSearched.add(new SubjectRecord(con));        
          }

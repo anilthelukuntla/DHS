@@ -66,7 +66,7 @@ public with sharing class DHSInvoiceModuleController {
             SELECT Id, User_Type__c
             FROM User
             WHERE Id = :UserInfo.getUserId()
-             WITH USER_MODE LIMIT 1
+            LIMIT 1
         ];
         isPMOUser = currentUser.User_Type__c == 'PMO';
 
@@ -178,7 +178,7 @@ public with sharing class DHSInvoiceModuleController {
                 WHERE IsActive = TRUE
                 AND System_Access__c INCLUDES ('DHS')
                 AND Candidate_type__c IN ('Employee', 'SCA', 'Non-SCA')
-                 WITH USER_MODE ORDER BY LastName, FirstName
+                ORDER BY LastName, FirstName
             ];
         } else {
             workers = [
@@ -187,7 +187,7 @@ public with sharing class DHSInvoiceModuleController {
                 WHERE IsActive = TRUE
                 AND System_Access__c INCLUDES ('DHS')
                 AND Candidate_type__c = :selectedUserOption
-                 WITH USER_MODE ORDER BY LastName, FirstName
+                ORDER BY LastName, FirstName
             ];
         }
 

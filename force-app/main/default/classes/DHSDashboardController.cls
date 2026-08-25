@@ -38,7 +38,7 @@ public with sharing class DHSDashboardController {
     
     /** @description Provides this DHS API member. */
     public DHSDashboardController(){
-        currentUser = [select id,user_type__c from user where id =: userInfo.getUserId() WITH USER_MODE ];
+        currentUser = [select id,user_type__c from user where id =: userInfo.getUserId() ];
         
         testCMOIds = string.valueOf(removeTestUserData('CMO').get('value'));
         testINVIds = string.valueOf(removeTestUserData('INV').get('value'));

@@ -14,8 +14,8 @@ public with sharing class DHSPayrollSettingsController {
         payrollSettings = new list<DHS_PayrollSetting__c>();
         List<string> payrollSettingsFields = new List<string>();
         payrollSettingsFields = DHSApexUtil.FetchFields('DHS_PayrollSetting__c');
-        String query = 'Select '+string.join(payrollSettingsFields, ',') + ' From DHS_PayrollSetting__c WITH USER_MODE Order by Order__c';
-        payrollSettings = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        String query = 'Select '+string.join(payrollSettingsFields, ',') + ' From DHS_PayrollSetting__c Order by Order__c';
+        payrollSettings = database.query(query, AccessLevel.USER_MODE);
     }
     
     /** @description Provides this DHS API member. */

@@ -120,7 +120,7 @@ public class DHSROIReportControllerV3 {
         leadSubheaderNItems = New Map<string,list<String>>();
         noSubHeader = New Map<string,set<String>>();
         itemNLead = New Map<string,DHS_Lead__c>();
-        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() WITH USER_MODE ];
+        currentUser = [Select Id, User_Type__c FROM User where Id=:userinfo.getUserId() ];
         
         String sequenceIdParameter = ApexPages.currentPage().getParameters().get('sequenceid');
         sequenceId = String.isBlank(sequenceIdParameter) ? null : String.valueOf(Id.valueOf(sequenceIdParameter.escapeHtml4()));

@@ -113,8 +113,8 @@ global with sharing class DHSUpdateACDDateController {
         }
         whereCriteria.add(new DHSApexUtil.Criteria('Current_Task__c', 'QA Review Completed', '='));
         whereCond = DHSApexUtil.generateWhereQuery(whereCriteria); 
-        query = query + ' WHERE '+whereCond+' WITH USER_MODE Order by CreatedDate Desc';
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + ' WHERE '+whereCond+' Order by CreatedDate Desc';
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
         Map<string,string> docNcaseMap = new Map<string,string>();
         for(DHS_Case__c cse : cases){
             if(cse.DHS_Case_Documents__r.size() > 0){
@@ -177,8 +177,8 @@ global with sharing class DHSUpdateACDDateController {
         String query = 'Select '+string.join(caseFields, ',') + ' From DHS_Case__c ';
         //whereCriteria.add(new DHSApexUtil.Criteria('DHS_Order__c', orderids, 'IN:'));
         //where_cond = DHSApexUtil.generateWhereQuery(whereCriteria);    
-        query = query + ' WHERE DHS_Order__c in:orderids WITH USER_MODE'; 
-        list<DHS_Case__c> cases = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + ' WHERE DHS_Order__c in:orderids'; 
+        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
         return cases;
     }
     /** @description Provides this DHS API member. */
@@ -237,9 +237,9 @@ global with sharing class DHSUpdateACDDateController {
         if(String.isNotblank(whereCond)){
             query = query + ' WHERE '+whereCond ;     
         }else{
-            query = query+' WITH USER_MODE Order by createddate desc';         
+            query = query+' Order by createddate desc';         
         }
-        list<DHS_Customer_Order__c> orders = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        list<DHS_Customer_Order__c> orders = database.query(query, AccessLevel.USER_MODE);
         List<string> orderIds = new List<string>();
         for(DHS_Customer_Order__c doc: orders){
             orderIds.add(doc.id);

@@ -23,7 +23,7 @@ public with sharing class DHSHeaderController {
     /** @description Provides this DHS API member. */
     public DHSHeaderController(){
         hasAccessToLeadUpload = false;
-        currentUser = [Select Id, User_Type__c from User where Id=:userinfo.getuserid() WITH USER_MODE];
+        currentUser = [Select Id, User_Type__c from User where Id=:userinfo.getuserid()];
         if(currentUser.User_Type__c == 'PMO'){
             isPMOUser = true;
         }
@@ -76,8 +76,8 @@ public with sharing class DHSHeaderController {
             whereCondition = whereCondition + ' AND (To_Address_Type__c = \'All Program Members\' OR To_Address_Type__c = \'All QAs\')';       
         }
         
-        query = query + whereCondition+' WITH USER_MODE ORDER BY Createddate desc'; 
-        allmessages = database.query(String.escapeSingleQuotes(query), AccessLevel.USER_MODE);
+        query = query + whereCondition+' ORDER BY Createddate desc'; 
+        allmessages = database.query(query, AccessLevel.USER_MODE);
         List<string> messageIds = new List<string>();
         for(DHS_Message__c doc: allMessages){
             messageIds.add(doc.id);
