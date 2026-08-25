@@ -52,7 +52,7 @@ public with sharing class DHSCaseMessageEditorController {
             DHS_Message__c messageToEdit = [SELECT Id, Subject__c, Message_Body__c, DHS_From_User__c, DHS_Case__c 
                                        FROM DHS_Message__c 
                                        WHERE Id = :messageId
-                                       WITH USER_MODE LIMIT 1];
+ LIMIT 1];
             
             // Check permissions
             if (!hasEditPermission(currentUser, messageToEdit)) {
@@ -65,7 +65,7 @@ public with sharing class DHSCaseMessageEditorController {
             messageToEdit.Subject__c = editedSubject;
             messageToEdit.Message_Body__c = editedBody;
             
-            Database.update(messageToEdit, AccessLevel.USER_MODE);
+            Database.update(messageToEdit);
             
             hasError = false;
             errorMessage = '';
@@ -123,8 +123,8 @@ public with sharing class DHSCaseMessageEditorController {
                 throw new AuraHandledException('You do not have permission to delete messages.');
             }
             
-            DHS_Message__c messageToDelete = [SELECT Id FROM DHS_Message__c WHERE Id = :messageId WITH USER_MODE LIMIT 1];
-            Database.delete(messageToDelete, AccessLevel.USER_MODE);
+            DHS_Message__c messageToDelete = [SELECT Id FROM DHS_Message__c WHERE Id = :messageId LIMIT 1];
+            Database.delete(messageToDelete);
             
         } catch (Exception e) {
             throw new AuraHandledException('Error deleting message: ' + e.getMessage());

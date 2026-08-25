@@ -88,12 +88,12 @@ public with sharing class InvoiceModuleController {
         system.debug('whereCriteria...'+whereCriteria);
             if(!whereCriteria.isEmpty()){
                 queryForNextRecords = query + ' WHERE '+where_cond+' AND';
-                query = query + ' WHERE '+where_cond+' WITH SECURITY_ENFORCED Order by Name asc Limit 200'; 
-                countQuery = 'Select Count() from Invoice__c WHERE '+ where_cond+' WITH SECURITY_ENFORCED';
+                query = query + ' WHERE '+where_cond+' Order by Name asc Limit 200'; 
+                countQuery = 'Select Count() from Invoice__c WHERE '+ where_cond;
             }else{
                 queryForNextRecords = query + ' WHERE ';
-                query = query + ' WITH SECURITY_ENFORCED Order by Name asc Limit 200'; 
-                countQuery = 'Select Count() from Invoice__c WITH SECURITY_ENFORCED';
+                query = query + ' Order by Name asc Limit 200'; 
+                countQuery = 'Select Count() from Invoice__c';
             }
         
         

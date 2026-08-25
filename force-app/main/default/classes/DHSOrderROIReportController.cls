@@ -54,7 +54,7 @@ public without sharing class DHSOrderROIReportController {
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         //query = query + ' WHERE '+where_cond;
         query = query + ' WHERE '+whereCond; 
-        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
+        list<DHS_Case__c> cases = database.query(query);
         if(!cases.isEmpty()){
             caseRecord = cases[0]; 
         }    
@@ -80,7 +80,7 @@ public without sharing class DHSOrderROIReportController {
         //query = query + ' WHERE '+where_cond+ ' ORDER BY Item_number__c ASC'; 
         query = query + ' WHERE '+whereCond+ ' ORDER BY Item_number__c ASC'; 
         
-        leads = database.query(query, AccessLevel.USER_MODE);
+        leads = database.query(query);
         Integer i = 1;
         for(DHS_Lead__c l: leads){
             leadRecords.add(new leadRecord(l,null));    
@@ -142,9 +142,9 @@ public without sharing class DHSOrderROIReportController {
             } 
         }
         roiOrder.ROI_Report_Order__c = leaditemnumbers;
-        //database.insert(roiOrder,false,AccessLevel.USER_MODE);
+        //database.insert(roiOrder,false);
         roiOrder.HideTitles__c = string.join(skipTitles,',');
-        Database.insert(roiOrder, AccessLevel.USER_MODE);
+        Database.insert(roiOrder);
         roiOrderId = roiOrder.id;
         currentsequenceid = roiOrder.id;
         PageReference redirectPage = Page.DHSROIReportPreview;
@@ -186,9 +186,9 @@ public without sharing class DHSOrderROIReportController {
             } 
         }
         roiOrder.ROI_Report_Order__c = leaditemnumbers;
-        //database.insert(roiOrder,false,AccessLevel.USER_MODE);
+        //database.insert(roiOrder,false);
         roiOrder.HideTitles__c = string.join(skipTitles,',');
-        Database.insert(roiOrder, AccessLevel.USER_MODE);
+        Database.insert(roiOrder);
 
         myFutureMethod(caseRecord.id,roiOrder.id);
         PageReference redirectPage = Page.DHSCasedetail;
@@ -257,9 +257,9 @@ public without sharing class DHSOrderROIReportController {
         doc.Name__c = 'DHSROIReport';
         doc.DHS_Case__c = caseId;
         doc.Added_By__c = UserInfo.getFirstName() + ' '+ UserInfo.getLastName();
-        //database.insert(doc,false,AccessLevel.USER_MODE);
-        Database.insert(doc, AccessLevel.USER_MODE);
-        DHS_Case__c caseRecord = [select Subject_Type__c,DHS_Contact__r.SSN__c from DHS_Case__c where id=:caseId WITH USER_MODE limit 1];
+        //database.insert(doc,false);
+        Database.insert(doc);
+        DHS_Case__c caseRecord = [select Subject_Type__c,DHS_Contact__r.SSN__c from DHS_Case__c where id=:caseId limit 1];
         string applicantType;
         string ssnFormatted;
         if(caseRecord.Subject_Type__c == 'Applicant'){
@@ -286,8 +286,8 @@ public without sharing class DHSOrderROIReportController {
         }
         
         att.ContentType = 'application/pdf';
-        //database.insert(att,false,AccessLevel.USER_MODE);
-        Database.insert(att, AccessLevel.USER_MODE);
+        //database.insert(att,false);
+        Database.insert(att);
     }
     /** @description Provides this DHS API member. */
     public string currentsequenceid {get;set;}
@@ -324,20 +324,20 @@ public without sharing class DHSOrderROIReportController {
         
         
         if(currentsequenceid != Null){
-            //list<DHS_ROI_Report_Order__c> roiOrder = [Select Id, ROI_Report_Order__c, DHS_Case__c from DHS_ROI_Report_Order__c WHERE Id=:currentsequenceid WITH USER_MODE];
-            list<DHS_ROI_Report_Order__c> roiOrder = [Select Id, ROI_Report_Order__c, DHS_Case__c from DHS_ROI_Report_Order__c WHERE Id=:currentsequenceid WITH USER_MODE ];
+            //list<DHS_ROI_Report_Order__c> roiOrder = [Select Id, ROI_Report_Order__c, DHS_Case__c from DHS_ROI_Report_Order__c WHERE Id=:currentsequenceid];
+            list<DHS_ROI_Report_Order__c> roiOrder = [Select Id, ROI_Report_Order__c, DHS_Case__c from DHS_ROI_Report_Order__c WHERE Id=:currentsequenceid ];
             if(!roiOrder.isEmpty()){
                 roiOrder[0].ROI_Report_Order__c = leaditemnumbers;
                 roiOrder[0].HideTitles__c = string.join(skipTitles,',');
-                Database.update(roiOrder, AccessLevel.USER_MODE);   
+                Database.update(roiOrder);   
             }
         }else{
             DHS_ROI_Report_Order__c roiOrder = new DHS_ROI_Report_Order__c();
             roiOrder.DHS_Case__c = caseRecord.id;
             roiOrder.ROI_Report_Order__c = leaditemnumbers;
             roiOrder.HideTitles__c = string.join(skipTitles,',');
-            //database.insert(roiOrder,false,AccessLevel.USER_MODE);
-            Database.insert(roiOrder, AccessLevel.USER_MODE);
+            //database.insert(roiOrder,false);
+            Database.insert(roiOrder);
             currentsequenceid = roiOrder.id;    
         }
         showroireport = true;

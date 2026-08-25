@@ -26,7 +26,7 @@ public without sharing class DHSSubjectDocumentsUploadController{
         showUploadPanel = false;
         showAfterUploadPanel = false;
         showExpiryPanel = false;
-        documentRequest = [Select Id, DHS_Lead__c, DHS_Lead__r.Assigned_To_Name__c,DHS_Lead__r.DHS_Case__r.Case_Number__c, Expiration_Date__c, CreatedDate, Status__c, Subject_Comments__c, Request_Expired__c from DHS_Document_Request__c WHERE ID=: documentRequestId WITH USER_MODE ];
+        documentRequest = [Select Id, DHS_Lead__c, DHS_Lead__r.Assigned_To_Name__c,DHS_Lead__r.DHS_Case__r.Case_Number__c, Expiration_Date__c, CreatedDate, Status__c, Subject_Comments__c, Request_Expired__c from DHS_Document_Request__c WHERE ID=: documentRequestId ];
         if(documentRequest.Status__c == 'Documents Requested' && !documentRequest.Request_Expired__c){
             showUploadPanel = true;    
         }
@@ -37,27 +37,27 @@ public without sharing class DHSSubjectDocumentsUploadController{
             showExpiryPanel = true;    
         }
         attachmentsList = new list<attachment>();
-        attachmentsList = [Select Id, parentId, Name, CreatedDate, Description from Attachment where parentId =:documentRequestId WITH USER_MODE ];
+        attachmentsList = [Select Id, parentId, Name, CreatedDate, Description from Attachment where parentId =:documentRequestId ];
     
     }
     
     /** @description Provides this DHS API member. */
     public void submitaction(){
         documentRequest.Status__c='Documents Received';
-        Database.update(documentRequest, AccessLevel.USER_MODE);
+        Database.update(documentRequest);
         fetchDocumentRequest();
     }
     /** @description Provides this DHS API member. */
     public string deleteAttachmentId{get;set;}
     /** @description Provides this DHS API member. */
     public void deleteAttachment(){
-        Database.delete([select Id from Attachment where id=:deleteAttachmentId WITH USER_MODE ], AccessLevel.USER_MODE);
+        Database.delete([select Id from Attachment where id=:deleteAttachmentId ]);
         fetchDocumentRequest();
     }
     
     /** @description Provides this DHS API member. */
     public void autosaveaction(){
-        Database.update(documentRequest, AccessLevel.USER_MODE);
+        Database.update(documentRequest);
     }
     
     private String decodeURLParams(String encodedString){

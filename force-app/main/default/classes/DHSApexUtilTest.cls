@@ -208,17 +208,17 @@ private class DHSApexUtilTest {
             );
 
         System.assertEquals(
-            'NumberOfEmployees >=100',
+            'NumberOfEmployees >= 100',
             integerCriterion.getSOQLCriteria()
         , 'Expected the asserted condition to hold');
 
         System.assertEquals(
-            'AnnualRevenue >5000.50',
+            'AnnualRevenue > 5000.50',
             doubleCriterion.getSOQLCriteria()
         , 'Expected the asserted condition to hold');
 
         System.assertEquals(
-            'CreatedDate >=2026-01-01',
+            'CreatedDate >= 2026-01-01',
             dateCriterion.getSOQLCriteria()
         , 'Expected the asserted condition to hold');
     }
@@ -277,7 +277,7 @@ private class DHSApexUtilTest {
 
         System.assertEquals(
             'Name = \'Test Account\'' +
-            ' AND NumberOfEmployees >=10' +
+            ' AND NumberOfEmployees >= 10' +
             ' AND ParentId = null',
             whereClause
         , 'Expected the asserted condition to hold');

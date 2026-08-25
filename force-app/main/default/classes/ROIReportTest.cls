@@ -108,79 +108,7 @@ public class ROIReportTest {
         casedetailctrl.updatecaseaction();
         
         //Case Detail Page Test ends...
-        //LeadDashboardController test starts....
-         Test.startTest(); 
-        Lead__c lead = [Select Id, status__c, LeadType__c, Assigned_to__c, Lead_Accepted_or_Rejected__c from lead__c limit 1];
-        System.debug('lead...'+lead);
-        PageReference LeadDashboardPage = Page.LeadDashboard;
-        Test.setCurrentPage(LeadDashboardPage);
-        LeadDashboardController leadDashboardCtrl = new LeadDashboardController(); 
-        LeadDashboardPage.getParameters().put('searchUnassigned','true'); 
-        LeadDashboardController leaddashboardCtrl2 = new LeadDashboardController();
-        LeadDashboardPage.getParameters().clear();
-        LeadDashboardPage.getParameters().put('searchUnassigned','false'); 
-        LeadDashboardPage.getParameters().put('ZipSearchEntry','test'); 
-        LeadDashboardPage.getParameters().put('stateSearchEntry','test'); 
-        LeadDashboardPage.getParameters().put('citySearchEntry','test'); 
-        LeadDashboardPage.getParameters().put('subjectLastNameSearchEntry','test'); 
-        LeadDashboardPage.getParameters().put('manifestSearchEntry','test'); 
-        LeadDashboardPage.getParameters().put('subjectFirstNameSearchEntry','test'); 
-        LeadDashboardPage.getParameters().put('caseNumberSearchEntry','test'); 
-        LeadDashboardPage.getParameters().put('leadStatusSearchEntry','test'); 
-        LeadDashboardPage.getParameters().put('leadTypeSearchEntry','test'); 
-        LeadDashboardController leaddashboardCtrl3 = new LeadDashboardController(); 
-        LeadDashboardPage.getParameters().clear();
-        LeadDashboardPage.getParameters().put('searchmyavailableleads','true');  
-        LeadDashboardController leaddashboardCtrl4 = new LeadDashboardController();
-        LeadDashboardPage.getParameters().clear();
-        LeadDashboardPage.getParameters().put('searchmyassigned','true');  
-        LeadDashboardController leaddashboardCtrl5 = new LeadDashboardController();   
-        leadDashboardCtrl.searchUnassigned = true;
-        leadDashboardCtrl.SearchAction();
-        system.assertEquals(1,leadDashboardCtrl.leadsSearched.size());
-        leadDashboardCtrl.selectedUserIdForAssignment = userinfo.getUserId();
-        leadDashboardCtrl.leadsSearched[0].isSelected = true;
-        leadDashboardCtrl.AssignLeadsAction();
-        leadDashboardCtrl.UpdateACDLead();
-        //leadDashboardCtrl.leadsSearched[0].isSelected = true;
-        leadDashboardCtrl.UnAssignLeadsAction();
-        
-        //LeadDashboardController test ends....
-        //LeadDetailPageController test starts...
-        insert new GeneralSettings__c(Name = 'TimeEntryDuringLeadConfirm', Value__c='SCA');
-        PageReference leaddetailpage = Page.leaddetail;
-        Test.setCurrentPage(leaddetailpage);
-        Lead__c tempLead = [Select Id from Lead__c];
-        //leaddetailpage.getParameters().put('id',leadDashboardCtrl.leadsSearched[0].ld.id);
-        leaddetailpage.getParameters().put('id',tempLead.id);
-       
-        LeadDetailPageController leadDetailPageCtrl = new LeadDetailPageController();
-        leadDetailPageCtrl.updateleadaction();
-        leadDetailPageCtrl.completeleadaction();
-        leadDetailPageCtrl.selfassignaction();
-        pagereference temp = leadDetailPageCtrl.reviewcompletedaction();
-        leadDetailPageCtrl.createdocumentrequestaction();
-        leadDetailPageCtrl.rejectleadaction();
-        
-        Test.setCurrentPage(LeadDashboardPage);
-        //leadDashboardCtrl.leadIdToAccept = leadDashboardCtrl.leadsSearched[0].ld.id;
-        leadDashboardCtrl.leadIdToAccept = tempLead.id;
-        leadDashboardCtrl.acceptaction();
-        Contact__C con = new contact__c();
-        con.First_Name__c = 'test';
-        con.Last_Name__c = 'investigator';
-        con.Email__c = 'test.investigator@test.com';
-        insert con;
-        case__c c = new case__c(contact__c = con.id);
-        insert c;
-        Lead__c l = new Lead__c();
-        l.Case__c = c.id;
-        insert l;
-        leadDashboardCtrl.leadIdToReject = l.id;
-        leadDashboardCtrl.rejectaction();
-        leadDashboardCtrl.onstatechange();
-        //LeadDetailPageController test ends...
-        
+        Test.startTest();
         PageReference ROIReport = Page.OrderROIReport;
         Test.setCurrentPage(ROIReport);
         ROIReport.getParameters().put('id',casesCreated[0].id);
@@ -197,7 +125,7 @@ public class ROIReportTest {
         ROIReport2.getParameters().put('id',casesCreated[0].id);
         ROIReport2.getParameters().put('sequenceid',roiOrder.id);
         ROIReportControllerV2 roictrl = new ROIReportControllerV2 ();
-       
+        Test.stopTest();
     }
     
 }

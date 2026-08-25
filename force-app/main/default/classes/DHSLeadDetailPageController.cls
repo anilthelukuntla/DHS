@@ -71,7 +71,7 @@ global with sharing class DHSLeadDetailPageController {
                 CreatedDate
             FROM MS_Team_Call_Schedule__c
             WHERE DHS_Lead__c = :leadId
-            WITH USER_MODE
+
             ORDER BY Start_Date_Time__c DESC, CreatedDate DESC
         ]) {
             summaries.add(new MeetingSummary(schedule));
@@ -201,7 +201,7 @@ global with sharing class DHSLeadDetailPageController {
                 Last_Synchronized_At__c, Last_Graph_Error__c
             FROM MS_Team_Call_Schedule__c
             WHERE Id = :scheduleId AND DHS_Lead__c = :leadId
-            WITH USER_MODE
+
             LIMIT 1
         ];
         MeetingLifecycleDetails details =
@@ -215,7 +215,7 @@ global with sharing class DHSLeadDetailPageController {
                 Last_Left_At__c, Total_Attendance_Seconds__c
             FROM MS_Team_Meeting_Participant__c
             WHERE Meeting_Schedule__c = :scheduleId
-            WITH USER_MODE
+
             ORDER BY Display_Name__c, Email__c
         ]) {
             ParticipantDetail participantDetail =
@@ -229,7 +229,7 @@ global with sharing class DHSLeadDetailPageController {
                     Duration_Seconds__c
                 FROM MS_Team_Attendance_Interval__c
                 WHERE Participant__c IN :participantById.keySet()
-                WITH USER_MODE
+
                 ORDER BY Joined_At__c
             ]) {
                 participantById.get(interval.Participant__c).intervals.add(
@@ -243,7 +243,7 @@ global with sharing class DHSLeadDetailPageController {
                 Processing_Status__c, Last_Error__c
             FROM MS_Team_Meeting_Artifact__c
             WHERE Meeting_Schedule__c = :scheduleId
-            WITH USER_MODE
+
             ORDER BY Created_At__c DESC
         ]) {
             details.artifacts.add(new ArtifactDetail(artifact));
@@ -386,17 +386,17 @@ global with sharing class DHSLeadDetailPageController {
             SELECT Id, Fields__c
             FROM DHS_Lead_Grammar_Check__c
             WHERE DHS_Lead__c = :leadId
-            WITH USER_MODE LIMIT 1
+ LIMIT 1
         ];
 
         if (!existingRecords.isEmpty()) {
             existingRecords[0].Fields__c = fields;
-            Database.update(existingRecords[0], AccessLevel.USER_MODE);
+            Database.update(existingRecords[0]);
             return existingRecords[0].Fields__c;
         }
 
         DHS_Lead_Grammar_Check__c temp = New DHS_Lead_Grammar_Check__c(DHS_Lead__c = leadId, Fields__c =fields);
-        Database.insert(temp, AccessLevel.USER_MODE);
+        Database.insert(temp);
         return temp.Fields__c;
     }
     @RemoteAction
@@ -415,7 +415,7 @@ global with sharing class DHSLeadDetailPageController {
             SELECT Id, Fields__c
             FROM DHS_Lead_Grammar_Check__c
             WHERE DHS_Lead__c = :leadId
-            WITH USER_MODE LIMIT 1
+ LIMIT 1
         ];
 
         if (existingRecords.isEmpty()) {
@@ -423,7 +423,7 @@ global with sharing class DHSLeadDetailPageController {
         }
 
         existingRecords[0].Fields__c =fields;
-        Database.update(existingRecords[0], AccessLevel.USER_MODE);
+        Database.update(existingRecords[0]);
         return existingRecords[0].Fields__c;
     }
     @RemoteAction
@@ -441,7 +441,7 @@ global with sharing class DHSLeadDetailPageController {
             SELECT Id, Fields__c
             FROM DHS_Lead_Grammar_Check__c
             WHERE DHS_Lead__c = :leadId
-            WITH USER_MODE LIMIT 1
+ LIMIT 1
         ];
 
         if (existingRecords.isEmpty()) {
@@ -644,7 +644,7 @@ global with sharing class DHSLeadDetailPageController {
         
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCond;
-        list<DHS_Case__c> cases = database.query(query, AccessLevel.USER_MODE);
+        list<DHS_Case__c> cases = database.query(query);
         if(!cases.isEmpty()){
             caseRecord = cases[0];    
         }    
@@ -666,7 +666,7 @@ global with sharing class DHSLeadDetailPageController {
             }
         }
         List<DHS_Lead__c> leadsAssigned = new List<DHS_Lead__c>();
-        leadsAssigned = [Select Id, Status__c, DHS_Assigned_To__c, DHS_Assigned_To__r.Email, DHS_Case__c, DHS_Assigned_To__r.FirstName, DHS_Assigned_To__r.LastName from DHS_Lead__c where DHS_Case__c=:caseRecord.id WITH USER_MODE];
+        leadsAssigned = [Select Id, Status__c, DHS_Assigned_To__c, DHS_Assigned_To__r.Email, DHS_Case__c, DHS_Assigned_To__r.FirstName, DHS_Assigned_To__r.LastName from DHS_Lead__c where DHS_Case__c=:caseRecord.id];
         for(DHS_Lead__c lead: leadsAssigned){
             if(lead.DHS_Assigned_To__c != Null && lead.DHS_Assigned_To__c != userinfo.getuserid()){
                 if(!toUserIds.contains(lead.DHS_Assigned_To__r.Email)){
@@ -689,7 +689,7 @@ global with sharing class DHSLeadDetailPageController {
         message.DHS_Case__c = caseRecord.id;
         message.DHS_Lead__c = leadId;
         messagesToInsert.add(message); 
-        database.insert(message,false,AccessLevel.USER_MODE);
+        database.insert(message,false);
         String emailBody = 'Message has been sent for the case #'+caseRecord.Case_Number__c+' Please login to check the message.';
         if(!test.isRunningTest()){
             DHSMailUtilities.sendHTMLEmail(toAddressList,messageSubject,emailBody,null);
@@ -739,9 +739,9 @@ global with sharing class DHSLeadDetailPageController {
         queryForNextRecords = query + ' WHERE '+whereCond;
         query = query + ' WHERE '+whereCond+' Order by Name asc Limit 200'; 
         string countQuery = 'Select Count() from DHS_Message__c WHERE '+ whereCond;
-        totalRecordCount = database.countquery(Countquery, AccessLevel.USER_MODE);
+        totalRecordCount = database.countquery(Countquery);
         
-        List<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE); 
+        List<DHS_Message__c> msgs = database.query(query); 
         integer i = 0;
         for(DHS_Message__c msg: msgs){
             messages.add(msg); 
@@ -789,7 +789,7 @@ global with sharing class DHSLeadDetailPageController {
         
         String whereCond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+whereCond;
-        list<DHS_Lead__c> leads = database.query(query, AccessLevel.USER_MODE);
+        list<DHS_Lead__c> leads = database.query(query);
         if(!leads.isEmpty()){
             leadRecord = leads[0]; 
             caseId = leadRecord.DHS_Case__c; 
@@ -798,7 +798,7 @@ global with sharing class DHSLeadDetailPageController {
                  leadRecordRTAExtension = new DHS_Lead_RTA_Extension__c();
                  List<DHS_Lead_RTA_Extension__c> leadRecordExtensions = new List<DHS_Lead_RTA_Extension__c>();
                  leadRecordExtensions = [Select Id, Foreign_Activities__c, Foreign_Contacts__c, Foreign_Travel1__c, Foreign_Travel2__c, DHS_Lead__c
-                                         FROM DHS_Lead_RTA_Extension__c WHERE DHS_Lead__c =:leadRecord.Id WITH USER_MODE];
+                                         FROM DHS_Lead_RTA_Extension__c WHERE DHS_Lead__c =:leadRecord.Id];
                  if(!leadRecordExtensions.isEmpty()){
                      leadRecordRTAExtension = leadRecordExtensions[0];
                  } else{
@@ -823,15 +823,15 @@ global with sharing class DHSLeadDetailPageController {
             leadRecord.Status__c = 'QA Rejection Complete';
             leadRecord.QA_Rejection_Complete_Date__c = date.today(); 
         }
-        Database.update(leadRecord, AccessLevel.USER_MODE);
-        //database.update(leadRecord,false,AccessLevel.USER_MODE);
+        Database.update(leadRecord);
+        //database.update(leadRecord,false);
         if(isValidForRTAExtension){
             if(toInsertleadRecordRTAExtension){
-                Database.insert(leadRecordRTAExtension, AccessLevel.USER_MODE);
+                Database.insert(leadRecordRTAExtension);
                 //database.insert(leadRecordRTAExtension);
             }else{
-                Database.update(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                //database.update(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                Database.update(leadRecordRTAExtension);
+                //database.update(leadRecordRTAExtension,false);
             }
         }
         return getLeadCompletionRedirectPage();
@@ -863,15 +863,15 @@ global with sharing class DHSLeadDetailPageController {
     public void updateleadaction(){
         try{
             errorMessage = null;
-            Database.update(leadRecord, AccessLevel.USER_MODE);
-            //database.update(leadRecord,false,AccessLevel.USER_MODE);  
+            Database.update(leadRecord);
+            //database.update(leadRecord,false);  
             if(isValidForRTAExtension){
                 if(toInsertleadRecordRTAExtension){
-                    Database.insert(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                    //database.insert(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                    Database.insert(leadRecordRTAExtension);
+                    //database.insert(leadRecordRTAExtension,false);
                 }else{
-                    Database.update(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                    //database.update(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                    Database.update(leadRecordRTAExtension);
+                    //database.update(leadRecordRTAExtension,false);
                 }
             }
         }catch(Exception ex){
@@ -888,15 +888,15 @@ global with sharing class DHSLeadDetailPageController {
      */
     public pagereference reviewcompletedaction(){
         leadRecord.Status__c = 'QA Review Completed';
-        Database.update(leadRecord, AccessLevel.USER_MODE);
-        //database.update(leadRecord,false,AccessLevel.USER_MODE);
+        Database.update(leadRecord);
+        //database.update(leadRecord,false);
         if(isValidForRTAExtension){
             if(toInsertleadRecordRTAExtension){
-                Database.insert(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                //database.insert(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                Database.insert(leadRecordRTAExtension);
+                //database.insert(leadRecordRTAExtension,false);
             }else{
-                Database.update(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                //database.update(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                Database.update(leadRecordRTAExtension);
+                //database.update(leadRecordRTAExtension,false);
             }
         }
         PageReference redirectPage = Page.DHSCasedetail;
@@ -914,12 +914,12 @@ global with sharing class DHSLeadDetailPageController {
          leadRecord.Accepted_Date__c =system.today();  
          leadRecord.Assignee_Date__c = system.today(); 
          if(!test.isRunningTest()){
-            database.update(leadRecord,false,AccessLevel.USER_MODE); 
+            database.update(leadRecord,false); 
             if(isValidForRTAExtension){
                 if(toInsertleadRecordRTAExtension){
-                    database.insert(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                    database.insert(leadRecordRTAExtension,false);
                 }else{
-                    database.update(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                    database.update(leadRecordRTAExtension,false);
                 }
             }    
          }
@@ -931,8 +931,8 @@ global with sharing class DHSLeadDetailPageController {
      * @return The requested result.
      */
     public pagereference deleteleadaction(){
-        Database.delete(leadRecord, AccessLevel.USER_MODE);
-        //database.delete(leadRecord,false,AccessLevel.USER_MODE);
+        Database.delete(leadRecord);
+        //database.delete(leadRecord,false);
         PageReference redirectPage = Page.DHSLeaddashboard;
         redirectPage.setRedirect(true);
         return redirectPage;     
@@ -946,8 +946,8 @@ global with sharing class DHSLeadDetailPageController {
      /** @description Provides this DHS API member. */
      public void createdocumentrequestaction(){
         documentRequest.Status__c = 'Documents Requested';
-         Database.insert(documentRequest, AccessLevel.USER_MODE);
-        //database.insert(documentRequest,false,AccessLevel.USER_MODE);
+         Database.insert(documentRequest);
+        //database.insert(documentRequest,false);
         documentRequest = new DHS_Document_Request__c();
         documentRequest.To_Address__c = leadRecord.DHS_Contact__r.Email__c;
         documentRequest.DHS_Lead__c = leadId;
@@ -956,14 +956,14 @@ global with sharing class DHSLeadDetailPageController {
     
     /** @description Provides this DHS API member. */
     public  void fetchDocumentRequests(){
-        documentrequestsmap = new Map<Id,DHS_Document_Request__c>([SELECT Id,Name,Status__c,To_Address__c, Additional_To_Address__c, Investigator_Comments__c FROM DHS_Document_Request__c WHERE DHS_Lead__c=:leadId WITH USER_MODE order by createddate desc ]);
+        documentrequestsmap = new Map<Id,DHS_Document_Request__c>([SELECT Id,Name,Status__c,To_Address__c, Additional_To_Address__c, Investigator_Comments__c FROM DHS_Document_Request__c WHERE DHS_Lead__c=:leadId order by createddate desc ]);
         documentrequestnattachmentsmap = new Map<Id,List<Attachment>>();
         documentrequestids = new list<string>();
         for(string docId: documentrequestsmap.keyset()){
             documentrequestids.add(docId);
             documentrequestnattachmentsmap.put(docId,new list<Attachment> {});
         }
-        List<Attachment> attachments = [Select id, name, parentid, description from Attachment where parentid=:documentrequestsmap.keyset() WITH USER_MODE];
+        List<Attachment> attachments = [Select id, name, parentid, description from Attachment where parentid=:documentrequestsmap.keyset()];
         for(Attachment att: attachments){
             if(!documentrequestnattachmentsmap.containsKey(att.parentid)){
                 documentrequestnattachmentsmap.put(att.parentid, new list<Attachment> {att});
@@ -980,23 +980,23 @@ global with sharing class DHSLeadDetailPageController {
     public PageReference applyforwaiveraction(){
         leadRecord.Status__c = 'Applied For Waiver';
         leadRecord.Reason_for_Waiver__c = waiverreason;
-        Database.update(leadRecord, AccessLevel.USER_MODE);
-        //database.update(leadRecord,false,AccessLevel.USER_MODE);
+        Database.update(leadRecord);
+        //database.update(leadRecord,false);
         if(isValidForRTAExtension){
             if(toInsertleadRecordRTAExtension){
-                Database.insert(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                //database.insert(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                Database.insert(leadRecordRTAExtension);
+                //database.insert(leadRecordRTAExtension,false);
             }else{
-                Database.update(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                //database.update(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                Database.update(leadRecordRTAExtension);
+                //database.update(leadRecordRTAExtension,false);
             }
         }
         DHS_Case_History__c ch = new DHS_Case_History__c();
         ch.DHS_Case__c = leadRecord.DHS_Case__c;
         ch.DHS_Added_By__c = userinfo.getuserid();
         ch.Value__c = 'Applied For Waiver - '+ waiverreason;
-        Database.insert(ch, AccessLevel.USER_MODE);
-        //database.Insert(ch,false,AccessLevel.USER_MODE);
+        Database.insert(ch);
+        //database.Insert(ch,false);
         PageReference redirectPage = Page.DHSLeaddashboard;
         redirectPage.setRedirect(true);
         return redirectPage;  
@@ -1012,15 +1012,15 @@ global with sharing class DHSLeadDetailPageController {
         leadRecord.Status__c = 'QA Rejected';
         leadRecord.QA_Rejection_Comments__c = leadrejectionreason;
         leadRecord.QA_Rejected_Date__c = system.today();
-        Database.update(leadRecord, AccessLevel.USER_MODE);
-        //database.update(leadRecord,false,AccessLevel.USER_MODE);
+        Database.update(leadRecord);
+        //database.update(leadRecord,false);
         if(isValidForRTAExtension){
             if(toInsertleadRecordRTAExtension){
-                Database.insert(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                //database.insert(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                Database.insert(leadRecordRTAExtension);
+                //database.insert(leadRecordRTAExtension,false);
             }else{
-                Database.update(leadRecordRTAExtension, AccessLevel.USER_MODE);
-                //database.update(leadRecordRTAExtension,false,AccessLevel.USER_MODE);
+                Database.update(leadRecordRTAExtension);
+                //database.update(leadRecordRTAExtension,false);
             }
         }
         List<string> toAddress = new List<string>();
@@ -1045,8 +1045,8 @@ global with sharing class DHSLeadDetailPageController {
     /** @description Provides this DHS API member. */
     public void reopenleadaction(){
         leadRecord.Status__c = 'In-Progress';
-        Database.update(leadRecord, AccessLevel.USER_MODE);
-        //database.update(leadRecord,false,AccessLevel.USER_MODE);
+        Database.update(leadRecord);
+        //database.update(leadRecord,false);
     }
     
     /*public string sourcefieldtopopulatenarrative{get;set;}
@@ -1075,7 +1075,7 @@ global with sharing class DHSLeadDetailPageController {
         String where_cond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+where_cond; 
 
-        list<ROI_Report_Matrix__c> reportMatrices = database.query(query, AccessLevel.USER_MODE);
+        list<ROI_Report_Matrix__c> reportMatrices = database.query(query);
 
         if(!reportMatrices.isEmpty()){
             String textToPopulate = reportMatrices[0].Text_To_Populate__c;
@@ -1099,7 +1099,7 @@ global with sharing class DHSLeadDetailPageController {
         String where_cond = DHSApexUtil.generateWhereQuery(whereCriteria);    
         query = query + ' WHERE '+where_cond; 
 
-        list<ROI_Report_Matrix__c> reportMatrices = database.query(query, AccessLevel.USER_MODE);
+        list<ROI_Report_Matrix__c> reportMatrices = database.query(query);
         
         for(ROI_Report_Matrix__c roi: reportMatrices){
             Map<String,String> mergeFieldsMap = new Map<String,String>();
@@ -1134,15 +1134,15 @@ global with sharing class DHSLeadDetailPageController {
     public void autoSaveLeadAction(){
      if(leadRecord.LeadType__c == 'Subject Interview (ESI/TESI)'){
          try{
-             Database.update(leadRecordRTAExtension, AccessLevel.USER_MODE);
+             Database.update(leadRecordRTAExtension);
          }catch(exception e){
              ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Unable to save the lead extension.'));
          }
         
      }
         
-        Database.update(leadRecord, AccessLevel.USER_MODE);
-        //database.update(leadRecord,false,AccessLevel.USER_MODE);
+        Database.update(leadRecord);
+        //database.update(leadRecord,false);
     }
     
 
@@ -1153,7 +1153,7 @@ global with sharing class DHSLeadDetailPageController {
         
         PageNumber --;
         string query = queryForNextRecords + ' AND Name <:firstRecordName Order by Name desc Limit 200';    
-        list<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE);
+        list<DHS_Message__c> msgs = database.query(query);
         for(Integer j=msgs.size()-1;j>=0; j--){
             messages.add(msgs[j]); 
             if(j==msgs.size()-1){
@@ -1180,7 +1180,7 @@ global with sharing class DHSLeadDetailPageController {
         messages = new list<DHS_Message__c>();
         PageNumber ++ ;
         string query = queryForNextRecords + ' AND Name >:lastRecordName Order by Name asc Limit 200';      
-        list<DHS_Message__c> msgs = database.query(query, AccessLevel.USER_MODE);
+        list<DHS_Message__c> msgs = database.query(query);
         integer i = 0;
         for(DHS_Message__c msg: msgs){
             messages.add(msg); 
@@ -1227,7 +1227,7 @@ global with sharing class DHSLeadDetailPageController {
                 SELECT Id, Subject__c, Message_Body__c 
                 FROM DHS_Message__c 
                 WHERE Id = :selectedMessageId
-                WITH USER_MODE LIMIT 1
+ LIMIT 1
             ];
         }
     }
@@ -1235,7 +1235,7 @@ global with sharing class DHSLeadDetailPageController {
     /** @description Provides this DHS API member. */
     public void updateMessage() {
         if(selectedMessage != null){
-            Database.update(selectedMessage, AccessLevel.USER_MODE);
+            Database.update(selectedMessage);
         }
     }
 
@@ -1243,7 +1243,7 @@ global with sharing class DHSLeadDetailPageController {
     public void deleteMessage() {
         if(selectedMessageId != null){
             try {
-                Database.delete([SELECT Id FROM DHS_Message__c WHERE Id = :selectedMessageId WITH USER_MODE LIMIT 1], AccessLevel.USER_MODE);
+                Database.delete([SELECT Id FROM DHS_Message__c WHERE Id = :selectedMessageId LIMIT 1]);
                 // Refresh messages after deletion
                 fetchCaseMessages();
             } catch (Exception e) {

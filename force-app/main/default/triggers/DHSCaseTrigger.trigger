@@ -23,7 +23,7 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
                    l.Lead_Status_Before_Discont__c = Null;
                 }
             }
-            Database.update(leadsToUpdate, AccessLevel.USER_MODE);
+            Database.update(leadsToUpdate);
         }
     
     }
@@ -52,7 +52,7 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
         for(DHS_Contact__c con: contacts){
             con.Run_Credit_Report__c = true;
         }
-        Database.update(contacts, AccessLevel.USER_MODE);
+        Database.update(contacts);
     } 
     
     if(trigger.isBefore && trigger.isUpdate){ 
@@ -161,6 +161,6 @@ trigger DHSCaseTrigger on DHS_Case__c (before insert,after insert,before update,
     }
 
     if(!caseHistoriesToInsert.isEmpty()){
-        Database.insert(caseHistoriesToInsert, AccessLevel.USER_MODE);
+        Database.insert(caseHistoriesToInsert);
     } 
 }

@@ -19,7 +19,8 @@ public class DHSSubjFileUploadAuthPageCtrlTest {
         dHSSubjectFileUploadAuthPage.getParameters().put('id',diaCase.id); 
         DHSSubjectFileUploadAuthPageController ctrl =new DHSSubjectFileUploadAuthPageController();
         ctrl.ssnUserInput = '0000';
-        pagereference pref = ctrl.AuthMethod(); System.assertNotEquals(null, pref, 'Expected pref to be initialized');
+        PageReference pref = ctrl.AuthMethod();
+        System.assertEquals(null, pref, 'Failed authentication should not redirect');
         System.assertEquals(false, ctrl.isAuthenticatedSuccess, 'Expected the asserted condition to hold');
 
         ctrl.ssnUserInput = '1123';

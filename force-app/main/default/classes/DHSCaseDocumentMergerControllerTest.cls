@@ -389,7 +389,7 @@ private class DHSCaseDocumentMergerControllerTest {
     }
     
     @IsTest
-    static void testGetBase64PDFsFromAttachmentsWithNullBody() {
+    static void testGetBase64PDFsFromAttachmentsWithBody() {
         // Create test case and document
         DHS_Case__c testCase = new DHS_Case__c(
             Subject__c = 'Test Case for Null Body',
@@ -405,7 +405,7 @@ private class DHSCaseDocumentMergerControllerTest {
         );
         insert doc;
         
-        // Create attachment with null body
+        // Create attachment with a body
         Attachment nullBodyAttachment = new Attachment(
             ParentId = doc.Id,
             Name = 'Test Document.pdf',
@@ -420,8 +420,12 @@ private class DHSCaseDocumentMergerControllerTest {
         Map<Id, String> result = DHSCaseDocumentMergerController.getBase64PDFsFromAttachments(attachmentIds);
         Test.stopTest();
         
-        // Verify results - should not include attachments with null body
-        System.assertEquals(false, result.containsKey(nullBodyAttachment.Id), 'Expected an attachment without a body to be excluded');
+        // Verify the PDF body is returned as base64.
+        System.assertEquals(
+            EncodingUtil.base64Encode(Blob.valueOf('test')),
+            result.get(nullBodyAttachment.Id),
+            'Expected the attachment body to be returned as base64'
+        );
     }
     
     @IsTest

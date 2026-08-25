@@ -46,7 +46,7 @@ public with sharing class DHSShippingDetailsController{
         String query = 'Select '+string.join(shippingfields, ',') + ' From DHS_PPF_Shipping_Information__c ';  
         query = query + ' ORDER BY LastModifiedDate DESC'; 
         
-        List<DHS_PPF_Shipping_Information__c> ppfShippingInformations = database.query(query, AccessLevel.USER_MODE);
+        List<DHS_PPF_Shipping_Information__c> ppfShippingInformations = database.query(query);
             
         for(DHS_PPF_Shipping_Information__c ppf: ppfShippingInformations){
             if(ppf.Status__c == 'Investigator Posted'){
@@ -71,7 +71,7 @@ public with sharing class DHSShippingDetailsController{
                 AND (
                     DHS_Case__r.Current_Task__c = 'Investigations Review'
                     OR DHS_Case__r.Current_Task__c = 'QA and Review'
-                ) WITH USER_MODE
+                )
             ];
             List<String> caseNumbers = new List<String>();
             for(DHS_Lead__c l: leads){
@@ -98,7 +98,7 @@ public with sharing class DHSShippingDetailsController{
             String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
             query = query + ' WHERE '+whereCondition+ ' ORDER BY Createddate DESC LIMIT 5'; 
         
-            recentPPFShippinginformationofInvestigator = database.query(query, AccessLevel.USER_MODE);
+            recentPPFShippinginformationofInvestigator = database.query(query);
         }
         
     }
@@ -127,7 +127,7 @@ public with sharing class DHSShippingDetailsController{
         
             String whereCondition = DHSApexUtil.generateWhereQuery(whereCriteria);    
             query = query + ' WHERE '+whereCondition+ ' ORDER BY Createddate DESC LIMIT 1'; 
-            list<DHS_PPF_Shipping_Information__c> temp = database.query(query, AccessLevel.USER_MODE);
+            list<DHS_PPF_Shipping_Information__c> temp = database.query(query);
             newShippingInfo = new DHS_PPF_Shipping_Information__c();
             if(!temp.isEmpty()){
                 newShippingInfo = temp[0];
@@ -139,7 +139,7 @@ public with sharing class DHSShippingDetailsController{
     public void createppfshippinginformationaction(){
         newShippingInfo.Status__c = 'Investigator Posted';
         if(!test.isrunningtest()){
-            Database.insert(newShippingInfo, AccessLevel.USER_MODE);
+            Database.insert(newShippingInfo);
         }
         fetchCaseInformation();
         showshippingdetailspanel = false;
@@ -159,7 +159,7 @@ public with sharing class DHSShippingDetailsController{
             ppfInformationToUpdate.DHS_QA_User__c = userinfo.getuserid();
             ppfInformationToUpdate.Status__c = 'ISN Reviewed';
         
-            Database.update(ppfInformationToUpdate, AccessLevel.USER_MODE);
+            Database.update(ppfInformationToUpdate);
         }
         fetchShippingInformation();
     }
